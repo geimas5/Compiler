@@ -1,15 +1,19 @@
 parser grammar MParser;
 
+options {
+  tokenVocab=MLexer;
+}
+
 program : (classDecleration | interfaceDecleration)+ EOF;
             
 classDecleration
-     : 'class' Identifier ':' Identifier '{' member* '}'
-     | 'class' Identifier '{' member* '}'
+     : Class Identifier Colon Identifier LeftBrace member* RightBrace
+     | Class Identifier LeftBrace member* RightBrace
      ;
 
 interfaceDecleration
-     : 'interface' Identifier ':' Identifier '{' prototype* '}'
-     | 'interface' Identifier '{' prototype* '}'
+     : Interface Identifier Colon Identifier LeftBrace prototype* RightBrace
+     | Interface Identifier LeftBrace prototype* RightBrace
      ;
 
 member
@@ -17,22 +21,22 @@ member
     | variableDecleration;
 
 prototype
-    : 'void' Identifier '(' parameters? ')' ';'
-    | type Identifier '(' parameters? ')' ';'
+    : Void Identifier LeftParen parameters? RightParen Semi
+    | type Identifier LeftParen parameters? RightParen Semi
     ;
 
 variableDecleration
-    : type Identifier '=' expression ';'
-    | type Identifier ';'
+    : type Identifier Assign expression Semi
+    | type Identifier Semi
     ;
 
 methodDecleration
-    : 'static'? 'void' Identifier '(' parameters? ')' statementBlock
-    | 'static'? type Identifier '(' parameters? ')' statementBlock
+    : Static? Void Identifier LeftParen parameters? RightParen statementBlock
+    | Static? type Identifier LeftParen parameters? RightParen statementBlock
     ;
 
 parameters
-   : variable (',' variable)*
+   : variable (Comma variable)*
    ;
 
 variable
@@ -40,19 +44,19 @@ variable
    ;
 
 type
-   : 'int'
-   | 'string'
-   | 'double'
-   | type '[' ']'
+   : Int
+   | String
+   | Double
+   | type LeftBracket RightBracket
    | Identifier
    ;
 
 statementBlock
-   : '{' statement* '}'
+   : LeftBrace statement* RightBrace
    ;
 
 statement
-   : expression ';'
+   : expression Semi
    | ifStatement
    | whileStatement
    | forStatement
@@ -63,63 +67,63 @@ statement
    ;
 
 ifStatement
-   : 'if' '(' expression ')' statement 'else' statement
-   | 'if' '(' expression ')' statement
+   : If LeftParen expression RightParen statement Else statement
+   | If LeftParen expression RightParen statement
    ;
 
 whileStatement
-   : 'while' '(' expression ')' statement
+   : While LeftParen expression RightParen statement
    ;
 
 forStatement
-   : 'for' '(' expression ',' expression ',' expression? ')'
+   : For LeftParen expression Comma expression Comma expression? RightParen
    ;
 
 returnStatement
-   : 'return' expression ';'
-   | 'return' ';'
+   : Return expression Semi
+   | Return Semi
    ;
 
 breakStatement
-   : 'break' ';'
+   : Break Semi
    ;
 
 expression
     : coreExpression
-   | expression '[' expression ']'
-   | expression '.' expression
+   | expression LeftBracket expression RightBracket
+   | expression Dot expression
    | methodCall
    | creator
-   | expression '**' expression
-   | expression ('*' | '/' | '%') expression
-   | expression ('+' | '-') expression
-   | '-' expression
-   |  expression ('<' | '<=' | '>' | '>=') expression
-   |  expression ('!=' | '==' ) expression
-   | expression '&&' expression
-   | expression '||' expression
-   | '!' expression
-   | <assoc=right>expression '=' expression
+   | expression StarStar expression
+   | expression (Star | Div | Mod) expression
+   | expression (Plus | Minus) expression
+   | Minus expression
+   |  expression (Less | LessEqual | Greater | GreaterEqual) expression
+   |  expression (NotEqual | Equal ) expression
+   | expression AndAnd expression
+   | expression OrOr expression
+   | Not expression
+   | <assoc=right>expression Assign expression
    ;
 
 coreExpression
-    : '(' expression ')'
-    | 'this'
+    : LeftParen expression RightParen
+    | This
     | constant
     | Identifier
     ;
 
 creator
-    : 'new' type '[' expression ']'
-    | 'new' type '(' ')'
+    : New type LeftBracket expression RightBracket
+    | New type LeftParen RightParen
     ;
 
 methodCall
-    : Identifier '(' arguments? ')'
+    : Identifier LeftParen arguments? RightParen
     ;
 
 arguments
-    : expression (',' expression)*
+    : expression (Comma expression)*
     ;
 
 constant

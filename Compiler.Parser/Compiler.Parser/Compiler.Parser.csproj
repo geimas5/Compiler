@@ -44,13 +44,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MLexer.g4.cs">
+      <DependentUpon>MLexer.g4</DependentUpon>
+    </Compile>
     <Compile Include="MParser.g4.cs">
       <DependentUpon>MParser.g4</DependentUpon>
     </Compile>
+    <Compile Include="obj\Debug\MLexer.cs" />
+    <Compile Include="obj\Debug\MParser.cs" />
+    <Compile Include="obj\Debug\MParserBaseListener.cs" />
+    <Compile Include="obj\Debug\MParserBaseVisitor.cs" />
+    <Compile Include="obj\Debug\MParserListener.cs" />
+    <Compile Include="obj\Debug\MParserVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Antlr4 Include="MParser.g4">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>Compiler.Parser</CustomToolNamespace>
+    </Antlr4>
+    <Antlr4 Include="MLexer.g4">
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>Compiler.Parser</CustomToolNamespace>
     </Antlr4>

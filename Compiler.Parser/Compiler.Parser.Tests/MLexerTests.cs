@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using Antlr4.Runtime;
 
-namespace Compiler.Scanner.Tests
+namespace Compiler.Parser.Tests
 {
     [TestClass]
     public class MLexerTests

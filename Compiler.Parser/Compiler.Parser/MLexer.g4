@@ -9,11 +9,12 @@ This : 'this';
 If : 'if';
 Else : 'else';
 For : 'for';
-Static : 'static';
+Static : 'static'; 
 Return : 'return';
 New : 'new';
 Double : 'double';
 String : 'string';
+Interface : 'interface';
 
 // Brackets
 LeftParen : '(' ;

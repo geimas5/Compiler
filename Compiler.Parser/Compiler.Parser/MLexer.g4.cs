@@ -1,4 +1,4 @@
-﻿namespace Compiler.Scanner
+﻿namespace Compiler.Parser
 {
     partial class MLexer
     {
