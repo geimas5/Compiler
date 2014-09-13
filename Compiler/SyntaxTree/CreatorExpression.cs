@@ -9,5 +9,6 @@
         }
 
         public TypeNode Type { get; set; }
+
     }
 }

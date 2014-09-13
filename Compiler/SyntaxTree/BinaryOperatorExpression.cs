@@ -15,5 +15,20 @@
         public ExpressionNode Right { get; private set; }
 
         public BinaryOperator Operator { get; set; }
+
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
+
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + string.Format("(Operator: {0})", this.Operator);
+        }
     }
 }

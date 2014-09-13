@@ -3,6 +3,7 @@
     using System;
 
     using Compiler.Parser.Antlr;
+    using Compiler.SyntaxTree;
 
     class Program
     {
@@ -12,8 +13,9 @@
             var result = antlerParser.ParseProgram(
 @"
 
-void test() {
+void test(int d) {
     int[] d = new int[2];
+    int d;
 
     test(1,2,3);
     test();
@@ -37,7 +39,9 @@ int[] test() {
 
 ");
 
-            Console.WriteLine(result.SynataxTree.ToString());
+            TreePrinter printer = new TreePrinter();
+            printer.PrintTree(result.SynataxTree);
+            //Console.WriteLine(result.SynataxTree.ToString());
             Console.ReadLine();
         }
     }

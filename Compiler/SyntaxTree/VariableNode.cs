@@ -1,8 +1,6 @@
 ﻿
 namespace Compiler.SyntaxTree
 {
-    using System;
-
     public class VariableNode : Node
     {
         public VariableNode(Location location, TypeNode type, VariableIdNode name)
@@ -16,14 +14,14 @@ namespace Compiler.SyntaxTree
 
         public VariableIdNode Name { get; set; }
 
-        public override string ToString()
+        public override T Accept<T>(IVisitor<T> visitor)
         {
-            string text = "(VariableNode " + this.Location + Environment.NewLine;
+            return visitor.Visit(this);
+        }
 
-            text += ((object)this.Type ?? string.Empty) + Environment.NewLine;
-            text += ((object)this.Name ?? string.Empty).ToString();
-
-            return text + ")";
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

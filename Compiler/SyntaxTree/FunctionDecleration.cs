@@ -1,9 +1,8 @@
 ﻿namespace Compiler.SyntaxTree
 {
-    using System;
     using System.Collections.Generic;
 
-    public class FunctionDecleration : Node
+    public abstract class FunctionDecleration : Node
     {
         public FunctionDecleration(
             Location location,
@@ -28,14 +27,7 @@
 
         public override string ToString()
         {
-            string text = "(FunctionDecleration " + this.Location + Environment.NewLine;
-
-            foreach (var parameterNode in this.Parameters)
-            {
-                text += parameterNode.ToString();
-            }
-
-            return text + ")";
+            return base.ToString() + string.Format("(Name: {0})", this.Name);
         }
     }
 }

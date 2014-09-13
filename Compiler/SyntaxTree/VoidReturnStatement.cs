@@ -1,14 +1,11 @@
 ﻿namespace Compiler.SyntaxTree
 {
-    public class VariableExpression : ExpressionNode
+    public class VoidReturnStatement : ReturnStatement
     {
-        public VariableExpression(Location location, VariableIdNode variableId)
+        public VoidReturnStatement(Location location)
             : base(location)
         {
-            this.VariableId = variableId;
         }
-
-        public VariableIdNode VariableId { get; set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

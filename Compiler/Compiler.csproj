@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Parser\Antlr\Utility.cs" />
     <Compile Include="SyntaxTree\ArrayCreatorExpression.cs" />
     <Compile Include="SyntaxTree\ArrayType.cs" />
     <Compile Include="SyntaxTree\AssignmentExpression.cs" />
@@ -83,16 +84,19 @@
     <Compile Include="SyntaxTree\IfStatement.cs" />
     <Compile Include="SyntaxTree\IndexerExpression.cs" />
     <Compile Include="SyntaxTree\IntegerConstant.cs" />
+    <Compile Include="SyntaxTree\IVisitor.cs" />
     <Compile Include="SyntaxTree\Location.cs" />
     <Compile Include="SyntaxTree\Node.cs" />
     <Compile Include="SyntaxTree\PrimitiveType.cs" />
     <Compile Include="SyntaxTree\ReturnExpressionStatement.cs" />
     <Compile Include="SyntaxTree\ReturningFunctionDecleration.cs" />
     <Compile Include="SyntaxTree\StringConstant.cs" />
+    <Compile Include="SyntaxTree\TreePrinter.cs" />
     <Compile Include="SyntaxTree\Type.cs" />
     <Compile Include="SyntaxTree\InitializedVariableDecleration.cs" />
     <Compile Include="SyntaxTree\UnaryExpression.cs" />
     <Compile Include="SyntaxTree\UnaryOperator.cs" />
+    <Compile Include="SyntaxTree\UnInitializedVariableDecleration.cs" />
     <Compile Include="SyntaxTree\VariableExpression.cs" />
     <Compile Include="SyntaxTree\VariableNode.cs" />
     <Compile Include="SyntaxTree\ProgramNode.cs" />
@@ -102,6 +106,8 @@
     <Compile Include="SyntaxTree\TypeNode.cs" />
     <Compile Include="SyntaxTree\VariableDecleration.cs" />
     <Compile Include="SyntaxTree\VariableIdNode.cs" />
+    <Compile Include="SyntaxTree\VoidFunctionDecleration.cs" />
+    <Compile Include="SyntaxTree\VoidReturnStatement.cs" />
     <Compile Include="SyntaxTree\WhileStatement.cs" />
   </ItemGroup>
   <ItemGroup>

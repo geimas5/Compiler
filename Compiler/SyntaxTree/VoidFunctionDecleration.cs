@@ -2,20 +2,16 @@
 {
     using System.Collections.Generic;
 
-    public class ReturningFunctionDecleration : FunctionDecleration
+    public class VoidFunctionDecleration : FunctionDecleration
     {
-        public ReturningFunctionDecleration(
+        public VoidFunctionDecleration(
             Location location,
             string name,
             IEnumerable<VariableNode> parameters,
-            IEnumerable<StatementNode> statements,
-            TypeNode type)
+            IEnumerable<StatementNode> statements)
             : base(location, name, parameters, statements)
         {
-            this.Type = type;
         }
-
-        public TypeNode Type { get; set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

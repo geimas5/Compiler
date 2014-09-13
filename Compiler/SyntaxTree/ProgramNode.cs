@@ -13,16 +13,14 @@
 
         public List<FunctionDecleration> Functions { get; private set; }
 
-        public override string ToString()
+        public override T Accept<T>(IVisitor<T> visitor)
         {
-            string text = "(Program " + this.Location + Environment.NewLine;
+            return visitor.Visit(this);
+        }
 
-            foreach (var functionDecleration in this.Functions)
-            {
-                text += functionDecleration;
-            }
-
-            return text + ")";
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

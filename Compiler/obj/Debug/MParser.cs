@@ -106,7 +106,7 @@ public partial class MParser : Parser {
 	public ProgramContext program() {
 		ProgramContext _localctx = new ProgramContext(_ctx, State);
 		EnterRule(_localctx, 0, RULE_program);
-		_localctx.programNode =  new Compiler.SyntaxTree.ProgramNode(null);
+		_localctx.programNode =  new Compiler.SyntaxTree.ProgramNode(Utility.CreateLocation(_localctx));
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
@@ -185,7 +185,7 @@ public partial class MParser : Parser {
 				State = 48; Match(Assign);
 				State = 49; _localctx._expression = expression(0);
 				State = 50; Match(Semi);
-				 _localctx.decleration =  new InitializedVariableDecleration(null, _localctx._variable.var, _localctx._expression.expr); 
+				 _localctx.decleration =  new InitializedVariableDecleration(Utility.CreateLocation(_localctx), _localctx._variable.var, _localctx._expression.expr); 
 				}
 				break;
 
@@ -194,7 +194,7 @@ public partial class MParser : Parser {
 				{
 				State = 53; _localctx._variable = variable();
 				State = 54; Match(Semi);
-				 _localctx.decleration =  new VariableDecleration(null, _localctx._variable.var); 
+				 _localctx.decleration =  new UnInitializedVariableDecleration(Utility.CreateLocation(_localctx), _localctx._variable.var); 
 				}
 				break;
 			}
@@ -265,7 +265,7 @@ public partial class MParser : Parser {
 				State = 62; _localctx._parameters = parameters();
 				State = 63; Match(RightParen);
 				State = 64; _localctx._statementBlock = statementBlock();
-				 _localctx.func =  new FunctionDecleration(null, (_localctx._Identifier!=null?_localctx._Identifier.Text:null), _localctx._parameters.vars, _localctx._statementBlock.stmts); 
+				 _localctx.func =  new VoidFunctionDecleration(Utility.CreateLocation(_localctx), (_localctx._Identifier!=null?_localctx._Identifier.Text:null), _localctx._parameters.vars, _localctx._statementBlock.stmts); 
 				}
 				break;
 
@@ -277,7 +277,7 @@ public partial class MParser : Parser {
 				State = 69; Match(LeftParen);
 				State = 70; Match(RightParen);
 				State = 71; _localctx._statementBlock = statementBlock();
-				 _localctx.func =  new FunctionDecleration(null, (_localctx._Identifier!=null?_localctx._Identifier.Text:null), new List<VariableNode>(), _localctx._statementBlock.stmts); 
+				 _localctx.func =  new VoidFunctionDecleration(Utility.CreateLocation(_localctx), (_localctx._Identifier!=null?_localctx._Identifier.Text:null), new List<VariableNode>(), _localctx._statementBlock.stmts); 
 				}
 				break;
 
@@ -290,7 +290,7 @@ public partial class MParser : Parser {
 				State = 77; _localctx._parameters = parameters();
 				State = 78; Match(RightParen);
 				State = 79; _localctx._statementBlock = statementBlock();
-				 _localctx.func =  new ReturningFunctionDecleration(null, (_localctx._Identifier!=null?_localctx._Identifier.Text:null), _localctx._parameters.vars, _localctx._statementBlock.stmts, _localctx._type.typeNode); 
+				 _localctx.func =  new ReturningFunctionDecleration(Utility.CreateLocation(_localctx), (_localctx._Identifier!=null?_localctx._Identifier.Text:null), _localctx._parameters.vars, _localctx._statementBlock.stmts, _localctx._type.typeNode); 
 				}
 				break;
 
@@ -302,7 +302,7 @@ public partial class MParser : Parser {
 				State = 84; Match(LeftParen);
 				State = 85; Match(RightParen);
 				State = 86; _localctx._statementBlock = statementBlock();
-				 _localctx.func =  new ReturningFunctionDecleration(null, (_localctx._Identifier!=null?_localctx._Identifier.Text:null), new List<VariableNode>(), _localctx._statementBlock.stmts, _localctx._type.typeNode); 
+				 _localctx.func =  new ReturningFunctionDecleration(Utility.CreateLocation(_localctx), (_localctx._Identifier!=null?_localctx._Identifier.Text:null), new List<VariableNode>(), _localctx._statementBlock.stmts, _localctx._type.typeNode); 
 				}
 				break;
 			}
@@ -428,7 +428,7 @@ public partial class MParser : Parser {
 			{
 			State = 103; _localctx._type = type(0);
 			State = 104; _localctx._Identifier = Match(Identifier);
-			 _localctx.var =  new VariableNode(null, _localctx._type.typeNode, new VariableIdNode(null, (_localctx._Identifier!=null?_localctx._Identifier.Text:null))); 
+			 _localctx.var =  new VariableNode(Utility.CreateLocation(_localctx), _localctx._type.typeNode, new VariableIdNode(Utility.CreateLocation(_localctx), (_localctx._Identifier!=null?_localctx._Identifier.Text:null))); 
 			}
 		}
 		catch (RecognitionException re) {
@@ -494,19 +494,19 @@ public partial class MParser : Parser {
 			case Int:
 				{
 				State = 108; Match(Int);
-				 _localctx.typeNode =  new PrimitiveType(null, Types.Int); 
+				 _localctx.typeNode =  new PrimitiveType(Utility.CreateLocation(_localctx), Types.Int); 
 				}
 				break;
 			case String:
 				{
 				State = 110; Match(String);
-				 _localctx.typeNode =  new PrimitiveType(null, Types.String); 
+				 _localctx.typeNode =  new PrimitiveType(Utility.CreateLocation(_localctx), Types.String); 
 				}
 				break;
 			case Double:
 				{
 				State = 112; Match(Double);
-				 _localctx.typeNode =  new PrimitiveType(null, Types.Double); 
+				 _localctx.typeNode =  new PrimitiveType(Utility.CreateLocation(_localctx), Types.Double); 
 				}
 				break;
 			default:
@@ -529,7 +529,7 @@ public partial class MParser : Parser {
 					if (!(Precpred(_ctx, 1))) throw new FailedPredicateException(this, "Precpred(_ctx, 1)");
 					State = 117; Match(LeftBracket);
 					State = 118; Match(RightBracket);
-					 _localctx.typeNode =  new ArrayType(null, _localctx.t.typeNode); 
+					 _localctx.typeNode =  new ArrayType(Utility.CreateLocation(_localctx), _localctx.t.typeNode); 
 					}
 					} 
 				}
@@ -693,7 +693,7 @@ public partial class MParser : Parser {
 				{
 				State = 136; _localctx._expression = expression(0);
 				State = 137; Match(Semi);
-				_localctx.stmts.Add(new ExpressionStatement(null, _localctx._expression.expr)); 
+				_localctx.stmts.Add(new ExpressionStatement(Utility.CreateLocation(_localctx), _localctx._expression.expr)); 
 				}
 				break;
 			case If:
@@ -817,7 +817,7 @@ public partial class MParser : Parser {
 				State = 167; _localctx.body = statement();
 				State = 168; Match(Else);
 				State = 169; _localctx.els = statement();
-				 _localctx.stmt =  new IfStatement(null, _localctx._expression.expr, _localctx.body.stmts, _localctx.els.stmts); 
+				 _localctx.stmt =  new IfStatement(Utility.CreateLocation(_localctx), _localctx._expression.expr, _localctx.body.stmts, _localctx.els.stmts); 
 				}
 				break;
 
@@ -829,7 +829,7 @@ public partial class MParser : Parser {
 				State = 174; _localctx._expression = expression(0);
 				State = 175; Match(RightParen);
 				State = 176; _localctx.body = statement();
-				 _localctx.stmt =  new IfStatement(null, _localctx._expression.expr, _localctx.body.stmts); 
+				 _localctx.stmt =  new IfStatement(Utility.CreateLocation(_localctx), _localctx._expression.expr, _localctx.body.stmts); 
 				}
 				break;
 			}
@@ -890,7 +890,7 @@ public partial class MParser : Parser {
 			State = 183; _localctx._expression = expression(0);
 			State = 184; Match(RightParen);
 			State = 185; _localctx._statement = statement();
-			 _localctx.stmt =  new WhileStatement(null, _localctx._expression.expr, _localctx._statement.stmts); 
+			 _localctx.stmt =  new WhileStatement(Utility.CreateLocation(_localctx), _localctx._expression.expr, _localctx._statement.stmts); 
 			}
 		}
 		catch (RecognitionException re) {
@@ -970,7 +970,7 @@ public partial class MParser : Parser {
 
 			State = 197; Match(RightParen);
 			State = 198; _localctx._statement = statement();
-			 _localctx.stmt =  new ForStatement(null, _localctx.init.expr, _localctx.cond.expr, _localctx.after.expr, _localctx._statement.stmts); 
+			 _localctx.stmt =  new ForStatement(Utility.CreateLocation(_localctx), _localctx.init.expr, _localctx.cond.expr, _localctx.after.expr, _localctx._statement.stmts); 
 			}
 		}
 		catch (RecognitionException re) {
@@ -1025,7 +1025,7 @@ public partial class MParser : Parser {
 				State = 201; Match(Return);
 				State = 202; _localctx._expression = expression(0);
 				State = 203; Match(Semi);
-				 _localctx.stmt =  new ReturnExpressionStatement(null, _localctx._expression.expr); 
+				 _localctx.stmt =  new ReturnExpressionStatement(Utility.CreateLocation(_localctx), _localctx._expression.expr); 
 				}
 				break;
 
@@ -1034,7 +1034,7 @@ public partial class MParser : Parser {
 				{
 				State = 206; Match(Return);
 				State = 207; Match(Semi);
-				 _localctx.stmt =  new ReturnStatement(null); 
+				 _localctx.stmt =  new VoidReturnStatement(Utility.CreateLocation(_localctx)); 
 				}
 				break;
 			}
@@ -1083,7 +1083,7 @@ public partial class MParser : Parser {
 			{
 			State = 211; Match(Break);
 			State = 212; Match(Semi);
-			 _localctx.stmt =  new BreakStatement(null); 
+			 _localctx.stmt =  new BreakStatement(Utility.CreateLocation(_localctx)); 
 			}
 		}
 		catch (RecognitionException re) {
@@ -1183,7 +1183,7 @@ public partial class MParser : Parser {
 				{
 				State = 216; Match(Minus);
 				State = 217; _localctx._expression = expression(7);
-				 _localctx.expr =  new UnaryExpression(null, UnaryOperator.Negation, _localctx.expr); 
+				 _localctx.expr =  new UnaryExpression(Utility.CreateLocation(_localctx), UnaryOperator.Negation, _localctx.expr); 
 				}
 				break;
 
@@ -1191,7 +1191,7 @@ public partial class MParser : Parser {
 				{
 				State = 220; Match(Not);
 				State = 221; _localctx._expression = expression(2);
-				 _localctx.expr =  new UnaryExpression(null, UnaryOperator.Not, _localctx.expr); 
+				 _localctx.expr =  new UnaryExpression(Utility.CreateLocation(_localctx), UnaryOperator.Not, _localctx.expr); 
 				}
 				break;
 
@@ -1236,7 +1236,7 @@ public partial class MParser : Parser {
 						if (!(Precpred(_ctx, 10))) throw new FailedPredicateException(this, "Precpred(_ctx, 10)");
 						State = 236; Match(StarStar);
 						State = 237; _localctx.right = _localctx._expression = expression(11);
-						 _localctx.expr =  new BinaryOperatorExpression(null, _localctx.left.expr, _localctx.right.expr, BinaryOperator.Exponensiation); 
+						 _localctx.expr =  new BinaryOperatorExpression(Utility.CreateLocation(_localctx), _localctx.left.expr, _localctx.right.expr, BinaryOperator.Exponensiation); 
 						}
 						break;
 
@@ -1271,7 +1271,7 @@ public partial class MParser : Parser {
 							throw new NoViableAltException(this);
 						}
 						State = 249; _localctx.right = _localctx._expression = expression(10);
-						 _localctx.expr =  new BinaryOperatorExpression(null, _localctx.left.expr, _localctx.right.expr, op); 
+						 _localctx.expr =  new BinaryOperatorExpression(Utility.CreateLocation(_localctx), _localctx.left.expr, _localctx.right.expr, op); 
 						}
 						break;
 
@@ -1300,7 +1300,7 @@ public partial class MParser : Parser {
 							throw new NoViableAltException(this);
 						}
 						State = 259; _localctx.right = _localctx._expression = expression(9);
-						 _localctx.expr =  new BinaryOperatorExpression(null, _localctx.left.expr, _localctx.right.expr, op); 
+						 _localctx.expr =  new BinaryOperatorExpression(Utility.CreateLocation(_localctx), _localctx.left.expr, _localctx.right.expr, op); 
 						}
 						break;
 
@@ -1341,7 +1341,7 @@ public partial class MParser : Parser {
 							throw new NoViableAltException(this);
 						}
 						State = 273; _localctx.right = _localctx._expression = expression(7);
-						 _localctx.expr =  new BinaryOperatorExpression(null, _localctx.left.expr, _localctx.right.expr, op); 
+						 _localctx.expr =  new BinaryOperatorExpression(Utility.CreateLocation(_localctx), _localctx.left.expr, _localctx.right.expr, op); 
 						}
 						break;
 
@@ -1370,7 +1370,7 @@ public partial class MParser : Parser {
 							throw new NoViableAltException(this);
 						}
 						State = 283; _localctx.right = _localctx._expression = expression(6);
-						 _localctx.expr =  new BinaryOperatorExpression(null, _localctx.left.expr, _localctx.right.expr, op); 
+						 _localctx.expr =  new BinaryOperatorExpression(Utility.CreateLocation(_localctx), _localctx.left.expr, _localctx.right.expr, op); 
 						}
 						break;
 
@@ -1383,7 +1383,7 @@ public partial class MParser : Parser {
 						if (!(Precpred(_ctx, 4))) throw new FailedPredicateException(this, "Precpred(_ctx, 4)");
 						State = 287; Match(AndAnd);
 						State = 288; _localctx.right = _localctx._expression = expression(5);
-						 _localctx.expr =  new BinaryOperatorExpression(null, _localctx.left.expr, _localctx.right.expr, BinaryOperator.And); 
+						 _localctx.expr =  new BinaryOperatorExpression(Utility.CreateLocation(_localctx), _localctx.left.expr, _localctx.right.expr, BinaryOperator.And); 
 						}
 						break;
 
@@ -1396,7 +1396,7 @@ public partial class MParser : Parser {
 						if (!(Precpred(_ctx, 3))) throw new FailedPredicateException(this, "Precpred(_ctx, 3)");
 						State = 292; Match(OrOr);
 						State = 293; _localctx.right = _localctx._expression = expression(4);
-						 _localctx.expr =  new BinaryOperatorExpression(null, _localctx.left.expr, _localctx.right.expr, BinaryOperator.Or); 
+						 _localctx.expr =  new BinaryOperatorExpression(Utility.CreateLocation(_localctx), _localctx.left.expr, _localctx.right.expr, BinaryOperator.Or); 
 						}
 						break;
 
@@ -1409,7 +1409,7 @@ public partial class MParser : Parser {
 						if (!(Precpred(_ctx, 1))) throw new FailedPredicateException(this, "Precpred(_ctx, 1)");
 						State = 297; Match(Assign);
 						State = 298; _localctx.right = _localctx._expression = expression(1);
-						 _localctx.expr =  new AssignmentExpression(null, _localctx.left.expr, _localctx.right.expr); 
+						 _localctx.expr =  new AssignmentExpression(Utility.CreateLocation(_localctx), _localctx.left.expr, _localctx.right.expr); 
 						}
 						break;
 
@@ -1423,7 +1423,7 @@ public partial class MParser : Parser {
 						State = 302; Match(LeftBracket);
 						State = 303; _localctx.indx = _localctx._expression = expression(0);
 						State = 304; Match(RightBracket);
-						 _localctx.expr =  new IndexerExpression(null, _localctx.name.expr, _localctx.indx.expr); 
+						 _localctx.expr =  new IndexerExpression(Utility.CreateLocation(_localctx), _localctx.name.expr, _localctx.indx.expr); 
 						}
 						break;
 					}
@@ -1501,14 +1501,14 @@ public partial class MParser : Parser {
 				EnterOuterAlt(_localctx, 2);
 				{
 				State = 317; _localctx._constant = constant();
-				 _localctx.expr =  new ConstantExpression(null, _localctx._constant.@const); 
+				 _localctx.expr =  new ConstantExpression(Utility.CreateLocation(_localctx), _localctx._constant.@const); 
 				}
 				break;
 			case Identifier:
 				EnterOuterAlt(_localctx, 3);
 				{
 				State = 320; _localctx._Identifier = Match(Identifier);
-				 _localctx.expr =  new VariableExpression(null, new VariableIdNode(null, (_localctx._Identifier!=null?_localctx._Identifier.Text:null)));  
+				 _localctx.expr =  new VariableExpression(Utility.CreateLocation(_localctx), new VariableIdNode(Utility.CreateLocation(_localctx), (_localctx._Identifier!=null?_localctx._Identifier.Text:null)));  
 				}
 				break;
 			default:
@@ -1571,7 +1571,7 @@ public partial class MParser : Parser {
 			State = 326; Match(LeftBracket);
 			State = 327; _localctx._expression = expression(0);
 			State = 328; Match(RightBracket);
-			 _localctx.expr =  new ArrayCreatorExpression(null, _localctx._type.typeNode, _localctx._expression.expr ); 
+			 _localctx.expr =  new ArrayCreatorExpression(Utility.CreateLocation(_localctx), _localctx._type.typeNode, _localctx._expression.expr ); 
 			}
 		}
 		catch (RecognitionException re) {
@@ -1629,7 +1629,7 @@ public partial class MParser : Parser {
 				State = 332; Match(LeftParen);
 				State = 333; _localctx._arguments = arguments();
 				State = 334; Match(RightParen);
-				 _localctx.expr =  new FunctionCallExpression(null, (_localctx._Identifier!=null?_localctx._Identifier.Text:null), _localctx._arguments.args ); 
+				 _localctx.expr =  new FunctionCallExpression(Utility.CreateLocation(_localctx), (_localctx._Identifier!=null?_localctx._Identifier.Text:null), _localctx._arguments.args ); 
 				}
 				break;
 
@@ -1639,7 +1639,7 @@ public partial class MParser : Parser {
 				State = 337; _localctx._Identifier = Match(Identifier);
 				State = 338; Match(LeftParen);
 				State = 339; Match(RightParen);
-				 _localctx.expr =  new FunctionCallExpression(null, (_localctx._Identifier!=null?_localctx._Identifier.Text:null), new List<ExpressionNode>() ); 
+				 _localctx.expr =  new FunctionCallExpression(Utility.CreateLocation(_localctx), (_localctx._Identifier!=null?_localctx._Identifier.Text:null), new List<ExpressionNode>() ); 
 				}
 				break;
 			}
@@ -1765,14 +1765,14 @@ public partial class MParser : Parser {
 				EnterOuterAlt(_localctx, 1);
 				{
 				State = 354; _localctx._IntegerConstant = Match(IntegerConstant);
-				 _localctx.@const =  new IntegerConstant(null, int.Parse((_localctx._IntegerConstant!=null?_localctx._IntegerConstant.Text:null))); 
+				 _localctx.@const =  new IntegerConstant(Utility.CreateLocation(_localctx), int.Parse((_localctx._IntegerConstant!=null?_localctx._IntegerConstant.Text:null))); 
 				}
 				break;
 			case StringConstant:
 				EnterOuterAlt(_localctx, 2);
 				{
 				State = 356; _localctx._StringConstant = Match(StringConstant);
-				 _localctx.@const =  new StringConstant(null, (_localctx._StringConstant!=null?_localctx._StringConstant.Text:null)); 
+				 _localctx.@const =  new StringConstant(Utility.CreateLocation(_localctx), (_localctx._StringConstant!=null?_localctx._StringConstant.Text:null)); 
 				}
 				break;
 			default:

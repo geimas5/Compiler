@@ -1,14 +1,11 @@
 ﻿namespace Compiler.SyntaxTree
 {
-    public class VariableExpression : ExpressionNode
+    public class UnInitializedVariableDecleration : VariableDecleration
     {
-        public VariableExpression(Location location, VariableIdNode variableId)
-            : base(location)
+        public UnInitializedVariableDecleration(Location location, VariableNode variable)
+            : base(location, variable)
         {
-            this.VariableId = variableId;
         }
-
-        public VariableIdNode VariableId { get; set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {
