@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\mariusg\documents\visual studio 2013\Projects\Compiler\Compiler.Parser\Compiler.Parser\MParser.g4 by ANTLR 4.3
+// Generated from C:\Users\mariusg\documents\visual studio 2013\Projects\Compiler\Compiler\Parser\Antlr\MParser.g4 by ANTLR 4.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -17,7 +17,8 @@
 // Missing XML comment for publicly visible type or member '...'
 #pragma warning disable 1591
 
-namespace Compiler.Parser {
+namespace Compiler.Parser.Antlr {
+ using Compiler.SyntaxTree; 
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using IToken = Antlr4.Runtime.IToken;
@@ -75,17 +76,6 @@ public partial class MParserBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitForStatement([NotNull] MParser.ForStatementContext context) { return VisitChildren(context); }
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="MParser.methodCall"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitMethodCall([NotNull] MParser.MethodCallContext context) { return VisitChildren(context); }
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="MParser.statementBlock"/>.
@@ -165,6 +155,17 @@ public partial class MParserBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	public virtual Result VisitStatement([NotNull] MParser.StatementContext context) { return VisitChildren(context); }
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="MParser.functionCall"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitFunctionCall([NotNull] MParser.FunctionCallContext context) { return VisitChildren(context); }
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="MParser.arguments"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -241,4 +242,4 @@ public partial class MParserBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	/// <return>The visitor result.</return>
 	public virtual Result VisitVariable([NotNull] MParser.VariableContext context) { return VisitChildren(context); }
 }
-} // namespace Compiler.Parser
+} // namespace Compiler.Parser.Antlr

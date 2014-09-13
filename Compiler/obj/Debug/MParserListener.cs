@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\mariusg\documents\visual studio 2013\Projects\Compiler\Compiler.Parser\Compiler.Parser\MParser.g4 by ANTLR 4.3
+// Generated from C:\Users\mariusg\documents\visual studio 2013\Projects\Compiler\Compiler\Parser\Antlr\MParser.g4 by ANTLR 4.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -17,7 +17,8 @@
 // Missing XML comment for publicly visible type or member '...'
 #pragma warning disable 1591
 
-namespace Compiler.Parser {
+namespace Compiler.Parser.Antlr {
+ using Compiler.SyntaxTree; 
 using Antlr4.Runtime.Misc;
 using IParseTreeListener = Antlr4.Runtime.Tree.IParseTreeListener;
 using IToken = Antlr4.Runtime.IToken;
@@ -72,17 +73,6 @@ public interface IMParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitForStatement([NotNull] MParser.ForStatementContext context);
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="MParser.methodCall"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterMethodCall([NotNull] MParser.MethodCallContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="MParser.methodCall"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitMethodCall([NotNull] MParser.MethodCallContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.statementBlock"/>.
@@ -162,6 +152,17 @@ public interface IMParserListener : IParseTreeListener {
 	void ExitStatement([NotNull] MParser.StatementContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="MParser.functionCall"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterFunctionCall([NotNull] MParser.FunctionCallContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="MParser.functionCall"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitFunctionCall([NotNull] MParser.FunctionCallContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.arguments"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -238,4 +239,4 @@ public interface IMParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitVariable([NotNull] MParser.VariableContext context);
 }
-} // namespace Compiler.Parser
+} // namespace Compiler.Parser.Antlr

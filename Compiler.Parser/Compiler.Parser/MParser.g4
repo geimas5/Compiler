@@ -4,35 +4,17 @@ options {
   tokenVocab=MLexer;
 }
 
-program : (classDecleration | interfaceDecleration)+ EOF;
-            
-classDecleration
-     : Class Identifier Colon Identifier LeftBrace member* RightBrace
-     | Class Identifier LeftBrace member* RightBrace
-     ;
-
-interfaceDecleration
-     : Interface Identifier Colon Identifier LeftBrace prototype* RightBrace
-     | Interface Identifier LeftBrace prototype* RightBrace
-     ;
-
-member
-    : methodDecleration
-    | variableDecleration;
-
-prototype
-    : Void Identifier LeftParen parameters? RightParen Semi
-    | type Identifier LeftParen parameters? RightParen Semi
-    ;
+program : ( functionDecleration
+    | variableDecleration)+ EOF;
 
 variableDecleration
     : type Identifier Assign expression Semi
     | type Identifier Semi
     ;
 
-methodDecleration
-    : Static? Void Identifier LeftParen parameters? RightParen statementBlock
-    | Static? type Identifier LeftParen parameters? RightParen statementBlock
+functionDecleration
+    : Void Identifier LeftParen parameters? RightParen statementBlock
+    | type Identifier LeftParen parameters? RightParen statementBlock
     ;
 
 parameters
@@ -48,7 +30,6 @@ type
    | String
    | Double
    | type LeftBracket RightBracket
-   | Identifier
    ;
 
 statementBlock
@@ -98,8 +79,8 @@ expression
    | expression (Star | Div | Mod) expression
    | expression (Plus | Minus) expression
    | Minus expression
-   |  expression (Less | LessEqual | Greater | GreaterEqual) expression
-   |  expression (NotEqual | Equal ) expression
+   | expression (Less | LessEqual | Greater | GreaterEqual) expression
+   | expression (NotEqual | Equal ) expression
    | expression AndAnd expression
    | expression OrOr expression
    | Not expression
@@ -114,8 +95,7 @@ coreExpression
     ;
 
 creator
-    : New type LeftBracket expression RightBracket
-    | New type LeftParen RightParen
+    : New type LeftParen RightParen
     ;
 
 methodCall

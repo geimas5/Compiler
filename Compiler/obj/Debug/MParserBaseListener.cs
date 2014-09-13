@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\mariusg\documents\visual studio 2013\Projects\Compiler\Compiler.Parser\Compiler.Parser\MParser.g4 by ANTLR 4.3
+// Generated from C:\Users\mariusg\documents\visual studio 2013\Projects\Compiler\Compiler\Parser\Antlr\MParser.g4 by ANTLR 4.3
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -17,7 +17,8 @@
 // Missing XML comment for publicly visible type or member '...'
 #pragma warning disable 1591
 
-namespace Compiler.Parser {
+namespace Compiler.Parser.Antlr {
+ using Compiler.SyntaxTree; 
 
 using Antlr4.Runtime.Misc;
 using IErrorNode = Antlr4.Runtime.Tree.IErrorNode;
@@ -84,19 +85,6 @@ public partial class MParserBaseListener : IMParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitForStatement([NotNull] MParser.ForStatementContext context) { }
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="MParser.methodCall"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterMethodCall([NotNull] MParser.MethodCallContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="MParser.methodCall"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitMethodCall([NotNull] MParser.MethodCallContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.statementBlock"/>.
@@ -188,6 +176,19 @@ public partial class MParserBaseListener : IMParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStatement([NotNull] MParser.StatementContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="MParser.functionCall"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterFunctionCall([NotNull] MParser.FunctionCallContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="MParser.functionCall"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitFunctionCall([NotNull] MParser.FunctionCallContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.arguments"/>.
@@ -293,4 +294,4 @@ public partial class MParserBaseListener : IMParserListener {
 	/// <remarks>The default implementation does nothing.</remarks>
 	public virtual void VisitErrorNode([NotNull] IErrorNode node) { }
 }
-} // namespace Compiler.Parser
+} // namespace Compiler.Parser.Antlr

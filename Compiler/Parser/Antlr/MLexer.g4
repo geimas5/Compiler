@@ -12,6 +12,7 @@ Return : 'return';
 New : 'new';
 Double : 'double';
 String : 'string';
+While : 'while';
 
 // Brackets
 LeftParen : '(' ;
@@ -53,12 +54,12 @@ Identifier : Letter LetterAndDigit*;
 IntegerConstant
     : '-'? [0-9]+;
 
-StringLiteral
+StringConstant
     :   '"' StringCharacters? '"'
     ;
 
 Whitespace
-    :   [ \t\n]+ -> skip
+    :   [ \t\n\r]+ -> skip
     ;
 
 Comment

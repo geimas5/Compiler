@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Antlr4.4.3.0\build\Antlr4.props" Condition="Exists('..\packages\Antlr4.4.3.0\build\Antlr4.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -12,6 +13,7 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>7723235f</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr4.Runtime.net45">
+      <HintPath>..\packages\Antlr4.Runtime.4.3.0\lib\net45\Antlr4.Runtime.net45.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,13 +47,93 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SyntaxTree\ArrayCreatorExpression.cs" />
+    <Compile Include="SyntaxTree\ArrayType.cs" />
+    <Compile Include="SyntaxTree\AssignmentExpression.cs" />
+    <Compile Include="SyntaxTree\BinaryOperator.cs" />
+    <Compile Include="SyntaxTree\BinaryOperatorExpression.cs" />
+    <Compile Include="Error.cs" />
+    <Compile Include="obj\Debug\MLexer.cs" />
+    <Compile Include="obj\Debug\MParser.cs" />
+    <Compile Include="obj\Debug\MParserBaseListener.cs" />
+    <Compile Include="obj\Debug\MParserBaseVisitor.cs" />
+    <Compile Include="obj\Debug\MParserListener.cs" />
+    <Compile Include="obj\Debug\MParserVisitor.cs" />
+    <Compile Include="Parser\Antlr\AntlrParser.cs" />
+    <Compile Include="Parser\Antlr\MLexer.g4.cs">
+      <DependentUpon>MLexer.g4</DependentUpon>
+    </Compile>
+    <Compile Include="Parser\Antlr\MParser.g4.cs">
+      <DependentUpon>MParser.g4</DependentUpon>
+    </Compile>
+    <Compile Include="Parser\Antlr\ParseTreeListener.cs" />
+    <Compile Include="Parser\IParser.cs" />
+    <Compile Include="Parser\ParsingResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SyntaxTree\BreakStatement.cs" />
+    <Compile Include="SyntaxTree\ConstantExpression.cs" />
+    <Compile Include="SyntaxTree\ConstantNode.cs" />
+    <Compile Include="SyntaxTree\CreatorExpression.cs" />
+    <Compile Include="SyntaxTree\ExpressionNode.cs" />
+    <Compile Include="SyntaxTree\ExpressionStatement.cs" />
+    <Compile Include="SyntaxTree\ForStatement.cs" />
+    <Compile Include="SyntaxTree\FunctionCallExpression.cs" />
+    <Compile Include="SyntaxTree\FunctionDecleration.cs" />
+    <Compile Include="SyntaxTree\IfStatement.cs" />
+    <Compile Include="SyntaxTree\IndexerExpression.cs" />
+    <Compile Include="SyntaxTree\IntegerConstant.cs" />
+    <Compile Include="SyntaxTree\Location.cs" />
+    <Compile Include="SyntaxTree\Node.cs" />
+    <Compile Include="SyntaxTree\PrimitiveType.cs" />
+    <Compile Include="SyntaxTree\ReturnExpressionStatement.cs" />
+    <Compile Include="SyntaxTree\ReturningFunctionDecleration.cs" />
+    <Compile Include="SyntaxTree\StringConstant.cs" />
+    <Compile Include="SyntaxTree\Type.cs" />
+    <Compile Include="SyntaxTree\InitializedVariableDecleration.cs" />
+    <Compile Include="SyntaxTree\UnaryExpression.cs" />
+    <Compile Include="SyntaxTree\UnaryOperator.cs" />
+    <Compile Include="SyntaxTree\VariableExpression.cs" />
+    <Compile Include="SyntaxTree\VariableNode.cs" />
+    <Compile Include="SyntaxTree\ProgramNode.cs" />
+    <Compile Include="SyntaxTree\ReturnStatement.cs" />
+    <Compile Include="SyntaxTree\StatementNode.cs" />
+    <Compile Include="SyntaxTree\SyntaxTree.cs" />
+    <Compile Include="SyntaxTree\TypeNode.cs" />
+    <Compile Include="SyntaxTree\VariableDecleration.cs" />
+    <Compile Include="SyntaxTree\VariableIdNode.cs" />
+    <Compile Include="SyntaxTree\WhileStatement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Antlr4 Include="Parser\Antlr\MParser.g4">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>Compiler.Parser.Antlr</CustomToolNamespace>
+    </Antlr4>
+    <Antlr4 Include="Parser\Antlr\MLexer.g4">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>Compiler.Parser.Antlr</CustomToolNamespace>
+    </Antlr4>
+    <AntlrTokens Include="obj\Debug\MLexer.tokens">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>Compiler.obj.Debug</CustomToolNamespace>
+    </AntlrTokens>
+    <AntlrTokens Include="obj\Debug\MParser.tokens">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>Compiler.obj.Debug</CustomToolNamespace>
+    </AntlrTokens>
+    <None Include="packages.config" />
+    <None Include="SyntaxTree\SyntaxTree.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Antlr4.4.3.0\build\Antlr4.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr4.4.3.0\build\Antlr4.props'))" />
+    <Error Condition="!Exists('..\packages\Antlr4.4.3.0\build\Antlr4.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr4.4.3.0\build\Antlr4.targets'))" />
+  </Target>
+  <Import Project="..\packages\Antlr4.4.3.0\build\Antlr4.targets" Condition="Exists('..\packages\Antlr4.4.3.0\build\Antlr4.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
