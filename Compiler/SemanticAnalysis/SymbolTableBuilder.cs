@@ -12,7 +12,7 @@
     {
         private SymbolTable currentSymbolTable;
 
-        private Logger logger;
+        private readonly Logger logger;
 
         public SymbolTableBuilder(Logger logger)
         {
@@ -144,6 +144,10 @@
 
         public override void Visit(ForStatement node)
         {
+            node.Condition.Accept(this);
+            node.Afterthought.Accept(this);
+            node.Initialization.Accept(this);
+
             var parent = this.currentSymbolTable;
             this.currentSymbolTable = parent.CreateNestedSymbolTable();
 
@@ -157,6 +161,8 @@
 
         public override void Visit(IfStatement node)
         {
+            node.Condition.Accept(this);
+
             var parent = this.currentSymbolTable;
             this.currentSymbolTable = parent.CreateNestedSymbolTable();
 
@@ -170,6 +176,8 @@
 
         public override void Visit(WhileStatement node)
         {
+            node.Condition.Accept(this);
+
             var parent = this.currentSymbolTable;
             this.currentSymbolTable = parent.CreateNestedSymbolTable();
 

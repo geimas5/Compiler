@@ -49,8 +49,8 @@
 
             PrintLevel(node.ToString());
 
-            node.Left.Accept(this);
-            node.Right.Accept(this);
+            if (node.Left != null) node.Left.Accept(this);
+            if (node.Right != null) node.Right.Accept(this);
 
             level--;
         }
@@ -81,7 +81,7 @@
 
             PrintLevel(node.ToString());
 
-            node.Expression.Accept(this);
+            if (node.Expression != null) node.Expression.Accept(this);
 
             level--;
         }

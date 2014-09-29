@@ -77,8 +77,10 @@ whileStatement returns [WhileStatement stmt]
    ;
 
 forStatement returns [ForStatement stmt]
-   : For LeftParen init=expression Comma cond=expression Comma after=expression? RightParen statementOrBlock 
+   : For LeftParen init=expression Semi cond=expression Semi after=expression RightParen statementOrBlock 
        { $stmt = nodeFactory.CreateForStatement(_localctx, $init.expr, $cond.expr, $after.expr, $statementOrBlock.stmts); }
+   | For LeftParen init=expression Semi cond=expression Semi RightParen statementOrBlock 
+       { $stmt = nodeFactory.CreateForStatement(_localctx, $init.expr, $cond.expr, null, $statementOrBlock.stmts); }
    ;
 
 returnStatement returns [ReturnStatement stmt]

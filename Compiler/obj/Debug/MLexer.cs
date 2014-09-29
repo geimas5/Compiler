@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\Users\mariusg\documents\visual studio 2013\Projects\Compiler\Compiler\Parser\Antlr\MLexer.g4 by ANTLR 4.3
+// Generated from C:\Users\mariusg\Documents\Visual Studio 2013\Projects\Compiler\Compiler\Parser\Antlr\MLexer.g4 by ANTLR 4.3
 
 // Unreachable code detected
 #pragma warning disable 0162

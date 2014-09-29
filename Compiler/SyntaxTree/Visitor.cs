@@ -1,5 +1,7 @@
 ﻿namespace Compiler.SyntaxTree
 {
+    using System.Linq;
+
     public abstract class Visitor : IVisitor
     {
         public virtual void Visit(ArrayCreatorExpression node)
@@ -134,7 +136,7 @@
 
         protected void VisitAllChildren(Node node)
         {
-            foreach (var child in node.Children)
+            foreach (var child in node.Children.Where(m => m != null))
             {
                 child.Accept(this);
             }

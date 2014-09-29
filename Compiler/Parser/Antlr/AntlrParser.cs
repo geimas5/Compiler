@@ -25,7 +25,7 @@
 
             var parser = new MParser(this.logger, tokens);
             parser.RemoveErrorListeners();
-            lexer.AddErrorListener(errorListener);
+            parser.AddErrorListener(errorListener);
 
             return new ParsingResult { SynataxTree = new SyntaxTree { RootNode = parser.program().programNode } };
         }
