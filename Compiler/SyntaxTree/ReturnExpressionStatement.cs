@@ -1,5 +1,7 @@
 ﻿namespace Compiler.SyntaxTree
 {
+    using System.Collections.Generic;
+
     public class ReturnExpressionStatement : ReturnStatement
     {
         public ReturnExpressionStatement(Location location, ExpressionNode expression)
@@ -18,6 +20,14 @@
         public override void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                yield return this.Expression;
+            }
         }
     }
 }

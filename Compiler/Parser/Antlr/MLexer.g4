@@ -7,12 +7,16 @@ Int : 'int';
 If : 'if';
 Else : 'else';
 For : 'for';
-Static : 'static'; 
 Return : 'return';
 New : 'new';
 Double : 'double';
 String : 'string';
 While : 'while';
+Bool : 'bool';
+BooleanConstant
+    : 'true' 
+	| 'false';
+
 
 // Brackets
 LeftParen : '(' ;
@@ -42,17 +46,18 @@ OrOr : '||';
 Not : '!';
 
 Semi : ';';
-Colon : ':';
 Comma : ',';
 
 Assign : '=';
 
-Dot : '.';
-
 Identifier : Letter LetterAndDigit*;
 
 IntegerConstant
-    : '-'? [0-9]+;
+    : Digit+;
+
+DoubleConstant
+    : Digit+ '.' Digit+
+	; 
 
 StringConstant
     :   '"' StringCharacters? '"'

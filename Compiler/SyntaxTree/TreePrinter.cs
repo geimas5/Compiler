@@ -14,24 +14,15 @@
 
             PrintLevel(node.ToString());
 
-            node.Type.Accept(this);
-            node.Size.Accept(this);
+            foreach (var expressionNode in node.Sizes)
+            {
+                expressionNode.Accept(this);
+            }
 
             level--;
         }
 
-        public void Visit(ArrayType node)
-        {
-            level++;
-
-            PrintLevel(node.ToString());
-
-            node.BaseType.Accept(this);
-
-            level--;
-        }
-
-        public void Visit(PrimitiveType node)
+        public void Visit(TypeNode node)
         {
             level++;
 
@@ -331,6 +322,15 @@
             {
                 statement.Accept(this);
             }
+
+            level--;
+        }
+
+        public void Visit(BooleanConstant node)
+        {
+            level++;
+
+            PrintLevel(node.ToString());
 
             level--;
         }

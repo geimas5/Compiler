@@ -2,6 +2,8 @@
 {
     using System.Collections.Generic;
 
+    using Compiler.SymbolTable;
+
     public abstract class FunctionDecleration : Node
     {
         public FunctionDecleration(
@@ -24,6 +26,8 @@
         public List<StatementNode> Statements { get; set; }
 
         public List<VariableNode> Parameters { get; set; }
+
+        public ISymbol Symbol { get; set; }
 
         public override string ToString()
         {

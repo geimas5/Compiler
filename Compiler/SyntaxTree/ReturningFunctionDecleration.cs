@@ -26,5 +26,22 @@
         {
             visitor.Visit(this);
         }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                yield return this.Type;
+                foreach (var node in this.Parameters)
+                {
+                    yield return node;
+                }
+
+                foreach (var node in this.Statements)
+                {
+                    yield return node;
+                }
+            }
+        }
     }
 }

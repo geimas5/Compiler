@@ -18,7 +18,9 @@
 #pragma warning disable 1591
 
 namespace Compiler.Parser.Antlr {
- using Compiler.SyntaxTree; 
+ 
+	using Compiler.SyntaxTree; 
+
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using IToken = Antlr4.Runtime.IToken;
@@ -46,6 +48,13 @@ public interface IMParserVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitFunctionDecleration([NotNull] MParser.FunctionDeclerationContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="MParser.statementOrBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStatementOrBlock([NotNull] MParser.StatementOrBlockContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="MParser.constant"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -60,6 +69,13 @@ public interface IMParserVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitForStatement([NotNull] MParser.ForStatementContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="MParser.returnStatement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitReturnStatement([NotNull] MParser.ReturnStatementContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="MParser.statementBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -67,11 +83,11 @@ public interface IMParserVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitStatementBlock([NotNull] MParser.StatementBlockContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="MParser.returnStatement"/>.
+	/// Visit a parse tree produced by <see cref="MParser.creatorSizes"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitReturnStatement([NotNull] MParser.ReturnStatementContext context);
+	Result VisitCreatorSizes([NotNull] MParser.CreatorSizesContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="MParser.type"/>.
@@ -135,6 +151,13 @@ public interface IMParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitProgram([NotNull] MParser.ProgramContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="MParser.primitiveType"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitPrimitiveType([NotNull] MParser.PrimitiveTypeContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="MParser.breakStatement"/>.

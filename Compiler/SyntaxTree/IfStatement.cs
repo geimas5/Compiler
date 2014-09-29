@@ -37,5 +37,22 @@
         {
             visitor.Visit(this);
         }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                yield return this.Condition;
+                foreach (var node in this.Body)
+                {
+                    yield return node;
+                }
+
+                foreach (var node in this.ElseStatements)
+                {
+                    yield return node;
+                }
+            }
+        }
     }
 }

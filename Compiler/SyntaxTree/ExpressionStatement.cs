@@ -1,5 +1,7 @@
 ﻿namespace Compiler.SyntaxTree
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// The expression statement.
     /// </summary>
@@ -21,6 +23,14 @@
         public override void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                return new[] { this.Expression };
+            }
         }
     }
 }

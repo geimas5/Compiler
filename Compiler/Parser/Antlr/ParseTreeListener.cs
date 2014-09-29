@@ -122,11 +122,11 @@
 
     //    public void ExitType(MParser.TypeContext context)
     //    {
-    //        var type = ParseType(context);
+    //        var primitiveType = ParseType(context);
 
     //        this.nodeStack.Push(new TypeNode(this.CreateLocation(context))
     //                                {
-    //                                    Type = type
+    //                                    primitiveType = primitiveType
     //                                });
     //    }
 
@@ -206,13 +206,13 @@
 
     //    public void ExitVariableDecleration(MParser.VariableDeclerationContext context)
     //    {
-    //        var variableDecleration = new VariableDecleration(this.CreateLocation(context));
+    //        var variableDecleration = new VariableSymbol(this.CreateLocation(context));
     //        variableDecleration.Name = new VariableIdNode(this.CreateLocation(context.GetToken(MParser.Identifier, 0)))
     //                                       {
     //                                           Name = context.GetToken(MParser.Identifier, 0).GetText()
     //                                       };
 
-    //        variableDecleration.Type = (TypeNode)this.nodeStack.Pop();
+    //        variableDecleration.primitiveType = (TypeNode)this.nodeStack.Pop();
 
     //        if (this.nodeStack.Peek() is BlockStatement)
     //        {
@@ -236,8 +236,8 @@
     //    public void ExitVariable(MParser.VariableContext context)
     //    {
     //        var variable = new VariableNode(this.CreateLocation(context));
-    //        var type = (TypeNode)this.nodeStack.Pop();
-    //        variable.Type = type;
+    //        var primitiveType = (TypeNode)this.nodeStack.Pop();
+    //        variable.primitiveType = primitiveType;
     //        variable.Name = new VariableIdNode(this.CreateLocation(context.GetToken(MParser.Identifier, 0)));
 
     //        if (this.nodeStack.Peek() is FunctionDecleration)
@@ -260,25 +260,25 @@
     //        return new Location(node.Symbol.Column, node.Symbol.Line);
     //    }
 
-    //    private static Types ParseType(MParser.TypeContext context)
+    //    private static PrimitiveType ParseType(MParser.TypeContext context)
     //    {
-    //        Types type;
+    //        PrimitiveType primitiveType;
 
     //        switch (context.GetText())
     //        {
     //            case "int":
-    //                type = Types.Int;
+    //                primitiveType = PrimitiveType.Int;
     //                break;
     //            case "double":
-    //                type = Types.Double;
+    //                primitiveType = PrimitiveType.Double;
     //                break;
     //            case "string":
-    //                type = Types.String;
+    //                primitiveType = PrimitiveType.String;
     //                break;
     //            default:
     //                throw new Exception();
     //        }
-    //        return type;
+    //        return primitiveType;
     //    }
     //}
 }

@@ -1,5 +1,7 @@
 ﻿namespace Compiler.SyntaxTree
 {
+    using System.Collections.Generic;
+
     public class VoidReturnStatement : ReturnStatement
     {
         public VoidReturnStatement(Location location)
@@ -15,6 +17,14 @@
         public override void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                return new Node[0];
+            }
         }
     }
 }

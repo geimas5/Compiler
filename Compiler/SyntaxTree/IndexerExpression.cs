@@ -1,5 +1,7 @@
 ﻿namespace Compiler.SyntaxTree
 {
+    using System.Collections.Generic;
+
     public class IndexerExpression : ExpressionNode
     {
         public IndexerExpression(Location location, ExpressionNode name, ExpressionNode index)
@@ -21,6 +23,15 @@
         public override void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                yield return this.Name;
+                yield return this.Index;
+            }
         }
     }
 }

@@ -18,7 +18,9 @@
 #pragma warning disable 1591
 
 namespace Compiler.Parser.Antlr {
- using Compiler.SyntaxTree; 
+ 
+	using Compiler.SyntaxTree; 
+
 using Antlr4.Runtime.Misc;
 using IParseTreeListener = Antlr4.Runtime.Tree.IParseTreeListener;
 using IToken = Antlr4.Runtime.IToken;
@@ -53,6 +55,17 @@ public interface IMParserListener : IParseTreeListener {
 	void ExitFunctionDecleration([NotNull] MParser.FunctionDeclerationContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="MParser.statementOrBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStatementOrBlock([NotNull] MParser.StatementOrBlockContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="MParser.statementOrBlock"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStatementOrBlock([NotNull] MParser.StatementOrBlockContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.constant"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -75,6 +88,17 @@ public interface IMParserListener : IParseTreeListener {
 	void ExitForStatement([NotNull] MParser.ForStatementContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="MParser.returnStatement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterReturnStatement([NotNull] MParser.ReturnStatementContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="MParser.returnStatement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitReturnStatement([NotNull] MParser.ReturnStatementContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.statementBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -86,15 +110,15 @@ public interface IMParserListener : IParseTreeListener {
 	void ExitStatementBlock([NotNull] MParser.StatementBlockContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="MParser.returnStatement"/>.
+	/// Enter a parse tree produced by <see cref="MParser.creatorSizes"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterReturnStatement([NotNull] MParser.ReturnStatementContext context);
+	void EnterCreatorSizes([NotNull] MParser.CreatorSizesContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="MParser.returnStatement"/>.
+	/// Exit a parse tree produced by <see cref="MParser.creatorSizes"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitReturnStatement([NotNull] MParser.ReturnStatementContext context);
+	void ExitCreatorSizes([NotNull] MParser.CreatorSizesContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.type"/>.
@@ -194,6 +218,17 @@ public interface IMParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitProgram([NotNull] MParser.ProgramContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="MParser.primitiveType"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterPrimitiveType([NotNull] MParser.PrimitiveTypeContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="MParser.primitiveType"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitPrimitiveType([NotNull] MParser.PrimitiveTypeContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.breakStatement"/>.

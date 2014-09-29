@@ -1,9 +1,14 @@
 ﻿namespace Compiler.SyntaxTree
 {
-    public enum Types
+    public enum PrimitiveType
     {
         Int,
         Double,
-        String
+        String,
+        Boolean,
+
+        //Internal typs not available to the developer
+        NoType,
+        Object
     }
 }

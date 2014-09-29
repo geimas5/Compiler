@@ -2,15 +2,15 @@
 {
     using System.Collections.Generic;
 
-    public class ArrayCreatorExpression : CreatorExpression
+    public class BooleanConstant : ConstantNode
     {
-        public ArrayCreatorExpression(Location location, PrimitiveType type, IEnumerable<ExpressionNode> sizes)
-            : base(location, type)
+        public BooleanConstant(Location location, bool value)
+            : base(location)
         {
-            this.Sizes = new List<ExpressionNode>(sizes);
+            this.Value = value;
         }
 
-        public List<ExpressionNode> Sizes { get; set; }
+        public bool Value { get; set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {
@@ -26,11 +26,13 @@
         {
             get
             {
-                foreach (var node in this.Sizes)
-                {
-                    yield return node;
-                }
+                return new Node[0];
             }
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + string.Format("(Value: {0})", this.Value);
         }
     }
 }

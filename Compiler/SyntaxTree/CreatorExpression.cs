@@ -2,13 +2,13 @@
 {
     public abstract class CreatorExpression : ExpressionNode
     {
-        public CreatorExpression(Location location, TypeNode type)
+        public CreatorExpression(Location location, PrimitiveType type)
             : base(location)
         {
             this.Type = type;
         }
 
-        public TypeNode Type { get; set; }
+        public PrimitiveType Type { get; set; }
 
     }
 }

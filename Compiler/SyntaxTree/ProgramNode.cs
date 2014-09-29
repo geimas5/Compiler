@@ -1,6 +1,5 @@
 ﻿namespace Compiler.SyntaxTree
 {
-    using System;
     using System.Collections.Generic;
 
     public class ProgramNode : Node
@@ -21,6 +20,17 @@
         public override void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                foreach (var node in this.Functions)
+                {
+                    yield return node;
+                }
+            }
         }
     }
 }

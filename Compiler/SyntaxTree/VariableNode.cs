@@ -1,6 +1,8 @@
 ﻿
 namespace Compiler.SyntaxTree
 {
+    using System.Collections.Generic;
+
     public class VariableNode : Node
     {
         public VariableNode(Location location, TypeNode type, VariableIdNode name)
@@ -22,6 +24,15 @@ namespace Compiler.SyntaxTree
         public override void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                yield return this.Type;
+                yield return this.Name;
+            }
         }
     }
 }

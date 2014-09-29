@@ -18,7 +18,9 @@
 #pragma warning disable 1591
 
 namespace Compiler.Parser.Antlr {
- using Compiler.SyntaxTree; 
+ 
+	using Compiler.SyntaxTree; 
+
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using IToken = Antlr4.Runtime.IToken;
@@ -56,6 +58,17 @@ public partial class MParserBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	public virtual Result VisitFunctionDecleration([NotNull] MParser.FunctionDeclerationContext context) { return VisitChildren(context); }
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="MParser.statementOrBlock"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitStatementOrBlock([NotNull] MParser.StatementOrBlockContext context) { return VisitChildren(context); }
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="MParser.constant"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -78,6 +91,17 @@ public partial class MParserBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	public virtual Result VisitForStatement([NotNull] MParser.ForStatementContext context) { return VisitChildren(context); }
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="MParser.returnStatement"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitReturnStatement([NotNull] MParser.ReturnStatementContext context) { return VisitChildren(context); }
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="MParser.statementBlock"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -89,7 +113,7 @@ public partial class MParserBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	public virtual Result VisitStatementBlock([NotNull] MParser.StatementBlockContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="MParser.returnStatement"/>.
+	/// Visit a parse tree produced by <see cref="MParser.creatorSizes"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -97,7 +121,7 @@ public partial class MParserBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitReturnStatement([NotNull] MParser.ReturnStatementContext context) { return VisitChildren(context); }
+	public virtual Result VisitCreatorSizes([NotNull] MParser.CreatorSizesContext context) { return VisitChildren(context); }
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="MParser.type"/>.
@@ -197,6 +221,17 @@ public partial class MParserBaseVisitor<Result> : AbstractParseTreeVisitor<Resul
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitProgram([NotNull] MParser.ProgramContext context) { return VisitChildren(context); }
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="MParser.primitiveType"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitPrimitiveType([NotNull] MParser.PrimitiveTypeContext context) { return VisitChildren(context); }
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="MParser.breakStatement"/>.

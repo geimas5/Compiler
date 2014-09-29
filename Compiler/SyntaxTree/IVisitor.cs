@@ -3,8 +3,7 @@
     public interface IVisitor<T>
     {
         T Visit(ArrayCreatorExpression node);
-        T Visit(ArrayType node);
-        T Visit(PrimitiveType node);
+        T Visit(TypeNode node);
         T Visit(AssignmentExpression node);
         T Visit(BinaryOperatorExpression node);
         T Visit(BreakStatement node);
@@ -28,13 +27,13 @@
         T Visit(VariableIdNode node);
         T Visit(VariableNode node);
         T Visit(WhileStatement node);
+        T Visit(BooleanConstant node);
     }
 
     public interface IVisitor
     {
         void Visit(ArrayCreatorExpression node);
-        void Visit(ArrayType node);
-        void Visit(PrimitiveType node);
+        void Visit(TypeNode node);
         void Visit(AssignmentExpression node);
         void Visit(BinaryOperatorExpression node);
         void Visit(BreakStatement node);
@@ -58,5 +57,6 @@
         void Visit(VariableIdNode node);
         void Visit(VariableNode node);
         void Visit(WhileStatement node);
+        void Visit(BooleanConstant node);
     }
 }

@@ -1,21 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Compiler.SyntaxTree.Node" Collapsed="true">
-    <Position X="28.5" Y="0.5" Width="1.5" />
+    <Position X="32.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAEAAIEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\Node.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.ConstantNode" Collapsed="true">
-    <Position X="2.5" Y="1.75" Width="1.5" />
+    <Position X="3.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\ConstantNode.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.ExpressionNode" Collapsed="true">
-    <Position X="14.75" Y="1.75" Width="1.5" />
+    <Position X="17" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\ExpressionNode.cs</FileName>
@@ -24,232 +24,289 @@
   <Class Name="Compiler.SyntaxTree.IntegerConstant" Collapsed="true">
     <Position X="3.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAEAAAEAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
       <FileName>SyntaxTree\IntegerConstant.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.FunctionDecleration" Collapsed="true">
-    <Position X="26.25" Y="1.75" Width="1.75" />
+    <Position X="30" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAEAAAAAAQAAAAABAAAAIAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAQAAAAABAAAAIAAAAAACAA=</HashCode>
       <FileName>SyntaxTree\FunctionDecleration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.ProgramNode" Collapsed="true">
-    <Position X="51" Y="1.75" Width="1.5" />
+    <Position X="61.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAEAAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAEAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\ProgramNode.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.SyntaxTree" Collapsed="true">
-    <Position X="59.75" Y="0.5" Width="1.5" />
+    <Position X="68.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAQAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\SyntaxTree.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.TypeNode" Collapsed="true">
-    <Position X="54.5" Y="1.75" Width="1.5" />
+    <Position X="64" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAEAAAEAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\TypeNode.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.VariableDecleration" Collapsed="true">
-    <Position X="36.25" Y="3.25" Width="1.75" />
+    <Position X="43" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\VariableDecleration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.BinaryOperatorExpression" Collapsed="true">
-    <Position X="10.75" Y="3.25" Width="2" />
+    <Position X="13" Y="3.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACACAAAAAIAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAEAAAEAAAAAAAAAAAACACAAAAAIAA=</HashCode>
       <FileName>SyntaxTree\BinaryOperatorExpression.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.StatementNode" Collapsed="true">
-    <Position X="41.25" Y="1.75" Width="1.5" />
+    <Position X="49" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\StatementNode.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.BreakStatement" Collapsed="true">
-    <Position X="41.25" Y="3.25" Width="1.5" />
+    <Position X="49.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\BreakStatement.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.IfStatement" Collapsed="true">
-    <Position X="46.5" Y="3.25" Width="1.5" />
+    <Position X="57.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAAAAAAAABAAAAIAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAACAAAAAAAAFAAAAIAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\IfStatement.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.ForStatement" Collapsed="true">
-    <Position X="48.75" Y="3.25" Width="1.5" />
+    <Position X="59.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAAAAAAAABAAAAAAAAAAAAAAAAEACAAAA=</HashCode>
+      <HashCode>AIAAAAAAAACAAAAAAAAFAAAAAAAAAAAAAAAAEACAAAA=</HashCode>
       <FileName>SyntaxTree\ForStatement.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.ReturnStatement" Collapsed="true">
-    <Position X="44" Y="3.25" Width="1.5" />
+    <Position X="53.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\ReturnStatement.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.AssignmentExpression" Collapsed="true">
-    <Position X="5.75" Y="3.25" Width="1.75" />
+    <Position X="8" Y="3.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAEAAAAAAAEAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\AssignmentExpression.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.Location" Collapsed="true">
-    <Position X="58" Y="0.5" Width="1.5" />
+    <Position X="66.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAEAABAAAAAAAAEAAAAAAAAAAABAAA=</HashCode>
       <FileName>SyntaxTree\Location.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.VariableIdNode" Collapsed="true">
-    <Position X="29" Y="1.75" Width="1.5" />
+    <Position X="34" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAEAAAEAAQAAAAAAAAAAAAAAAAACAA=</HashCode>
       <FileName>SyntaxTree\VariableIdNode.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.VariableNode" Collapsed="true">
-    <Position X="31.25" Y="1.75" Width="1.5" />
+    <Position X="36.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAEAAAAAAQAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAEAAQAAAAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\VariableNode.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.ReturnExpressionStatement" Collapsed="true">
-    <Position X="43.5" Y="4.75" Width="2.25" />
+    <Position X="54.25" Y="4.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAEAAAAAAAAAAAQAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\ReturnExpressionStatement.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.ConstantExpression" Collapsed="true">
-    <Position X="8.25" Y="3.25" Width="1.75" />
+    <Position X="10.5" Y="3.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAEAAAAAAAAAAgAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\ConstantExpression.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.ExpressionStatement" Collapsed="true">
-    <Position X="33.5" Y="3.25" Width="1.75" />
+    <Position X="38.5" Y="3.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAEAAAAAAAAAAAQAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\ExpressionStatement.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.InitializedVariableDecleration" Collapsed="true">
-    <Position X="36" Y="4.75" Width="2.25" />
+    <Position X="44.25" Y="4.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAACAAAA=</HashCode>
       <FileName>SyntaxTree\InitializedVariableDecleration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.VariableExpression" Collapsed="true">
-    <Position X="20.75" Y="3.25" Width="1.75" />
+    <Position X="23" Y="3.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAABAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\VariableExpression.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.WhileStatement" Collapsed="true">
-    <Position X="39" Y="3.25" Width="1.5" />
+    <Position X="47.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAACAAAAAAAAFAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\WhileStatement.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.IndexerExpression" Collapsed="true">
-    <Position X="18.5" Y="3.25" Width="1.5" />
+    <Position X="20.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAEAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAEAAQAAAAAAAAAAAEAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\IndexerExpression.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.UnaryExpression" Collapsed="true">
-    <Position X="13.5" Y="3.25" Width="1.5" />
+    <Position X="15.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAIAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAEAAAEAAAAAAAAAAAQAAAAAAAAIAA=</HashCode>
       <FileName>SyntaxTree\UnaryExpression.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.ArrayCreatorExpression" Collapsed="true">
-    <Position X="15.75" Y="4.75" Width="2" />
+    <Position X="18" Y="4.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\ArrayCreatorExpression.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.ArrayType" Collapsed="true">
-    <Position X="53.25" Y="3.25" Width="1.5" />
+    <Position X="61.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\ArrayType.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.CreatorExpression" Collapsed="true">
-    <Position X="16" Y="3.25" Width="1.5" />
+    <Position X="18.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\CreatorExpression.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.FunctionCallExpression" Collapsed="true">
-    <Position X="23.25" Y="3.25" Width="2" />
+    <Position X="25.5" Y="3.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAEAAAEAAQAAAAAAAAAIAAAAAAACAA=</HashCode>
       <FileName>SyntaxTree\FunctionCallExpression.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.PrimitiveType" Collapsed="true">
-    <Position X="55.5" Y="3.25" Width="1.5" />
+    <Position X="64" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\PrimitiveType.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.ReturningFunctionDecleration" Collapsed="true">
-    <Position X="26" Y="3.25" Width="2.25" />
+    <Position X="31" Y="3.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\ReturningFunctionDecleration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Compiler.SyntaxTree.StringConstant" Collapsed="true">
     <Position X="1.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <HashCode>AIAAAAAAAAAAAAAEAAAEAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
       <FileName>SyntaxTree\StringConstant.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Compiler.SyntaxTree.TreePrinter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="66.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAQABAAAAAAAAAEAAAAAAAAAACAAAAA=</HashCode>
+      <FileName>SyntaxTree\TreePrinter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Compiler.SyntaxTree.UnInitializedVariableDecleration" Collapsed="true">
+    <Position X="41" Y="4.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\UnInitializedVariableDecleration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Compiler.SyntaxTree.VoidFunctionDecleration" Collapsed="true">
+    <Position X="28.25" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\VoidFunctionDecleration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Compiler.SyntaxTree.VoidReturnStatement" Collapsed="true">
+    <Position X="51.75" Y="4.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\VoidReturnStatement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Compiler.SyntaxTree.BooleanConstant" Collapsed="true">
+    <Position X="5.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAEAAAEAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\BooleanConstant.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Compiler.SyntaxTree.IVisitor&lt;T&gt;" Collapsed="true">
+    <Position X="66.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\IVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Compiler.SyntaxTree.IVisitor" Collapsed="true">
+    <Position X="68.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\IVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
   <Enum Name="Compiler.SyntaxTree.BinaryOperator" Collapsed="true">
-    <Position X="58" Y="1.75" Width="1.5" />
+    <Position X="66.5" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>IAIAAAAAAQAAAAAAgAADAgAAAAQIAAAgQQAAAAQAAgA=</HashCode>
       <FileName>SyntaxTree\BinaryOperator.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="Compiler.SyntaxTree.Types" Collapsed="true">
-    <Position X="59.75" Y="1.75" Width="1.5" />
+    <Position X="68.25" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAQAAAAAAAAAACAAAAAAAAAAAAACA=</HashCode>
       <FileName>SyntaxTree\Type.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Compiler.SyntaxTree.UnaryOperator" Collapsed="true">
+    <Position X="68.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAIAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\UnaryOperator.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Font Name="Segoe UI" Size="9" />

@@ -2,6 +2,8 @@
 {
     using System.Collections.Generic;
 
+    using Compiler.SymbolTable;
+
     public class FunctionCallExpression : ExpressionNode
     {
         public FunctionCallExpression(Location location, string name, IEnumerable<ExpressionNode> arguments)
@@ -17,6 +19,8 @@
 
         public List<ExpressionNode> Arguments { get; set; }
 
+        public ISymbol Symbol { get; set; }
+
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.Visit(this);
@@ -25,6 +29,14 @@
         public override void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                return this.Arguments;
+            }
         }
 
         public override string ToString()

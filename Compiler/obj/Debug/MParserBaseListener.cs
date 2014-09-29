@@ -18,7 +18,9 @@
 #pragma warning disable 1591
 
 namespace Compiler.Parser.Antlr {
- using Compiler.SyntaxTree; 
+ 
+	using Compiler.SyntaxTree; 
+
 
 using Antlr4.Runtime.Misc;
 using IErrorNode = Antlr4.Runtime.Tree.IErrorNode;
@@ -61,6 +63,19 @@ public partial class MParserBaseListener : IMParserListener {
 	public virtual void ExitFunctionDecleration([NotNull] MParser.FunctionDeclerationContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="MParser.statementOrBlock"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterStatementOrBlock([NotNull] MParser.StatementOrBlockContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="MParser.statementOrBlock"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitStatementOrBlock([NotNull] MParser.StatementOrBlockContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.constant"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -87,6 +102,19 @@ public partial class MParserBaseListener : IMParserListener {
 	public virtual void ExitForStatement([NotNull] MParser.ForStatementContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="MParser.returnStatement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterReturnStatement([NotNull] MParser.ReturnStatementContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="MParser.returnStatement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitReturnStatement([NotNull] MParser.ReturnStatementContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.statementBlock"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -100,17 +128,17 @@ public partial class MParserBaseListener : IMParserListener {
 	public virtual void ExitStatementBlock([NotNull] MParser.StatementBlockContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="MParser.returnStatement"/>.
+	/// Enter a parse tree produced by <see cref="MParser.creatorSizes"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterReturnStatement([NotNull] MParser.ReturnStatementContext context) { }
+	public virtual void EnterCreatorSizes([NotNull] MParser.CreatorSizesContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="MParser.returnStatement"/>.
+	/// Exit a parse tree produced by <see cref="MParser.creatorSizes"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitReturnStatement([NotNull] MParser.ReturnStatementContext context) { }
+	public virtual void ExitCreatorSizes([NotNull] MParser.CreatorSizesContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.type"/>.
@@ -228,6 +256,19 @@ public partial class MParserBaseListener : IMParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitProgram([NotNull] MParser.ProgramContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="MParser.primitiveType"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterPrimitiveType([NotNull] MParser.PrimitiveTypeContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="MParser.primitiveType"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitPrimitiveType([NotNull] MParser.PrimitiveTypeContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.breakStatement"/>.

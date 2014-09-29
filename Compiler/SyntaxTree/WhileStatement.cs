@@ -26,5 +26,17 @@
         {
             visitor.Visit(this);
         }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                yield return Condition;
+                foreach (var node in this.Body)
+                {
+                    yield return node;
+                }
+            }
+        }
     }
 }

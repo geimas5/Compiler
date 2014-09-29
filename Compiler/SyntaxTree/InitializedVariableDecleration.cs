@@ -1,5 +1,7 @@
 ﻿namespace Compiler.SyntaxTree
 {
+    using System.Collections.Generic;
+
     public class InitializedVariableDecleration : VariableDecleration
     {
         public InitializedVariableDecleration(Location location, VariableNode variable, ExpressionNode initialization)
@@ -18,6 +20,14 @@
         public override void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                yield return this.Initialization;
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿namespace Compiler.SyntaxTree
 {
+    using System.Collections.Generic;
+
     public class BinaryOperatorExpression : ExpressionNode
     {
         public BinaryOperatorExpression(Location location, ExpressionNode left, ExpressionNode right, BinaryOperator op)
@@ -24,6 +26,14 @@
         public override void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                return new[] { this.Left, this.Right };
+            }
         }
 
         public override string ToString()

@@ -37,5 +37,19 @@
         {
             visitor.Visit(this);
         }
+
+        public override IEnumerable<Node> Children
+        {
+            get
+            {
+                yield return this.Initialization;
+                yield return this.Condition;
+                yield return this.Afterthought;
+                foreach (var statementNode in Body)
+                {
+                    yield return statementNode;
+                }
+            }
+        }
     }
 }
