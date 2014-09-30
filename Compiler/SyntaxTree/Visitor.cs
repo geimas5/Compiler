@@ -134,6 +134,11 @@
             VisitAllChildren(node);
         }
 
+        public virtual void Visit(DoubleConstant node)
+        {
+            VisitAllChildren(node);
+        }
+
         protected void VisitAllChildren(Node node)
         {
             foreach (var child in node.Children.Where(m => m != null))
@@ -227,7 +232,6 @@
         {
             VisitAllChildren(node);
             return default(T);
-            
         }
 
         public virtual T Visit(ProgramNode node)
@@ -297,6 +301,12 @@
         }
 
         public virtual T Visit(BooleanConstant node)
+        {
+            VisitAllChildren(node);
+            return default(T);
+        }
+
+        public virtual T Visit(DoubleConstant node)
         {
             VisitAllChildren(node);
             return default(T);

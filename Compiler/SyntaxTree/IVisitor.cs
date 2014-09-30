@@ -28,6 +28,8 @@
         T Visit(VariableNode node);
         T Visit(WhileStatement node);
         T Visit(BooleanConstant node);
+
+        T Visit(DoubleConstant node);
     }
 
     public interface IVisitor
@@ -58,5 +60,6 @@
         void Visit(VariableNode node);
         void Visit(WhileStatement node);
         void Visit(BooleanConstant node);
+        void Visit(DoubleConstant node);
     }
 }

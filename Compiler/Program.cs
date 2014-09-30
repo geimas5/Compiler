@@ -10,7 +10,7 @@
     {
         static void Main(string[] args)
         {
-            Logger logger = new Logger();
+            var logger = new Logger();
 
             var antlerParser = new AntlrParser(logger);
 //            var result = antlerParser.ParseProgram(
@@ -60,33 +60,16 @@
  
   for (k = 1; k <= n; k=k+1)
   {
-    for (c = 1; c <= space; c=c+1)
-      printf("" "");
- 
-    space=space -1;
- 
-    for (c = 1; c <= 2*k-1; c=c+1)
-      printf(""*"");
- 
-    printf(""n"");
   }
- 
-  space = 1;
- 
-  for (k = 1; k <= n - 1; k=k+1)
-  {
-    for (c = 1; c <= space; c=c+1)
-      printf("" "");
- 
-    space=space +1;
- 
-    for (c = 1 ; c <= 2*(n-k)-1; c=c+1)
-      printf(""*"");
- 
-    printf(""n"");
-  }
- 
-  return 0;
+
+   return 0;
+}
+
+void printf(string input){
+    
+}
+
+void scanf(string input, int n){
 }");
 
             var printer = new TreePrinter();

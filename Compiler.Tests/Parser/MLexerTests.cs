@@ -263,6 +263,26 @@
         }
 
         [TestMethod]
+        public void TestDoubleConstant1()
+        {
+            var sw = new StringReader(" 543.21 ");
+
+            var input = new AntlrInputStream(sw);
+            var lexer = new MLexer(input);
+
+            var tokenStream = new CommonTokenStream(lexer);
+            tokenStream.Fill();
+
+            var tokens = tokenStream.GetTokens();
+            Assert.AreEqual(MLexer.DoubleConstant, tokens[0].Type);
+            Assert.AreEqual("543.21", tokens[0].Text);
+
+            Assert.AreEqual(2, tokens.Count);
+        }
+
+        
+
+        [TestMethod]
         public void TestWhitespace()
         {
             var sw = new StringReader("  \n ");

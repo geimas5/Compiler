@@ -335,6 +335,15 @@
             level--;
         }
 
+        public void Visit(DoubleConstant node)
+        {
+            level++;
+
+            PrintLevel(node.ToString());
+
+            level--;
+        }
+
         private void PrintLevel(string text)
         {
             Console.WriteLine(new string(' ', this.level * indent) + text);

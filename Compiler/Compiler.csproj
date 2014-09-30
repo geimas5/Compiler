@@ -52,7 +52,9 @@
     <Compile Include="Parser\Antlr\MParser.cs" />
     <Compile Include="Parser\Antlr\NodeFactory.cs" />
     <Compile Include="Parser\Antlr\Utility.cs" />
+    <Compile Include="SemanticAnalysis\AssignmentChecker.cs" />
     <Compile Include="SemanticAnalysis\BreakStatementChecker.cs" />
+    <Compile Include="SemanticAnalysis\ReturnChecker.cs" />
     <Compile Include="SemanticAnalysis\SemanticChecker.cs" />
     <Compile Include="SemanticAnalysis\SymbolTableBuilder.cs" />
     <Compile Include="SemanticAnalysis\TypeChecker.cs" />
@@ -90,6 +92,7 @@
     <Compile Include="SyntaxTree\ConstantExpression.cs" />
     <Compile Include="SyntaxTree\ConstantNode.cs" />
     <Compile Include="SyntaxTree\CreatorExpression.cs" />
+    <Compile Include="SyntaxTree\DoubleConstant.cs" />
     <Compile Include="SyntaxTree\ExpressionNode.cs" />
     <Compile Include="SyntaxTree\ExpressionStatement.cs" />
     <Compile Include="SyntaxTree\ForStatement.cs" />

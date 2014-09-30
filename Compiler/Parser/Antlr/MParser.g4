@@ -8,7 +8,6 @@ options {
 	using Compiler.SyntaxTree; 
 }
 
-
 program returns [ProgramNode programNode]
 @init{$programNode = nodeFactory.CreateProgramNode(_localctx);}
     : (functionDecleration {$programNode.Functions.Add($functionDecleration.func);})+ EOF;
@@ -139,4 +138,5 @@ constant returns [ConstantNode const]
    : IntegerConstant { $const = nodeFactory.CreateIntegerConstant(_localctx, $IntegerConstant.text); }
    | StringConstant { $const = nodeFactory.CreateStringConstant(_localctx, $StringConstant.text); }
    | BooleanConstant { $const = nodeFactory.CreateBooleanConstant(_localctx, $BooleanConstant.text); }
+   | DoubleConstant {{ $const = nodeFactory.CreateDoubleConstant(_localctx, $DoubleConstant.text); } } 
    ;
