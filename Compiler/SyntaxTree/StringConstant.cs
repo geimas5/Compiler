@@ -10,7 +10,7 @@
             this.Text = text;
         }
 
-        public string Text { get; set; }
+        public string Text { get; private set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

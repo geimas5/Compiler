@@ -1,6 +1,7 @@
 ﻿namespace Compiler.SyntaxTree
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     /// <summary>
     /// The expression statement.
@@ -10,10 +11,12 @@
         public ExpressionStatement(Location location, ExpressionNode expression)
             : base(location)
         {
+            Trace.Assert(expression != null);
+
             this.Expression = expression;
         }
 
-        public ExpressionNode Expression { get; set; }
+        public ExpressionNode Expression { get; private set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

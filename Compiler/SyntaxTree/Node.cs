@@ -1,13 +1,16 @@
 ﻿namespace Compiler.SyntaxTree
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     public abstract class Node
     {
         public Location Location { get; set; }
 
-        public Node(Location location)
+        protected Node(Location location)
         {
+            Trace.Assert(location != null);
+
             this.Location = location;
         }
 

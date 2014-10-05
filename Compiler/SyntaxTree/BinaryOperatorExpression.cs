@@ -1,12 +1,16 @@
 ﻿namespace Compiler.SyntaxTree
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     public class BinaryOperatorExpression : ExpressionNode
     {
         public BinaryOperatorExpression(Location location, ExpressionNode left, ExpressionNode right, BinaryOperator op)
             : base(location)
         {
+            Trace.Assert(left != null);
+            Trace.Assert(right != null);
+
             this.Left = left;
             this.Right = right;
             this.Operator = op;
@@ -16,7 +20,7 @@
 
         public ExpressionNode Right { get; private set; }
 
-        public BinaryOperator Operator { get; set; }
+        public BinaryOperator Operator { get; private set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

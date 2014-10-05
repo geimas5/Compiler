@@ -13,9 +13,8 @@ Double : 'double';
 String : 'string';
 While : 'while';
 Bool : 'bool';
-BooleanConstant
-    : 'true' 
-	| 'false';
+True : 'true';
+False : 'false';
 
 
 // Brackets
@@ -76,11 +75,9 @@ LineComment
     ;
 
 
-fragment Nondigit : [a-zA-Z_];
 fragment Digit : [0-9] ;
 fragment Letter : [a-zA-Z_];
 fragment LetterAndDigit : [a-zA-Z0-9_];
-
 
 fragment
 StringCharacters

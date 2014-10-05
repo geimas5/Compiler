@@ -284,19 +284,6 @@ public partial class MParserBaseListener : IMParserListener {
 	public virtual void ExitBreakStatement([NotNull] MParser.BreakStatementContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="MParser.variableDecleration"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterVariableDecleration([NotNull] MParser.VariableDeclerationContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="MParser.variableDecleration"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitVariableDecleration([NotNull] MParser.VariableDeclerationContext context) { }
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.parameters"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -308,6 +295,19 @@ public partial class MParserBaseListener : IMParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitParameters([NotNull] MParser.ParametersContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="MParser.variableDecleration"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterVariableDecleration([NotNull] MParser.VariableDeclerationContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="MParser.variableDecleration"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitVariableDecleration([NotNull] MParser.VariableDeclerationContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.variable"/>.

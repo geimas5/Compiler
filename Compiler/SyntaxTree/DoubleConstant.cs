@@ -10,7 +10,7 @@
             this.Value = value;
         }
 
-        public double Value { get; set; }
+        public double Value { get; private set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

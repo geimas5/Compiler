@@ -344,6 +344,11 @@
             level--;
         }
 
+        public void Visit(NopExpression node)
+        {
+            
+        }
+
         private void PrintLevel(string text)
         {
             Console.WriteLine(new string(' ', this.level * indent) + text);

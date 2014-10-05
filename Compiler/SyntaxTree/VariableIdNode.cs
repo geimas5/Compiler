@@ -1,6 +1,7 @@
 ﻿namespace Compiler.SyntaxTree
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     using Compiler.SymbolTable;
 
@@ -11,6 +12,7 @@
         public VariableIdNode(Location location, string name)
             : base(location)
         {
+            Trace.Assert(!string.IsNullOrEmpty(name));
             this.Name = name;
         }
 

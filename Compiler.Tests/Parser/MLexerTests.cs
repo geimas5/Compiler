@@ -236,8 +236,8 @@
             tokenStream.Fill();
 
             var tokens = tokenStream.GetTokens();
-            Assert.AreEqual(MLexer.BooleanConstant, tokens[0].Type);
-            Assert.AreEqual(MLexer.BooleanConstant, tokens[1].Type);
+            Assert.AreEqual(MLexer.True, tokens[0].Type);
+            Assert.AreEqual(MLexer.False, tokens[1].Type);
             Assert.AreEqual("true", tokens[0].Text);
             Assert.AreEqual("false", tokens[1].Text);
 

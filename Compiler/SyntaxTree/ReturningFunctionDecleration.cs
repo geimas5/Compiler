@@ -1,6 +1,7 @@
 ﻿namespace Compiler.SyntaxTree
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     public class ReturningFunctionDecleration : FunctionDecleration
     {
@@ -12,10 +13,12 @@
             TypeNode type)
             : base(location, name, parameters, statements)
         {
+            Trace.Assert(type != null);
+
             this.Type = type;
         }
 
-        public TypeNode Type { get; set; }
+        public TypeNode Type { get; private set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

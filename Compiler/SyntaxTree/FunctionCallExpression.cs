@@ -1,7 +1,9 @@
 ﻿namespace Compiler.SyntaxTree
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
 
+    using Compiler.Common;
     using Compiler.SymbolTable;
 
     public class FunctionCallExpression : ExpressionNode
@@ -9,15 +11,17 @@
         public FunctionCallExpression(Location location, string name, IEnumerable<ExpressionNode> arguments)
             : base(location)
         {
-            this.Arguments = new List<ExpressionNode>();
+            Trace.Assert(!string.IsNullOrEmpty(name));
+
+            this.Arguments = new NotNullList<ExpressionNode>();
 
             this.Name = name;
             this.Arguments.AddRange(arguments);
         }
 
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
-        public List<ExpressionNode> Arguments { get; set; }
+        public IList<ExpressionNode> Arguments { get; private set; }
 
         public ISymbol Symbol { get; set; }
 

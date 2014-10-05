@@ -12,11 +12,6 @@ program returns [ProgramNode programNode]
 @init{$programNode = nodeFactory.CreateProgramNode(_localctx);}
     : (functionDecleration {$programNode.Functions.Add($functionDecleration.func);})+ EOF;
 
-variableDecleration returns [VariableDecleration decleration]
-    : variable Assign expression Semi { $decleration = nodeFactory.CreateInitializedVariableDecleration(_localctx, $variable.var, $expression.expr); }
-    | variable Semi  { $decleration = nodeFactory.CreateUnInitializedVariableDecleration(_localctx, $variable.var); }
-    ;
-
 functionDecleration returns [FunctionDecleration func]
     : Void Identifier LeftParen parameters RightParen statementBlock { $func = nodeFactory.CreateVoidFunctionDecleration(_localctx, $Identifier.text, $parameters.vars, $statementBlock.stmts); }
 	| Void Identifier LeftParen RightParen statementBlock { $func = nodeFactory.CreateVoidFunctionDecleration(_localctx, $Identifier.text, new List<VariableNode>(), $statementBlock.stmts); }
@@ -28,6 +23,11 @@ parameters returns [List<VariableNode> vars]
 @init{ $vars = new List<VariableNode>(); }
    : first=variable (Comma variable { $vars.Add($variable.var); } )* { $vars.Add($first.var); }
    ;
+
+variableDecleration returns [VariableDecleration decleration]
+    : variable Assign expression Semi { $decleration = nodeFactory.CreateInitializedVariableDecleration(_localctx, $variable.var, $expression.expr); }
+    | variable Semi  { $decleration = nodeFactory.CreateUnInitializedVariableDecleration(_localctx, $variable.var); }
+    ;
 
 variable returns [VariableNode var]
    : type Identifier { $var = nodeFactory.CreateVariableNode(_localctx, $type.typeNode, nodeFactory.CreateVariableIdNode(_localctx, $Identifier.text)); }
@@ -137,6 +137,7 @@ arguments returns [List<ExpressionNode> args]
 constant returns [ConstantNode const]
    : IntegerConstant { $const = nodeFactory.CreateIntegerConstant(_localctx, $IntegerConstant.text); }
    | StringConstant { $const = nodeFactory.CreateStringConstant(_localctx, $StringConstant.text); }
-   | BooleanConstant { $const = nodeFactory.CreateBooleanConstant(_localctx, $BooleanConstant.text); }
    | DoubleConstant {{ $const = nodeFactory.CreateDoubleConstant(_localctx, $DoubleConstant.text); } } 
+   | True { $const = nodeFactory.CreateBooleanConstant(_localctx, true); }
+   | False { $const = nodeFactory.CreateBooleanConstant(_localctx, false); }
    ;

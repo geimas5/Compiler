@@ -30,6 +30,8 @@
         T Visit(BooleanConstant node);
 
         T Visit(DoubleConstant node);
+
+        T Visit(NopExpression node);
     }
 
     public interface IVisitor
@@ -61,5 +63,6 @@
         void Visit(WhileStatement node);
         void Visit(BooleanConstant node);
         void Visit(DoubleConstant node);
+        void Visit(NopExpression node);
     }
 }

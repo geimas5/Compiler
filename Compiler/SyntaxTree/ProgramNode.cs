@@ -2,15 +2,17 @@
 {
     using System.Collections.Generic;
 
+    using Compiler.Common;
+
     public class ProgramNode : Node
     {
         public ProgramNode(Location location)
             : base(location)
         {
-            this.Functions = new List<FunctionDecleration>();
+            this.Functions = new NotNullList<FunctionDecleration>();
         }
 
-        public List<FunctionDecleration> Functions { get; private set; }
+        public IList<FunctionDecleration> Functions { get; private set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

@@ -242,17 +242,6 @@ public interface IMParserListener : IParseTreeListener {
 	void ExitBreakStatement([NotNull] MParser.BreakStatementContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="MParser.variableDecleration"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterVariableDecleration([NotNull] MParser.VariableDeclerationContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="MParser.variableDecleration"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitVariableDecleration([NotNull] MParser.VariableDeclerationContext context);
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.parameters"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -262,6 +251,17 @@ public interface IMParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitParameters([NotNull] MParser.ParametersContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="MParser.variableDecleration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterVariableDecleration([NotNull] MParser.VariableDeclerationContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="MParser.variableDecleration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitVariableDecleration([NotNull] MParser.VariableDeclerationContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="MParser.variable"/>.

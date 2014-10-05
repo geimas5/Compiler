@@ -1,12 +1,14 @@
 ﻿namespace Compiler.SyntaxTree
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     public class InitializedVariableDecleration : VariableDecleration
     {
         public InitializedVariableDecleration(Location location, VariableNode variable, ExpressionNode initialization)
             : base(location, variable)
         {
+            Trace.Assert(initialization != null);
             this.Initialization = initialization;
         }
 

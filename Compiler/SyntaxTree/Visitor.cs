@@ -139,6 +139,11 @@
             VisitAllChildren(node);
         }
 
+        public void Visit(NopExpression node)
+        {
+            this.VisitAllChildren(node);
+        }
+
         protected void VisitAllChildren(Node node)
         {
             foreach (var child in node.Children.Where(m => m != null))
@@ -307,6 +312,12 @@
         }
 
         public virtual T Visit(DoubleConstant node)
+        {
+            VisitAllChildren(node);
+            return default(T);
+        }
+
+        public T Visit(NopExpression node)
         {
             VisitAllChildren(node);
             return default(T);

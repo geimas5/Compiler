@@ -2,19 +2,23 @@
 namespace Compiler.SyntaxTree
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     public class VariableNode : Node
     {
         public VariableNode(Location location, TypeNode type, VariableIdNode name)
             : base(location)
         {
+            Trace.Assert(type != null);
+            Trace.Assert(name != null);
+
             this.Type = type;
             this.Name = name;
         }
 
-        public TypeNode Type { get; set; }
+        public TypeNode Type { get; private set; }
 
-        public VariableIdNode Name { get; set; }
+        public VariableIdNode Name { get; private set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

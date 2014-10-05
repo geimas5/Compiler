@@ -1,19 +1,22 @@
 ﻿namespace Compiler.SyntaxTree
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     public class UnaryExpression : ExpressionNode
     {
         public UnaryExpression(Location location, UnaryOperator op, ExpressionNode expression)
             : base(location)
         {
+            Trace.Assert(expression != null);
+
             this.Operator = op;
             this.Expression = expression;
         }
 
-        public UnaryOperator Operator { get; set; }
+        public UnaryOperator Operator { get; private set; }
 
-        public ExpressionNode Expression { get; set; }
+        public ExpressionNode Expression { get; private set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

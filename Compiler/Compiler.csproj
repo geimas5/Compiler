@@ -47,6 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ListExtensions.cs" />
+    <Compile Include="Common\NotNullList.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Parser\Antlr\AntlrErrorListener.cs" />
     <Compile Include="Parser\Antlr\MParser.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="SyntaxTree\ConstantNode.cs" />
     <Compile Include="SyntaxTree\CreatorExpression.cs" />
     <Compile Include="SyntaxTree\DoubleConstant.cs" />
+    <Compile Include="SyntaxTree\NopExpression.cs" />
     <Compile Include="SyntaxTree\ExpressionNode.cs" />
     <Compile Include="SyntaxTree\ExpressionStatement.cs" />
     <Compile Include="SyntaxTree\ForStatement.cs" />

@@ -2,15 +2,19 @@
 {
     using System.Collections.Generic;
 
+    using Compiler.Common;
+
     public class ArrayCreatorExpression : CreatorExpression
     {
         public ArrayCreatorExpression(Location location, PrimitiveType type, IEnumerable<ExpressionNode> sizes)
             : base(location, type)
         {
-            this.Sizes = new List<ExpressionNode>(sizes);
+            this.Sizes = new NotNullList<ExpressionNode>();
+
+            this.Sizes.AddRange(sizes);
         }
 
-        public List<ExpressionNode> Sizes { get; set; }
+        public IList<ExpressionNode> Sizes { get; private set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

@@ -1,6 +1,9 @@
 ﻿namespace Compiler.SyntaxTree
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
+
+    using Compiler.Common;
 
     public class ForStatement : StatementNode
     {
@@ -12,21 +15,24 @@
             IEnumerable<StatementNode> body)
             : base(location)
         {
+            Trace.Assert(initialization != null);
+            Trace.Assert(condition != null);
+
             this.Initialization = initialization;
             this.Condition = condition;
             this.Afterthought = afterthought;
 
-            this.Body = new List<StatementNode>();
+            this.Body = new NotNullList<StatementNode>();
             this.Body.AddRange(body);
         }
 
-        public ExpressionNode Initialization { get; set; }
+        public ExpressionNode Initialization { get; private set; }
 
-        public ExpressionNode Condition { get; set; }
+        public ExpressionNode Condition { get; private set; }
 
-        public ExpressionNode Afterthought { get; set; }
+        public ExpressionNode Afterthought { get; private set; }
 
-        public List<StatementNode> Body { get; set; }
+        public IList<StatementNode> Body { get; private set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

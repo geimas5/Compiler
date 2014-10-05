@@ -1,16 +1,25 @@
 ﻿namespace Compiler.SyntaxTree
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
+
+    using Compiler.Common;
 
     public class IfStatement : StatementNode
     {
-        public IfStatement(Location location, ExpressionNode condition, IEnumerable<StatementNode> body, IEnumerable<StatementNode> els)
+        public IfStatement(
+            Location location,
+            ExpressionNode condition,
+            IEnumerable<StatementNode> body,
+            IEnumerable<StatementNode> els)
             : base(location)
         {
+            Trace.Assert(condition != null);
+
             this.Condition = condition;
 
-            this.Body = new List<StatementNode>();
-            this.ElseStatements = new List<StatementNode>();
+            this.Body = new NotNullList<StatementNode>();
+            this.ElseStatements = new NotNullList<StatementNode>();
 
             this.Body.AddRange(body);
             this.ElseStatements.AddRange(els);
@@ -22,11 +31,11 @@
         {
         }
 
-        public ExpressionNode Condition { get; set; }
+        public ExpressionNode Condition { get; private set; }
 
-        public List<StatementNode> Body { get; set; }
+        public IList<StatementNode> Body { get; private set; }
 
-        public List<StatementNode> ElseStatements { get; set; }
+        public IList<StatementNode> ElseStatements { get; private set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

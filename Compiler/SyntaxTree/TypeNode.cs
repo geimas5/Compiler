@@ -1,16 +1,19 @@
 ﻿namespace Compiler.SyntaxTree
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     public class TypeNode : Node
     {
         public TypeNode(Location location, Type type)
             : base(location)
         {
+            Trace.Assert(type != null);
+
             this.Type = type;
         }
 
-        public Type Type { get; set; }
+        public Type Type { get; private set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

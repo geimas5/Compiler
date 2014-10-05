@@ -167,18 +167,18 @@ public interface IMParserVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitBreakStatement([NotNull] MParser.BreakStatementContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="MParser.variableDecleration"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitVariableDecleration([NotNull] MParser.VariableDeclerationContext context);
-
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="MParser.parameters"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitParameters([NotNull] MParser.ParametersContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="MParser.variableDecleration"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitVariableDecleration([NotNull] MParser.VariableDeclerationContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="MParser.variable"/>.
