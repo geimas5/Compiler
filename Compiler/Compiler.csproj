@@ -49,6 +49,13 @@
   <ItemGroup>
     <Compile Include="Common\ListExtensions.cs" />
     <Compile Include="Common\NotNullList.cs" />
+    <Compile Include="ControlFlowGraph\ControlFlowGraph.cs" />
+    <Compile Include="ControlFlowGraph\ControlFlowGraphBuilder.cs" />
+    <Compile Include="ControlFlowGraph\ControlFlowNode.cs" />
+    <Compile Include="ControlFlowGraph\ExpressionNode.cs" />
+    <Compile Include="ControlFlowGraph\OperatorStatement.cs" />
+    <Compile Include="ControlFlowGraph\Statement.cs" />
+    <Compile Include="ControlFlowGraph\StatementOperator.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Parser\Antlr\AntlrErrorListener.cs" />
     <Compile Include="Parser\Antlr\MParser.cs" />
