@@ -2,6 +2,7 @@
 {
     using System;
 
+    using Compiler.ControlFlowGraph;
     using Compiler.Parser.Antlr;
     using Compiler.SemanticAnalysis;
     using Compiler.SyntaxTree;
@@ -48,28 +49,11 @@
             var result = antlerParser.ParseProgram(
 @"int main()
 {
-  int n;
-  int c;
-  int k;
-  int space = 1;
- 
-  printf(""Enter number of rowsn"");
-  scanf(""%d"", n);
- 
-  space = n - 1;
- 
-  for (k = 1; k <= n; k=k+1)
-  {
-  }
-
-   return 0;
-}
-
-void printf(string input){
-    
-}
-
-void scanf(string input, int n){
+  int n = 43;
+  n = n * 3;
+  int f = n*n;
+  f = n / f;
+  return n;
 }");
 
             var printer = new TreePrinter();
@@ -87,7 +71,20 @@ void scanf(string input, int n){
                     logger.TotalErrors,
                     logger.TotalWarnings,
                     logger.TotalInfo);
+
+                Console.ReadLine();
+                return;
             }
+
+            var builder = new ControlFlowGraphBuilder();
+            var controlGraph = builder.BuildGraph(result.SynataxTree.RootNode);
+
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("Ir:");
+            Console.WriteLine();
+
+            new IrPrinter().PrintIr(controlGraph);
 
             Console.ReadLine();
         }

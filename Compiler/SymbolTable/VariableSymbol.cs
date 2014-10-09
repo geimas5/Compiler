@@ -11,5 +11,10 @@
         public string Name { get; private set; }
 
         public Type Type { get; private set; }
+
+        public override string ToString()
+        {
+            return Name; // + ":" + Type;
+        }
     }
 }

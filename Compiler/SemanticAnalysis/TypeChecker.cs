@@ -47,7 +47,8 @@
             var leftType = node.LeftSide.Accept(this);
             var rightType = node.RightSide.Accept(this);
 
-            return this.CheckAssigmentCompatability(node, leftType, rightType);
+            node.ResultingType = this.CheckAssigmentCompatability(node, leftType, rightType);
+            return node.ResultingType;
         }
 
         private Type CheckAssigmentCompatability(Node node, Type leftType, Type rightType)
@@ -101,7 +102,8 @@
 
         public override Type Visit(ConstantExpression node)
         {
-            return node.Constant.Accept(this);
+            node.ResultingType = node.Constant.Accept(this);
+            return node.ResultingType;
         }
 
         public override Type Visit(IntegerConstant node)
@@ -189,6 +191,7 @@
                         returnType = new Type(PrimitiveType.Double);
                     }
 
+                    node.ResultingType = returnType;
                     return returnType;
                 case BinaryOperator.Less:
                 case BinaryOperator.LessEqual:
@@ -207,7 +210,8 @@
                         return Type.NoType;
                     }
 
-                    return new Type(PrimitiveType.Boolean);
+                    node.ResultingType = new Type(PrimitiveType.Boolean);
+                    return node.ResultingType;
                 case BinaryOperator.And:
                 case BinaryOperator.Or:
                     if (leftType.Dimensions != 0 || rightType.Dimensions != 0)
@@ -251,7 +255,9 @@
                 return Type.NoType;
             }
 
-            return new Type(nameType.PrimitiveType, nameType.Dimensions - 1);
+            node.ResultingType = new Type(nameType.PrimitiveType, nameType.Dimensions - 1);
+
+            return node.ResultingType;
         }
 
         public override Type Visit(FunctionCallExpression node)
@@ -279,12 +285,13 @@
             }
 
             var symbol = node.Symbol as ITypedSymbol;
-            return symbol != null ? symbol.Type : new Type(PrimitiveType.Object);
+
+            return node.ResultingType = symbol != null ? symbol.Type : new Type(PrimitiveType.Object);
         }
 
         public override Type Visit(VariableExpression node)
         {
-            return ((ITypedSymbol)node.VariableId.Symbol).Type;
+            return node.ResultingType = ((ITypedSymbol)node.VariableId.Symbol).Type;
         }
 
         public override Type Visit(UnaryExpression node)
@@ -310,7 +317,7 @@
                         return Type.NoType;
                     }
 
-                    return new Type(PrimitiveType.Boolean);
+                    return node.ResultingType = new Type(PrimitiveType.Boolean);
                 case UnaryOperator.Negation:
                     if (expType.PrimitiveType != PrimitiveType.Double && expType.PrimitiveType != PrimitiveType.Int)
                     {
@@ -318,7 +325,7 @@
                         return Type.NoType;
                     }
 
-                    return expType;
+                    return node.ResultingType =  expType;
 
                 default:
                     throw new ArgumentOutOfRangeException();

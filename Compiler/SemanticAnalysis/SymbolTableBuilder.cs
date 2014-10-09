@@ -30,6 +30,7 @@
         {
             this.currentSymbolTable = new SymbolTable();
             var symbolTable = this.currentSymbolTable;
+            node.SymbolTable = this.currentSymbolTable;
 
             RegisterFunctions(node, symbolTable);
             base.Visit(node);
@@ -51,6 +52,7 @@
         {
             var parent = this.currentSymbolTable;
             this.currentSymbolTable = ((FunctionSymbol)node.Symbol).SymbolTable;
+            node.SymbolTable = this.currentSymbolTable;
 
             foreach (var statement in node.Statements)
             {
@@ -116,18 +118,21 @@
 
         public override void Visit(UnInitializedVariableDecleration node)
         {
+            node.SymbolTable = this.currentSymbolTable;
             this.Visit(node);
         }
 
         public override void Visit(InitializedVariableDecleration node)
         {
             this.Visit(node);
+            node.SymbolTable = this.currentSymbolTable;
             node.Initialization.Accept(this);
         }
 
         private void Visit(VariableDecleration variableDecleration)
         {
             var variable = variableDecleration.Variable;
+            variableDecleration.SymbolTable = this.currentSymbolTable;
 
             var symbol = new VariableSymbol(variable.Name.Name, variable.Type.Type);
 
@@ -150,6 +155,7 @@
 
             var parent = this.currentSymbolTable;
             this.currentSymbolTable = parent.CreateNestedSymbolTable();
+            node.SymbolTable = this.currentSymbolTable;
 
             foreach (var statements in node.Body)
             {
@@ -165,6 +171,7 @@
 
             var parent = this.currentSymbolTable;
             this.currentSymbolTable = parent.CreateNestedSymbolTable();
+            node.SymbolTable = this.currentSymbolTable;
 
             foreach (var statements in node.Body)
             {
@@ -180,6 +187,7 @@
 
             var parent = this.currentSymbolTable;
             this.currentSymbolTable = parent.CreateNestedSymbolTable();
+            node.SymbolTable = this.currentSymbolTable;
 
             foreach (var statements in node.Body)
             {
@@ -192,6 +200,7 @@
         public override void Visit(VariableIdNode node)
         {
             node.Symbol = this.currentSymbolTable.GetSymbol(node.Name, SymbolType.Variable);
+            node.SymbolTable = this.currentSymbolTable;
 
             if (node.Symbol == null)
             {
@@ -203,9 +212,111 @@
         public override void Visit(FunctionCallExpression node)
         {
             var symbol = this.currentSymbolTable.GetSymbol(node.Name, SymbolType.Function);
-
+            node.SymbolTable = this.currentSymbolTable;
             node.Symbol = symbol;
 
+            base.Visit(node);
+        }
+
+        public override void Visit(ArrayCreatorExpression node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(AssignmentExpression node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(BinaryOperatorExpression node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(BooleanConstant node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(BreakStatement node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(ConstantExpression node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(DoubleConstant node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(ExpressionStatement node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(IndexerExpression node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(IntegerConstant node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(ReturnExpressionStatement node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(StringConstant node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(TypeNode node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(UnaryExpression node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(VariableExpression node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(VariableNode node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
+            base.Visit(node);
+        }
+
+        public override void Visit(VoidReturnStatement node)
+        {
+            node.SymbolTable = this.currentSymbolTable;
             base.Visit(node);
         }
     }

@@ -1,7 +1,6 @@
 ﻿namespace Compiler.ControlFlowGraph
 {
-    public class OperatorStatement
+    public abstract class Argument
     {
-
     }
 }

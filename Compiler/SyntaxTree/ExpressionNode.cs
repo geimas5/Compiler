@@ -6,5 +6,7 @@
             : base(location)
         {
         }
+
+        public Type ResultingType { get; set; }
     }
 }

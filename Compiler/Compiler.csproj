@@ -49,13 +49,20 @@
   <ItemGroup>
     <Compile Include="Common\ListExtensions.cs" />
     <Compile Include="Common\NotNullList.cs" />
+    <Compile Include="ControlFlowGraph\Argument.cs" />
+    <Compile Include="ControlFlowGraph\AssignStatement.cs" />
+    <Compile Include="ControlFlowGraph\BinaryOperatorStatement.cs" />
+    <Compile Include="ControlFlowGraph\BranchStatement.cs" />
     <Compile Include="ControlFlowGraph\ControlFlowGraph.cs" />
     <Compile Include="ControlFlowGraph\ControlFlowGraphBuilder.cs" />
-    <Compile Include="ControlFlowGraph\ControlFlowNode.cs" />
-    <Compile Include="ControlFlowGraph\ExpressionNode.cs" />
-    <Compile Include="ControlFlowGraph\OperatorStatement.cs" />
+    <Compile Include="ControlFlowGraph\BasicBlock.cs" />
+    <Compile Include="ControlFlowGraph\IntConstantArgument.cs" />
+    <Compile Include="ControlFlowGraph\IrPrinter.cs" />
+    <Compile Include="ControlFlowGraph\ReturningStatement.cs" />
+    <Compile Include="ControlFlowGraph\ReturnStatement.cs" />
     <Compile Include="ControlFlowGraph\Statement.cs" />
-    <Compile Include="ControlFlowGraph\StatementOperator.cs" />
+    <Compile Include="ControlFlowGraph\BinaryStatementOperator.cs" />
+    <Compile Include="ControlFlowGraph\VariableArgument.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Parser\Antlr\AntlrErrorListener.cs" />
     <Compile Include="Parser\Antlr\MParser.cs" />
@@ -73,6 +80,7 @@
     <Compile Include="SymbolTable\ReturningFunctionSymbol.cs" />
     <Compile Include="SymbolTable\SymbolTable.cs" />
     <Compile Include="SymbolTable\SymbolType.cs" />
+    <Compile Include="SymbolTable\TempVariableSymbol.cs" />
     <Compile Include="SymbolTable\VariableSymbol.cs" />
     <Compile Include="SyntaxTree\ArrayCreatorExpression.cs" />
     <Compile Include="SyntaxTree\AssignmentExpression.cs" />
@@ -156,6 +164,7 @@
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>Compiler.obj.Debug</CustomToolNamespace>
     </AntlrTokens>
+    <None Include="ControlFlowGraph\Diagram.cd" />
     <None Include="packages.config" />
     <None Include="SyntaxTree\SyntaxTree.cd" />
   </ItemGroup>

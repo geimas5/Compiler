@@ -17,7 +17,9 @@
         public abstract T Accept<T>(IVisitor<T> visitor);
         public abstract void Accept(IVisitor visitor);
 
-        public abstract IEnumerable<Node> Children { get; } 
+        public abstract IEnumerable<Node> Children { get; }
+
+        public SymbolTable.SymbolTable SymbolTable { get; set; }
 
         public override string ToString()
         {
