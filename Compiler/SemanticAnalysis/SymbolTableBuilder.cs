@@ -177,6 +177,11 @@
                 statements.Accept(this);
             }
 
+            foreach (var statements in node.ElseStatements)
+            {
+                statements.Accept(this);
+            }
+
             this.currentSymbolTable = parent;
         }
 

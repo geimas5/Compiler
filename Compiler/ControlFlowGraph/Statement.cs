@@ -17,5 +17,7 @@
         public ICollection<Statement> Predecessors { get; private set; }
 
         public Statement Next { get; set; }
+
+        public BasicBlock BasicBlock { get; set; }
     }
 }

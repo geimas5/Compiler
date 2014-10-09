@@ -105,31 +105,48 @@
 
         public override IEnumerable<BasicBlock> Visit(IfStatement node)
         {
+            if (!node.ElseStatements.Any())
+            {
+                return this.BuildIfStatement(node.Condition, this.BuildBlock(node.Body));
+            }
+            
+            return this.BuildIfStatement(
+                node.Condition,
+                this.BuildBlock(node.Body),
+                this.BuildBlock(node.ElseStatements));
+        }
+
+        private IEnumerable<BasicBlock> BuildIfStatement(ExpressionNode expression, IEnumerable<BasicBlock> trueBranch)
+        {
             var afterStatement = new NopStatement();
             var afterBranch = new BasicBlock(afterStatement);
-            var trueBranch = this.BuildBlock(node.Body).ToList();
-
-            List<BasicBlock> falseBranch = null;
-
-            if (node.ElseStatements.Any())
-            {
-                falseBranch = this.BuildBlock(node.ElseStatements).ToList();
-                falseBranch[falseBranch.Count - 1] = falseBranch[falseBranch.Count - 1].Append(new JumpStatement(afterStatement));
-
-                falseBranch = this.UnionBasicBlockLists(falseBranch, new[] { afterBranch }).ToList();
-            }
-
-            if (falseBranch != null)
-            {
-                return this.CreateBranchNode(node.Condition, trueBranch.First().Enter, falseBranch.First().Enter);
-            }
 
             var ret = this.UnionBasicBlockLists(
-                    this.CreateBranchNode(node.Condition, trueBranch.First().Enter, afterStatement),
-                    new[] { new BasicBlock(new JumpStatement(afterStatement)), });
+                    this.CreateBranchNode(expression, afterStatement),
+                    trueBranch);
 
-            ret = this.UnionBasicBlockLists(ret, trueBranch);
             ret = this.UnionBasicBlockLists(ret, new[] { afterBranch });
+            
+            return ret;
+        }
+
+        private IEnumerable<BasicBlock> BuildIfStatement(
+            ExpressionNode expression,
+            IEnumerable<BasicBlock> trueBranch,
+            IEnumerable<BasicBlock> elseBranch)
+        {
+            var afterStatement = new NopStatement();
+            var afterBranch = new BasicBlock(afterStatement);
+
+            var elseBranchList = elseBranch.ToArray();
+
+            var condition = this.CreateBranchNode(expression, elseBranchList.First().Enter);
+
+            var ret = this.UnionBasicBlockLists(condition, trueBranch);
+            ret = this.UnionBasicBlockLists(ret, new[] { new BasicBlock(new JumpStatement(afterStatement)), });
+            ret = this.UnionBasicBlockLists(ret, elseBranchList);
+            ret = this.UnionBasicBlockLists(ret, new[] { afterBranch });
+
             return ret;
         }
 
@@ -180,16 +197,13 @@
             return blocks;
         }
 
-        private IEnumerable<BasicBlock> CreateBranchNode(
-            ExpressionNode expression,
-            Statement trueTarget,
-            Statement falseTarget)
+        private IEnumerable<BasicBlock> CreateBranchNode(ExpressionNode expression, Statement after)
         {
             var unaryExpression = expression as UnaryExpression;
             if (unaryExpression != null)
             {
                 Trace.Assert(unaryExpression.Operator == UnaryOperator.Not);
-                return this.CreateBranchNode(unaryExpression.Expression, trueTarget, falseTarget);
+                return this.CreateBranchNode(unaryExpression.Expression, after);
             }
 
             var binaryOperatorExpression = expression as BinaryOperatorExpression;
@@ -206,10 +220,11 @@
                 var rightArguumment = new VariableArgument(((ReturningStatement)rightBlock.Exit).Return);
 
                 var branchStatement = new BranchStatement(
+                    true,
                     binaryOperatorExpression.Operator,
                     leftArgument,
                     rightArguumment,
-                    trueTarget);
+                    after);
 
                 return new[] { beforeBlock.Append(branchStatement) };
             }

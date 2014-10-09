@@ -6,19 +6,22 @@
 
     public class BranchStatement : Statement
     {
-        public BranchStatement(BinaryOperator @operator, Argument left, Argument right, Statement branchTarget)
+        public BranchStatement(bool zero, BinaryOperator @operator, Argument left, Argument right, Statement branchTarget)
         {
             this.BranchTarget = branchTarget;
             this.Operator = @operator;
             this.Left = left;
             this.Right = right;
+            this.Zero = zero;
         }
 
-        public BinaryOperator Operator { get; set; }
+        public bool Zero { get; set; }
 
-        public Argument Left { get; set; }
+        public BinaryOperator Operator { get; private set; }
 
-        public Argument Right { get; set; }
+        public Argument Left { get; private set; }
+
+        public Argument Right { get; private set; }
 
         public Statement BranchTarget { get; private set; }
 
@@ -73,7 +76,13 @@
                     throw new ArgumentOutOfRangeException();
             }
 
-            return string.Format("If {0} {1} {2}, Goto {3}", this.Left, op, this.Right, this.BranchTarget.Id);
+            return string.Format(
+                "If{4} {0} {1} {2}, Goto {3}",
+                this.Left,
+                op,
+                this.Right,
+                this.BranchTarget.Id,
+                this.Zero ? "Z" : string.Empty);
         }
     }
 }

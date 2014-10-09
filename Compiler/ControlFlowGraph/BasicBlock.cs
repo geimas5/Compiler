@@ -6,6 +6,18 @@
         {
             this.Enter = enter;
             this.Exit = exit;
+
+            var current = enter;
+            current.BasicBlock = this;
+            while ((current = current.Next) != null)
+            {
+                current.BasicBlock = this;
+
+                if (current == exit)
+                {
+                    break;
+                }
+            }
         }
 
         public BasicBlock(Statement statement)
@@ -22,6 +34,7 @@
         {
             this.Exit.Next = statement;
             statement.Predecessors.Add(this.Exit);
+            statement.BasicBlock = this;
 
             return new BasicBlock(this.Enter, statement);
         }

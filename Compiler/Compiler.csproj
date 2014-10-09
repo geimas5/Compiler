@@ -63,7 +63,6 @@
     <Compile Include="ControlFlowGraph\ReturningStatement.cs" />
     <Compile Include="ControlFlowGraph\ReturnStatement.cs" />
     <Compile Include="ControlFlowGraph\Statement.cs" />
-    <Compile Include="ControlFlowGraph\BinaryStatementOperator.cs" />
     <Compile Include="ControlFlowGraph\VariableArgument.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Parser\Antlr\AntlrErrorListener.cs" />

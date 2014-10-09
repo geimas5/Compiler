@@ -60,7 +60,10 @@
 @"int main()
 {
    if(1==1) {
-       int d = 443;
+       int d = 443 * 3423 / 234;
+   }
+   else {
+       int e = 43;
    }
   
    return 1;
