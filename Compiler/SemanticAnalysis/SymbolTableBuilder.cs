@@ -1,6 +1,5 @@
 ﻿namespace Compiler.SemanticAnalysis
 {
-    using System;
     using System.Linq;
 
     using Compiler.SymbolTable;
