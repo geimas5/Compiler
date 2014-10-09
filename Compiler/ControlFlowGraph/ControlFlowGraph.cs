@@ -8,9 +8,9 @@
     {
         public ControlFlowGraph()
         {
-            this.Functions = new NotNullList<BasicBlock>();
+            this.Functions = new NotNullList<IEnumerable<BasicBlock>>();
         }
 
-        public IList<BasicBlock> Functions { get; private set; }
+        public IList<IEnumerable<BasicBlock>> Functions { get; private set; }
     }
 }

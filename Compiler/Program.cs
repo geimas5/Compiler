@@ -46,14 +46,24 @@
 //
 //");
 
+//            var result = antlerParser.ParseProgram(
+//@"int main()
+//{
+//  int n = 43;
+//  n = n * 3;
+//  int f = n*n;
+//  f = n / f;
+//  return n;
+//}");
+
             var result = antlerParser.ParseProgram(
 @"int main()
 {
-  int n = 43;
-  n = n * 3;
-  int f = n*n;
-  f = n / f;
-  return n;
+   if(1==1) {
+       int d = 443;
+   }
+  
+   return 1;
 }");
 
             var printer = new TreePrinter();
@@ -87,6 +97,9 @@
             new IrPrinter().PrintIr(controlGraph);
 
             Console.ReadLine();
+
         }
+
     }
+
 }

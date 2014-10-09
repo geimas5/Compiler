@@ -1,6 +1,7 @@
 ﻿namespace Compiler.ControlFlowGraph
 {
     using System;
+    using System.Linq;
 
     public class IrPrinter
     {
@@ -8,7 +9,7 @@
         {
             foreach (var block in graph.Functions)
             {
-                Statement statement = block.Enter;
+                var statement = block.First().Enter;
 
                 while (statement != null)
                 {
