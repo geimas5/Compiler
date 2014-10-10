@@ -1,31 +1,36 @@
 ﻿namespace Compiler.ControlFlowGraph
 {
     using System;
-    using System.Linq;
+    using System.Text;
 
     public class IrPrinter
     {
         public void PrintIr(ControlFlowGraph graph)
         {
+            var sb = new StringBuilder();
+
             foreach (var block in graph.Functions)
             {
-                var statement = block.First().Enter;
+                var statement = block.Enter;
                 BasicBlock currentBlock = null;
 
                 while (statement != null)
                 {
                     if (currentBlock != statement.BasicBlock)
                     {
-                        Console.WriteLine("-----------------");
+                        sb.AppendLine("-----------------");
                     }
 
                     currentBlock = statement.BasicBlock;
 
-                    Console.WriteLine("{0}: {1}", statement.Id, statement);
+                    sb.AppendFormat("{0}: {1}", statement.Id, statement);
+                    sb.AppendLine();
 
                     statement = statement.Next;
                 }
             }
+
+            Console.Write(sb);
         }
     }
 }

@@ -59,14 +59,19 @@
             var result = antlerParser.ParseProgram(
 @"int main()
 {
-   if(1==1) {
-       int d = 443 * 3423 / 234;
+   bool f = false;
+   bool t = true;
+   bool e = true;
+   int i;
+
+   if(f == false || t == true) {
+        i = 1;
    }
    else {
-       int e = 43;
+       i = 2;
    }
-  
-   return 1;
+
+   return i;
 }");
 
             var printer = new TreePrinter();
@@ -80,7 +85,7 @@
             if (logger.TotalErrors > 0)
             {
                 Console.WriteLine(
-                    "Compilation failed, {0} errors {1} warnings, and {2} informationss",
+                    "Compilation failed, {0} errors {1} warnings, and {2} information",
                     logger.TotalErrors,
                     logger.TotalWarnings,
                     logger.TotalInfo);

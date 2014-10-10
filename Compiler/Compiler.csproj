@@ -52,6 +52,7 @@
     <Compile Include="ControlFlowGraph\Argument.cs" />
     <Compile Include="ControlFlowGraph\AssignStatement.cs" />
     <Compile Include="ControlFlowGraph\BinaryOperatorStatement.cs" />
+    <Compile Include="ControlFlowGraph\BooleanConstantArgument.cs" />
     <Compile Include="ControlFlowGraph\BranchStatement.cs" />
     <Compile Include="ControlFlowGraph\ControlFlowGraph.cs" />
     <Compile Include="ControlFlowGraph\ControlFlowGraphBuilder.cs" />

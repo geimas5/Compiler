@@ -11,9 +11,11 @@
     using ConstantExpression = Compiler.SyntaxTree.ConstantExpression;
     using Type = Compiler.Type;
 
-    public class ControlFlowGraphBuilder : Visitor<IEnumerable<BasicBlock>>
+    public class ControlFlowGraphBuilder : Visitor<BasicBlock>
     {
         private ControlFlowGraph controlFlowGraph;
+
+        private readonly Stack<Statement> loopExits = new Stack<Statement>(); 
 
         public ControlFlowGraph BuildGraph(ProgramNode rootNode)
         {
@@ -27,83 +29,107 @@
             return this.controlFlowGraph;
         }
 
-        public override IEnumerable<BasicBlock> Visit(VoidFunctionDecleration node)
+        public override BasicBlock Visit(VoidFunctionDecleration node)
         {
             return this.BuildBlock(node.Statements);
         }
 
-        public override IEnumerable<BasicBlock> Visit(ReturningFunctionDecleration node)
+        public override BasicBlock Visit(ReturningFunctionDecleration node)
         {
             return this.BuildBlock(node.Statements);
         }
 
-        public override IEnumerable<BasicBlock> Visit(ExpressionStatement node)
+        public override BasicBlock Visit(ExpressionStatement node)
         {
             return node.Expression.Accept(this);
         }
 
-        public override IEnumerable<BasicBlock> Visit(ConstantExpression node)
+        public override BasicBlock Visit(ConstantExpression node)
         {
             return node.Constant.Accept(this);
         }
 
-        public override IEnumerable<BasicBlock> Visit(InitializedVariableDecleration node)
+        public override BasicBlock Visit(InitializedVariableDecleration node)
         {
-            var initBlock = node.Initialization.Accept(this).Single();
+            var initBlock = node.Initialization.Accept(this);
             var argument = new VariableArgument(((ReturningStatement)initBlock.Exit).Return);
 
             var statemment = new AssignStatement((VariableSymbol)node.Variable.Name.Symbol, argument);
 
-            yield return initBlock.Append(statemment);
+            return initBlock.Append(statemment);
         }
 
-        public override IEnumerable<BasicBlock> Visit(IntegerConstant node)
+        public override BasicBlock Visit(IntegerConstant node)
         {
             var variable = this.MakeTempVariable(node, new Type(PrimitiveType.Int));
 
             var assignment = new AssignStatement(variable, new IntConstantArgument(node.Value));
-            yield return new BasicBlock(assignment);
+            return new BasicBlock(assignment);
         }
 
-        public override IEnumerable<BasicBlock> Visit(VariableExpression node)
+        public override BasicBlock Visit(BooleanConstant node)
+        {
+            var variable = this.MakeTempVariable(node, new Type(PrimitiveType.Boolean));
+
+            var assignment = new AssignStatement(variable, new BooleanConstantArgument(node.Value));
+            return new BasicBlock(assignment);
+        }
+
+        public override BasicBlock Visit(VariableExpression node)
         {
             var assignment = new AssignStatement(
                 (VariableSymbol)node.VariableId.Symbol,
                 new VariableArgument((VariableSymbol)node.VariableId.Symbol));
-            yield return new BasicBlock(assignment);
+            return new BasicBlock(assignment);
         }
 
-        public override IEnumerable<BasicBlock> Visit(VoidReturnStatement node)
+        public override BasicBlock Visit(VoidReturnStatement node)
         {
-            yield return new BasicBlock(new ReturnStatement());
+            return new BasicBlock(new ReturnStatement());
         }
 
-        public override IEnumerable<BasicBlock> Visit(ReturnExpressionStatement node)
+        public override BasicBlock Visit(StringConstant node)
         {
-            var block = node.Expression.Accept(this).Single();
+            return base.Visit(node);
+        }
+
+        public override BasicBlock Visit(ReturnExpressionStatement node)
+        {
+            var block = node.Expression.Accept(this);
             var argument = new VariableArgument(((ReturningStatement)block.Exit).Return);
             var statement = new ReturnStatement(argument);
 
-            yield return block.Append(statement);
+            return block.Append(statement);
         }
 
-        public override IEnumerable<BasicBlock> Visit(BinaryOperatorExpression node)
+        public override BasicBlock Visit(BinaryOperatorExpression node)
         {
-            var leftBlock = node.Left.Accept(this).Single();
-            var rightBlock = node.Right.Accept(this).Single();
+            var tempVariable = this.MakeTempVariable(node, node.ResultingType);
+            
+            if (node.Operator == BinaryOperator.And || node.Operator == BinaryOperator.Or)
+            {
+                var trueBranch = new BasicBlock(new AssignStatement(tempVariable, new BooleanConstantArgument(true)));
+                var falseBranch = new BasicBlock(new AssignStatement(tempVariable, new BooleanConstantArgument(false)));
+
+                var branch = this.CreateBranchNode1(node, trueBranch, falseBranch);
+
+                return branch.Append(new AssignStatement(tempVariable, new VariableArgument(tempVariable)));
+            }
+
+
+            var leftBlock = node.Left.Accept(this);
+            var rightBlock = node.Right.Accept(this);
             var beforeBlock = leftBlock.Join(rightBlock);
 
             var leftArgument = new VariableArgument(((ReturningStatement)leftBlock.Exit).Return);
             var rightArguumment = new VariableArgument(((ReturningStatement)rightBlock.Exit).Return);
 
-            var tempVariable = this.MakeTempVariable(node, node.ResultingType);
-
             var statement = new BinaryOperatorStatement(tempVariable, node.Operator, leftArgument, rightArguumment);
 
-            yield return beforeBlock.Append(statement);
+            return beforeBlock.Append(statement);
         }
 
-        public override IEnumerable<BasicBlock> Visit(IfStatement node)
+        public override BasicBlock Visit(IfStatement node)
         {
             if (!node.ElseStatements.Any())
             {
@@ -116,43 +142,67 @@
                 this.BuildBlock(node.ElseStatements));
         }
 
-        private IEnumerable<BasicBlock> BuildIfStatement(ExpressionNode expression, IEnumerable<BasicBlock> trueBranch)
+        public override BasicBlock Visit(WhileStatement node)
         {
-            var afterStatement = new NopStatement();
-            var afterBranch = new BasicBlock(afterStatement);
+            var afterBranch = new BasicBlock(new NopStatement());
+            var body = this.BuildBlock(node.Body);
+            var branchNode = this.CreateBranchNode1(node.Condition, body, afterBranch);
 
-            var ret = this.UnionBasicBlockLists(
-                    this.CreateBranchNode(expression, afterStatement),
-                    trueBranch);
-
-            ret = this.UnionBasicBlockLists(ret, new[] { afterBranch });
+            loopExits.Push(afterBranch.Enter);
             
-            return ret;
+            loopExits.Pop();
+
+            body = body.Append(new JumpStatement(branchNode.Enter));
+
+            return branchNode.Join(body).Join(afterBranch);
         }
 
-        private IEnumerable<BasicBlock> BuildIfStatement(
+        public override BasicBlock Visit(ForStatement node)
+        {
+            var afterStatement = new BasicBlock(new NopStatement());
+            var initialization = node.Initialization.Accept(this);
+            
+            loopExits.Push(afterStatement.Enter);
+
+            var body = this.BuildBlock(node.Body);
+
+            loopExits.Pop();
+
+            var conditionNode = this.CreateBranchNode1(node.Condition, body, afterStatement);
+
+            body = body.Join(node.Afterthought.Accept(this));
+
+            return initialization.Join(conditionNode).Join(body).Join(afterStatement);
+        }
+
+        public override BasicBlock Visit(IndexerExpression node)
+        {
+            return base.Visit(node);
+        }
+
+        public override BasicBlock Visit(BreakStatement node)
+        {
+            return new BasicBlock(new JumpStatement(this.loopExits.Peek()));
+        }
+
+        private BasicBlock BuildIfStatement(ExpressionNode expression, BasicBlock trueBranch)
+        {
+            var afterStatement = new BasicBlock(new NopStatement());
+
+            return this.CreateBranchNode1(expression, trueBranch, afterStatement);
+        }
+
+        private BasicBlock BuildIfStatement(
             ExpressionNode expression,
-            IEnumerable<BasicBlock> trueBranch,
-            IEnumerable<BasicBlock> elseBranch)
+            BasicBlock trueBranch,
+            BasicBlock elseBranch)
         {
-            var afterStatement = new NopStatement();
-            var afterBranch = new BasicBlock(afterStatement);
-
-            var elseBranchList = elseBranch.ToArray();
-
-            var condition = this.CreateBranchNode(expression, elseBranchList.First().Enter);
-
-            var ret = this.UnionBasicBlockLists(condition, trueBranch);
-            ret = this.UnionBasicBlockLists(ret, new[] { new BasicBlock(new JumpStatement(afterStatement)), });
-            ret = this.UnionBasicBlockLists(ret, elseBranchList);
-            ret = this.UnionBasicBlockLists(ret, new[] { afterBranch });
-
-            return ret;
+            return this.CreateBranchNode1(expression, trueBranch, elseBranch);
         }
 
-        public override IEnumerable<BasicBlock> Visit(AssignmentExpression node)
+        public override BasicBlock Visit(AssignmentExpression node)
         {
-            var beforeBlock = node.RightSide.Accept(this).Single();
+            var beforeBlock = node.RightSide.Accept(this);
             var argument = new VariableArgument(((ReturningStatement)beforeBlock.Exit).Return);
 
             VariableSymbol symbol;
@@ -167,7 +217,7 @@
             }
 
             var statement = new AssignStatement(symbol, argument);
-            yield return beforeBlock.Append(statement);
+            return beforeBlock.Append(statement);
         }
 
         private TempVariableSymbol MakeTempVariable(Node node, Type type)
@@ -177,76 +227,111 @@
             return variable;
         }
 
-        private IEnumerable<BasicBlock> BuildBlock(IEnumerable<StatementNode> statements)
+        private BasicBlock BuildBlock(IEnumerable<StatementNode> statements)
         {
-            var blocks = new List<BasicBlock>();
-
-            foreach (var statement in statements)
+            if (!statements.Any())
             {
-                var subBlocks = statement.Accept(this).ToArray();
-                if (!blocks.Any() || blocks.Count > 1)
-                {
-                    blocks = this.UnionBasicBlockLists(blocks, subBlocks).ToList();
-                }
-                else
-                {
-                    blocks[blocks.Count - 1] = blocks[blocks.Count - 1].Join(subBlocks.Single());
-                }
+                return new BasicBlock(new NopStatement());
             }
 
-            return blocks;
+            BasicBlock result = null;
+
+            foreach (StatementNode statement in statements)
+            {
+                BasicBlock block = statement.Accept(this);
+                if (block == null)
+                {
+                    continue;
+                }
+
+                result = result == null ? block : result.Join(block);
+            }
+
+            return result;
         }
 
-        private IEnumerable<BasicBlock> CreateBranchNode(ExpressionNode expression, Statement after)
+        private BasicBlock CreateBranchNode1(ExpressionNode expression, BasicBlock trueBranch, BasicBlock falseBranch)
         {
             var unaryExpression = expression as UnaryExpression;
             if (unaryExpression != null)
             {
+                // If the node is a not node, then all we need to do is to switch the branches. 
+
                 Trace.Assert(unaryExpression.Operator == UnaryOperator.Not);
-                return this.CreateBranchNode(unaryExpression.Expression, after);
+                return this.CreateBranchNode1(unaryExpression.Expression, falseBranch, trueBranch);
             }
 
-            var binaryOperatorExpression = expression as BinaryOperatorExpression;
-            Trace.Assert(binaryOperatorExpression != null);
+            var binaryExpression = expression as BinaryOperatorExpression;
 
-            if (binaryOperatorExpression.Operator != BinaryOperator.And
-                && binaryOperatorExpression.Operator != BinaryOperator.Or)
+            var leftBlock = binaryExpression.Left.Accept(this);
+            var leftArgument = new VariableArgument(((ReturningStatement)leftBlock.Exit).Return);
+
+            if (binaryExpression.Operator != BinaryOperator.And
+                && binaryExpression.Operator != BinaryOperator.Or)
             {
-                var leftBlock = binaryOperatorExpression.Left.Accept(this).Single();
-                var rightBlock = binaryOperatorExpression.Right.Accept(this).Single();
-                var beforeBlock = leftBlock.Join(rightBlock);
-
-                var leftArgument = new VariableArgument(((ReturningStatement)leftBlock.Exit).Return);
+                var rightBlock = binaryExpression.Right.Accept(this);
                 var rightArguumment = new VariableArgument(((ReturningStatement)rightBlock.Exit).Return);
+                var beforeBlock = leftBlock.Join(rightBlock);
 
                 var branchStatement = new BranchStatement(
                     true,
-                    binaryOperatorExpression.Operator,
+                    binaryExpression.Operator,
                     leftArgument,
                     rightArguumment,
-                    after);
+                    falseBranch.Enter);
 
-                return new[] { beforeBlock.Append(branchStatement) };
+                return beforeBlock.Append(branchStatement).Join(trueBranch).Join(falseBranch);
             }
 
-            throw new NotImplementedException("&& or || operator in if is not implemented");
-        }
+            BasicBlock block = leftBlock;
 
-        private IEnumerable<BasicBlock> UnionBasicBlockLists(
-            IEnumerable<BasicBlock> blocks1,
-            IEnumerable<BasicBlock> blocks2)
-        {
-            var b1arr = blocks1.ToArray();
-            if (b1arr.Length == 0)
+            if (binaryExpression.Operator == BinaryOperator.And)
             {
-                return blocks2;
+                var firstBranch = new BranchStatement(
+                    true,
+                    BinaryOperator.Equal,
+                    leftArgument,
+                    new BooleanConstantArgument(true),
+                    falseBranch.Enter);
+
+                var rightBlock = binaryExpression.Right.Accept(this);
+                var rightArguumment = new VariableArgument(((ReturningStatement)rightBlock.Exit).Return);
+
+                var seccondBranch = new BranchStatement(
+                    true,
+                    BinaryOperator.Equal,
+                    rightArguumment,
+                    new BooleanConstantArgument(true),
+                    falseBranch.Enter);
+
+                block = block.Append(firstBranch).Join(rightBlock).Append(seccondBranch);
+            }
+            else if (binaryExpression.Operator == BinaryOperator.Or)
+            {
+                var firstBranch = new BranchStatement(
+                   true,
+                   BinaryOperator.Equal,
+                   leftArgument,
+                   new BooleanConstantArgument(true),
+                   trueBranch.Enter);
+
+                var rightBlock = binaryExpression.Right.Accept(this);
+                var rightArguumment = new VariableArgument(((ReturningStatement)rightBlock.Exit).Return);
+
+                var seccondBranch = new BranchStatement(
+                    true,
+                    BinaryOperator.Equal,
+                    rightArguumment,
+                    new BooleanConstantArgument(true),
+                    falseBranch.Enter);
+
+                block = block.Append(firstBranch).Join(rightBlock).Append(seccondBranch);
             }
 
-            var b2arr = blocks2.ToArray();
+            var afterStatement = new NopStatement();
+            var jumpToAfter = new JumpStatement(afterStatement);
 
-            b1arr.Last().Exit.Next = b2arr.First().Enter;
-
-            return b1arr.Union(b2arr);
+            return block.Join(trueBranch).Append(jumpToAfter).Join(falseBranch).Append(afterStatement);
         }
     }
 }
