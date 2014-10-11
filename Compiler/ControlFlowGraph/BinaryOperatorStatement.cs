@@ -5,14 +5,14 @@
     using Compiler.SymbolTable;
     using Compiler.SyntaxTree;
 
-    public class BinaryOperatorStatement : ReturningStatement
+    public class BinaryOperatorStatement : Statement, IReturningStatement
     {
         public BinaryOperatorStatement(VariableSymbol @return, BinaryOperator @operator, Argument left, Argument right)
-            : base(@return)
         {
             this.Operator = @operator;
             this.Left = left;
             this.Right = right;
+            this.Return = @return;
         }
 
         public BinaryOperator Operator { get; set; }
@@ -74,5 +74,7 @@
 
             return string.Format("{0} = {1} {2} {3}", this.Return, this.Left, op, this.Right);
         }
+
+        public VariableSymbol Return { get; private set; }
     }
 }

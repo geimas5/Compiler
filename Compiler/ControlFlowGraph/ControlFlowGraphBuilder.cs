@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data.Odbc;
     using System.Diagnostics;
     using System.Linq;
 
@@ -52,7 +53,7 @@
         public override BasicBlock Visit(InitializedVariableDecleration node)
         {
             var initBlock = node.Initialization.Accept(this);
-            var argument = new VariableArgument(((ReturningStatement)initBlock.Exit).Return);
+            var argument = new VariableArgument(((IReturningStatement)initBlock.Exit).Return);
 
             var statemment = new AssignStatement((VariableSymbol)node.Variable.Name.Symbol, argument);
 
@@ -90,13 +91,47 @@
 
         public override BasicBlock Visit(StringConstant node)
         {
-            return base.Visit(node);
+            string name = ".str" + node.Text.GetHashCode();
+            if (!controlFlowGraph.Strings.ContainsKey(name))
+            {
+                controlFlowGraph.Strings.Add(name, node.Text);
+            }
+
+            var variable = this.MakeTempVariable(node, new Type(PrimitiveType.Int));
+
+            var assignment = new AssignStatement(variable, new GlobalArgument(name));
+            return new BasicBlock(assignment);
+        }
+
+        public override BasicBlock Visit(ArrayCreatorExpression node)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override BasicBlock Visit(UnaryExpression node)
+        {
+            var tempVariable = this.MakeTempVariable(node, node.ResultingType);
+
+            var beforeBlock = node.Expression.Accept(this);
+            var leftArgument = new VariableArgument(((IReturningStatement)beforeBlock.Exit).Return);
+
+            var statement = new UnaryOperatorStatement(tempVariable, node.Operator, leftArgument);
+
+            return beforeBlock.Append(statement);
+        }
+
+        public override BasicBlock Visit(DoubleConstant node)
+        {
+            var variable = this.MakeTempVariable(node, new Type(PrimitiveType.Int));
+
+            var assignment = new AssignStatement(variable, new DoubleConstantArgument(node.Value));
+            return new BasicBlock(assignment);
         }
 
         public override BasicBlock Visit(ReturnExpressionStatement node)
         {
             var block = node.Expression.Accept(this);
-            var argument = new VariableArgument(((ReturningStatement)block.Exit).Return);
+            var argument = new VariableArgument(((IReturningStatement)block.Exit).Return);
             var statement = new ReturnStatement(argument);
 
             return block.Append(statement);
@@ -111,7 +146,7 @@
                 var trueBranch = new BasicBlock(new AssignStatement(tempVariable, new BooleanConstantArgument(true)));
                 var falseBranch = new BasicBlock(new AssignStatement(tempVariable, new BooleanConstantArgument(false)));
 
-                var branch = this.CreateBranchNode1(node, trueBranch, falseBranch);
+                var branch = this.CreateBranchNode(node, trueBranch, falseBranch);
 
                 return branch.Append(new AssignStatement(tempVariable, new VariableArgument(tempVariable)));
             }
@@ -121,8 +156,8 @@
             var rightBlock = node.Right.Accept(this);
             var beforeBlock = leftBlock.Join(rightBlock);
 
-            var leftArgument = new VariableArgument(((ReturningStatement)leftBlock.Exit).Return);
-            var rightArguumment = new VariableArgument(((ReturningStatement)rightBlock.Exit).Return);
+            var leftArgument = new VariableArgument(((IReturningStatement)leftBlock.Exit).Return);
+            var rightArguumment = new VariableArgument(((IReturningStatement)rightBlock.Exit).Return);
 
             var statement = new BinaryOperatorStatement(tempVariable, node.Operator, leftArgument, rightArguumment);
 
@@ -146,7 +181,7 @@
         {
             var afterBranch = new BasicBlock(new NopStatement());
             var body = this.BuildBlock(node.Body);
-            var branchNode = this.CreateBranchNode1(node.Condition, body, afterBranch);
+            var branchNode = this.CreateBranchNode(node.Condition, body, afterBranch);
 
             loopExits.Push(afterBranch.Enter);
             
@@ -168,7 +203,7 @@
 
             loopExits.Pop();
 
-            var conditionNode = this.CreateBranchNode1(node.Condition, body, afterStatement);
+            var conditionNode = this.CreateBranchNode(node.Condition, body, afterStatement);
 
             body = body.Join(node.Afterthought.Accept(this));
 
@@ -180,6 +215,45 @@
             return base.Visit(node);
         }
 
+        public override BasicBlock Visit(FunctionCallExpression node)
+        {
+            BasicBlock block = null;
+
+            if (node.Arguments.Any())
+            {
+                var arguments = new List<VariableArgument>();
+                foreach (var expressionNode in node.Arguments)
+                {
+                    var nodeStatements = expressionNode.Accept(this);
+                    arguments.Add(new VariableArgument(((IReturningStatement)nodeStatements.Exit).Return));
+
+                    block = block == null ? nodeStatements : block.Join(nodeStatements);
+                }
+
+                foreach (var argument in arguments)
+                {
+                    var param = new ParamStatement(argument);
+                    block = block.Append(param);
+                }
+            }
+
+            Statement callStatement;
+            if (node.Symbol is ReturningFunctionSymbol)
+            {
+                var temp = this.MakeTempVariable(node, ((ReturningFunctionSymbol)node.Symbol).Type);
+
+                callStatement = new ReturningCallStatement((FunctionSymbol)node.Symbol, node.Arguments.Count, temp);
+            }
+            else
+            {
+                callStatement = new CallStatement((FunctionSymbol)node.Symbol, node.Arguments.Count);      
+            }
+
+            block = block == null ? new BasicBlock(callStatement) : block.Append(callStatement);
+
+            return block;
+        }
+
         public override BasicBlock Visit(BreakStatement node)
         {
             return new BasicBlock(new JumpStatement(this.loopExits.Peek()));
@@ -189,7 +263,7 @@
         {
             var afterStatement = new BasicBlock(new NopStatement());
 
-            return this.CreateBranchNode1(expression, trueBranch, afterStatement);
+            return this.CreateBranchNode(expression, trueBranch, afterStatement);
         }
 
         private BasicBlock BuildIfStatement(
@@ -197,13 +271,13 @@
             BasicBlock trueBranch,
             BasicBlock elseBranch)
         {
-            return this.CreateBranchNode1(expression, trueBranch, elseBranch);
+            return this.CreateBranchNode(expression, trueBranch, elseBranch);
         }
 
         public override BasicBlock Visit(AssignmentExpression node)
         {
             var beforeBlock = node.RightSide.Accept(this);
-            var argument = new VariableArgument(((ReturningStatement)beforeBlock.Exit).Return);
+            var argument = new VariableArgument(((IReturningStatement)beforeBlock.Exit).Return);
 
             VariableSymbol symbol;
 
@@ -250,27 +324,38 @@
             return result;
         }
 
-        private BasicBlock CreateBranchNode1(ExpressionNode expression, BasicBlock trueBranch, BasicBlock falseBranch)
+        private BasicBlock CreateBranchNode(ExpressionNode expression, BasicBlock trueBranch, BasicBlock falseBranch)
         {
+            var afterStatement = new NopStatement();
+            var jumpToAfter = new JumpStatement(afterStatement);
+
             var unaryExpression = expression as UnaryExpression;
             if (unaryExpression != null)
             {
                 // If the node is a not node, then all we need to do is to switch the branches. 
 
                 Trace.Assert(unaryExpression.Operator == UnaryOperator.Not);
-                return this.CreateBranchNode1(unaryExpression.Expression, falseBranch, trueBranch);
+                return this.CreateBranchNode(unaryExpression.Expression, falseBranch, trueBranch);
+            }
+
+            var booleanConstant = expression as ConstantExpression;
+            if (booleanConstant != null && booleanConstant.Constant is BooleanConstant)
+            {
+                var con = booleanConstant.Constant as BooleanConstant;
+
+                return con.Value ? trueBranch: falseBranch;
             }
 
             var binaryExpression = expression as BinaryOperatorExpression;
 
             var leftBlock = binaryExpression.Left.Accept(this);
-            var leftArgument = new VariableArgument(((ReturningStatement)leftBlock.Exit).Return);
+            var leftArgument = new VariableArgument(((IReturningStatement)leftBlock.Exit).Return);
 
             if (binaryExpression.Operator != BinaryOperator.And
                 && binaryExpression.Operator != BinaryOperator.Or)
             {
                 var rightBlock = binaryExpression.Right.Accept(this);
-                var rightArguumment = new VariableArgument(((ReturningStatement)rightBlock.Exit).Return);
+                var rightArguumment = new VariableArgument(((IReturningStatement)rightBlock.Exit).Return);
                 var beforeBlock = leftBlock.Join(rightBlock);
 
                 var branchStatement = new BranchStatement(
@@ -280,10 +365,14 @@
                     rightArguumment,
                     falseBranch.Enter);
 
-                return beforeBlock.Append(branchStatement).Join(trueBranch).Join(falseBranch);
+                return beforeBlock.Append(branchStatement)
+                        .Join(trueBranch)
+                        .Append(jumpToAfter)
+                        .Join(falseBranch)
+                        .Append(afterStatement);
             }
 
-            BasicBlock block = leftBlock;
+            var block = leftBlock;
 
             if (binaryExpression.Operator == BinaryOperator.And)
             {
@@ -295,7 +384,7 @@
                     falseBranch.Enter);
 
                 var rightBlock = binaryExpression.Right.Accept(this);
-                var rightArguumment = new VariableArgument(((ReturningStatement)rightBlock.Exit).Return);
+                var rightArguumment = new VariableArgument(((IReturningStatement)rightBlock.Exit).Return);
 
                 var seccondBranch = new BranchStatement(
                     true,
@@ -316,7 +405,7 @@
                    trueBranch.Enter);
 
                 var rightBlock = binaryExpression.Right.Accept(this);
-                var rightArguumment = new VariableArgument(((ReturningStatement)rightBlock.Exit).Return);
+                var rightArguumment = new VariableArgument(((IReturningStatement)rightBlock.Exit).Return);
 
                 var seccondBranch = new BranchStatement(
                     true,
@@ -327,9 +416,6 @@
 
                 block = block.Append(firstBranch).Join(rightBlock).Append(seccondBranch);
             }
-
-            var afterStatement = new NopStatement();
-            var jumpToAfter = new JumpStatement(afterStatement);
 
             return block.Join(trueBranch).Append(jumpToAfter).Join(falseBranch).Append(afterStatement);
         }

@@ -59,20 +59,28 @@
             var result = antlerParser.ParseProgram(
 @"int main()
 {
-   bool f = false;
-   bool t = true;
-   bool e = true;
-   int i;
+   int d = 3;
+   int t = 444;
 
-   if(f == false || t == true) {
-        i = 1;
-   }
-   else {
-       i = 2;
+  if(d == 3) {
+     int i = 4;
+  }
+   else{
+     int j = 5;
    }
 
-   return i;
-}");
+
+   for(d=0; d < 7; d = d + 1) {
+      t = t + d;
+   }
+
+   return 0;
+}
+
+int d(int f){
+   return f; 
+}
+");
 
             var printer = new TreePrinter();
             printer.PrintTree(result.SynataxTree);
