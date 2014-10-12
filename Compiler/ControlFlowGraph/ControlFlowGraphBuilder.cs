@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.Odbc;
     using System.Diagnostics;
     using System.Linq;
 
@@ -24,7 +23,7 @@
 
             foreach (var node in rootNode.Functions)
             {
-                this.controlFlowGraph.Functions.Add(node.Accept(this));
+                this.controlFlowGraph.Functions.Add(this.SplitBlock(node.Accept(this)).ToList());
             }
 
             return this.controlFlowGraph;
@@ -419,5 +418,59 @@
 
             return block.Join(trueBranch).Append(jumpToAfter).Join(falseBranch).Append(afterStatement);
         }
+
+        private IEnumerable<BasicBlock> SplitBlock(BasicBlock block)
+        {
+            var blocks = new List<BasicBlock>();
+            var leaders = new Dictionary<int, bool>();
+
+            bool isNextLeader = true;
+
+            foreach (var statement in block)
+            {
+                if (isNextLeader)
+                {
+                    leaders[statement.Id] = true;
+                    isNextLeader = false;
+                }
+
+                var branchStatement = statement as BranchStatement;
+                if (branchStatement != null)
+                {
+                    leaders[branchStatement.BranchTarget.Id] = true;
+                    isNextLeader = true;
+                }
+
+                var callStatement = statement as CallStatement;
+                if (callStatement != null)
+                {
+                    isNextLeader = true;
+                }
+            }
+
+            Statement firstStatement = null;
+            foreach (var statement in block.ToArray())
+            {
+                if (firstStatement == null)
+                {
+                    firstStatement = statement;
+                    continue;
+                }
+
+                if (statement.Next == null)
+                {
+                    blocks.Add(new BasicBlock(firstStatement, statement));
+                    break;
+                }
+
+                if (leaders.ContainsKey(statement.Next.Id) && leaders[statement.Next.Id])
+                {
+                    blocks.Add(new BasicBlock(firstStatement, statement));
+                    firstStatement = null;
+                }
+            }
+
+            return blocks;
+        } 
     }
 }

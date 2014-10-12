@@ -30,6 +30,7 @@
             this.currentSymbolTable = new SymbolTable();
             var symbolTable = this.currentSymbolTable;
             node.SymbolTable = this.currentSymbolTable;
+            SystemLibrary.RegisterSystemFunctions(symbolTable);
 
             RegisterFunctions(node, symbolTable);
             base.Visit(node);

@@ -88,6 +88,7 @@
     <Compile Include="SymbolTable\ReturningFunctionSymbol.cs" />
     <Compile Include="SymbolTable\SymbolTable.cs" />
     <Compile Include="SymbolTable\SymbolType.cs" />
+    <Compile Include="SymbolTable\SystemLibrary.cs" />
     <Compile Include="SymbolTable\TempVariableSymbol.cs" />
     <Compile Include="SymbolTable\VariableSymbol.cs" />
     <Compile Include="SyntaxTree\ArrayCreatorExpression.cs" />
@@ -176,7 +177,6 @@
     <None Include="packages.config" />
     <None Include="SyntaxTree\SyntaxTree.cd" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

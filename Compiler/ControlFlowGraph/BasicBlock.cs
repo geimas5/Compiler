@@ -1,6 +1,9 @@
 ﻿namespace Compiler.ControlFlowGraph
 {
-    public class BasicBlock
+    using System.Collections;
+    using System.Collections.Generic;
+
+    public class BasicBlock : IEnumerable<Statement>
     {
         public BasicBlock(Statement enter, Statement exit)
         {
@@ -22,8 +25,7 @@
 
         public BasicBlock(Statement statement)
             : this(statement, statement)
-        {
-            
+        {   
         }
 
         public Statement Enter { get; private set; }
@@ -45,6 +47,22 @@
             block.Enter.Predecessors.Add(this.Exit);
 
             return new BasicBlock(this.Enter, block.Exit);
+        }
+
+        public IEnumerator<Statement> GetEnumerator()
+        {
+            var statement = this.Enter;
+            while (statement != null && statement.BasicBlock == this)
+            {
+                yield return statement;
+
+                statement = statement.Next;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
     }
 }

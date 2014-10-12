@@ -13,7 +13,7 @@
 
         public override string ToString()
         {
-            return Value.ToString(CultureInfo.InvariantCulture);
+            return this.Value.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

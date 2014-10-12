@@ -9,24 +9,17 @@
         {
             var sb = new StringBuilder();
 
-            foreach (var block in graph.Functions)
+            foreach (var blocks in graph.Functions)
             {
-                var statement = block.Enter;
-                BasicBlock currentBlock = null;
-
-                while (statement != null)
+                foreach (var block in blocks)
                 {
-                    if (currentBlock != statement.BasicBlock)
+                    sb.AppendLine("-----------------");
+
+                    foreach (var statement in block)
                     {
-                        sb.AppendLine("-----------------");
-                    }
-
-                    currentBlock = statement.BasicBlock;
-
-                    sb.AppendFormat("{0}: {1}", statement.Id, statement);
-                    sb.AppendLine();
-
-                    statement = statement.Next;
+                        sb.AppendFormat("{0}: {1}", statement.Id, statement);
+                        sb.AppendLine();
+                    }   
                 }
             }
 

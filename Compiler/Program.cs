@@ -14,37 +14,6 @@
             var logger = new Logger();
 
             var antlerParser = new AntlrParser(logger);
-//            var result = antlerParser.ParseProgram(
-//@"void test(int d, int e) {
-//    int[] f = new int[-2];
-//    int g;
-//   int[] y = test2();
-//
-//    bool h = true;
-//    double[] sale = f;
-//
-//    test1(1,2,3);
-//    test();
-//
-//    if(3==3) {
-//        int test = 43;
-//    }
-//
-//    while (3==2) {
-//        int v;
-//    }
-//
-//    for (44=3,3>4,3) {
-//        int d;
-//        break;
-//    }
-//}
-//
-//int[] test2() {
-//
-//}
-//
-//");
 
 //            var result = antlerParser.ParseProgram(
 //@"int main()
@@ -59,26 +28,17 @@
             var result = antlerParser.ParseProgram(
 @"int main()
 {
-   int d = 3;
-   int t = 444;
+    PrintLine(""Test"");
+    int i;
+    int j;
 
-  if(d == 3) {
-     int i = 4;
-  }
-   else{
-     int j = 5;
-   }
-
-
-   for(d=0; d < 7; d = d + 1) {
-      t = t + d;
-   }
+    for(i = 0; i < 5; i = i +1){
+        for(j = 0; j < 5; j = j +1) {
+              PrintLine(IntToString(i + j));
+        }
+    }
 
    return 0;
-}
-
-int d(int f){
-   return f; 
 }
 ");
 
