@@ -11,7 +11,7 @@
 
             foreach (var blocks in graph.Functions)
             {
-                foreach (var block in blocks)
+                foreach (var block in blocks.Value)
                 {
                     sb.AppendLine("-----------------");
 

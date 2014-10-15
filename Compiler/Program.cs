@@ -1,7 +1,9 @@
 ﻿namespace Compiler
 {
     using System;
+    using System.IO;
 
+    using Compiler.Assembly;
     using Compiler.ControlFlowGraph;
     using Compiler.Parser.Antlr;
     using Compiler.SemanticAnalysis;
@@ -28,25 +30,19 @@
             var result = antlerParser.ParseProgram(
 @"int main()
 {
-    PrintLine(""Test"");
-    int i;
-    int j;
+    if(1==2)
+        PrintLine(""Test1"");
+    else
+       PrintLine(""Test2"");
 
-    for(i = 0; i < 5; i = i +1){
-        for(j = 0; j < 5; j = j +1) {
-              PrintLine(IntToString(i + j));
-        }
-    }
-
-   return 0;
-}
-");
+    return 0;
+}");
 
             var printer = new TreePrinter();
             printer.PrintTree(result.SynataxTree);
             
             var semanticChecker = new SemanticChecker(logger);
-            semanticChecker.RunCheck(result.SynataxTree);
+            var symbolTable = semanticChecker.RunCheck(result.SynataxTree);
 
             logger.PrintMessages();
 
@@ -72,10 +68,22 @@
 
             new IrPrinter().PrintIr(controlGraph);
 
+            using (var stream = File.Create("output.asm"))
+            using (var writer = new StreamWriter(stream))
+            {
+                var assemblyFile = new AssemblyFile();
+                AssemblyFileBuilder.BuildFile(assemblyFile, controlGraph);
+
+                assemblyFile.Write(writer);
+            }
+
+            //string d = "set LINKCMD64=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\amd64\link.exe";
+            //var assebleBat = @"""C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\amd64\ml64"" output.asm /link /subsystem:console /defaultlib:""C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib\x64\Kernel32.Lib"" /entry:main";
+            //File.WriteAllText("Assemble.bat", assebleBat);
+
+            // ml64 output.asm /link /subsystem:console /defaultlib:"C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib\x64\Kernel32.Lib" /entry:main
+
             Console.ReadLine();
-
         }
-
     }
-
 }

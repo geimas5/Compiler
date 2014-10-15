@@ -20,7 +20,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,7 +29,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -47,6 +47,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assembly\AssemblyFile.cs" />
+    <Compile Include="Assembly\AssemblyFileBuilder.cs" />
+    <Compile Include="Assembly\AssemblyObject.cs" />
+    <Compile Include="Assembly\Block.cs" />
+    <Compile Include="Assembly\CodeSection.cs" />
+    <Compile Include="Assembly\DataEntry.cs" />
+    <Compile Include="Assembly\DataSection.cs" />
+    <Compile Include="Assembly\DataType.cs" />
+    <Compile Include="Assembly\Instruction.cs" />
+    <Compile Include="Assembly\JumpInstruction.cs" />
+    <Compile Include="Assembly\NOPInstruction.cs" />
+    <Compile Include="Assembly\Procedure.cs" />
+    <Compile Include="Assembly\Register.cs" />
+    <Compile Include="Assembly\Section.cs" />
+    <Compile Include="Assembly\SingleArgOpcode.cs" />
+    <Compile Include="Assembly\SingleOpcodeInstruction.cs" />
+    <Compile Include="Assembly\StringEntry.cs" />
     <Compile Include="Common\ListExtensions.cs" />
     <Compile Include="Common\NotNullList.cs" />
     <Compile Include="ControlFlowGraph\Argument.cs" />
@@ -64,6 +81,8 @@
     <Compile Include="ControlFlowGraph\IrPrinter.cs" />
     <Compile Include="ControlFlowGraph\JumpStatement.cs" />
     <Compile Include="ControlFlowGraph\NopStatement.cs" />
+    <Compile Include="Assembly\Opcode.cs" />
+    <Compile Include="Assembly\OpCodeInstruction.cs" />
     <Compile Include="ControlFlowGraph\ParamStatement.cs" />
     <Compile Include="ControlFlowGraph\ReturningCallStatement.cs" />
     <Compile Include="ControlFlowGraph\IReturningStatement.cs" />
@@ -72,6 +91,7 @@
     <Compile Include="ControlFlowGraph\UnaryOperatorStatement.cs" />
     <Compile Include="ControlFlowGraph\VariableArgument.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Ml64Runner.cs" />
     <Compile Include="Parser\Antlr\AntlrErrorListener.cs" />
     <Compile Include="Parser\Antlr\MParser.cs" />
     <Compile Include="Parser\Antlr\NodeFactory.cs" />
@@ -173,6 +193,9 @@
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>Compiler.obj.Debug</CustomToolNamespace>
     </AntlrTokens>
+    <None Include="Assemble.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ControlFlowGraph\Diagram.cd" />
     <None Include="packages.config" />
     <None Include="SyntaxTree\SyntaxTree.cd" />

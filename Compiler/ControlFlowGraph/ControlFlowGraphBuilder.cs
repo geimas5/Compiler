@@ -23,7 +23,7 @@
 
             foreach (var node in rootNode.Functions)
             {
-                this.controlFlowGraph.Functions.Add(this.SplitBlock(node.Accept(this)).ToList());
+                this.controlFlowGraph.Functions[node.Name] = this.SplitBlock(node.Accept(this)).ToList();
             }
 
             return this.controlFlowGraph;
@@ -90,7 +90,7 @@
 
         public override BasicBlock Visit(StringConstant node)
         {
-            string name = ".str" + node.Text.GetHashCode();
+            string name = "str" + Math.Abs(node.Text.GetHashCode());
             if (!controlFlowGraph.Strings.ContainsKey(name))
             {
                 controlFlowGraph.Strings.Add(name, node.Text);

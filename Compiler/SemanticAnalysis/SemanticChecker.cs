@@ -1,5 +1,6 @@
 ﻿namespace Compiler.SemanticAnalysis
 {
+    using Compiler.SymbolTable;
     using Compiler.SyntaxTree;
 
     public class SemanticChecker
@@ -11,10 +12,10 @@
             this.logger = logger;
         }
 
-        public void RunCheck(SyntaxTree syntaxTree)
+        public SymbolTable RunCheck(SyntaxTree syntaxTree)
         {
             var symbolTableBuilder = new SymbolTableBuilder(this.logger);
-            symbolTableBuilder.BuildSymbolTable(syntaxTree.RootNode);
+            var symbolTable = symbolTableBuilder.BuildSymbolTable(syntaxTree.RootNode);
 
             var breakStatementChecker = new BreakStatementChecker(this.logger);
             breakStatementChecker.RunCheck(syntaxTree.RootNode);
@@ -27,6 +28,8 @@
 
             var assignmentChecker = new AssignmentChecker(this.logger);
             assignmentChecker.RunCheck(syntaxTree.RootNode);
+
+            return symbolTable;
         }
     }
 }
