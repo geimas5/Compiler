@@ -12,6 +12,7 @@
         public static void RegisterSystemFunctions(SymbolTable symbolTable)
         {
             RegisterFunction(symbolTable, "PrintLine", new Tuple<string, Type>("str", new Type(PrimitiveType.String)));
+            RegisterFunction(symbolTable, "PrintInt", new Tuple<string, Type>("value", new Type(PrimitiveType.Int)));
             RegisterReturningFunction(
                 symbolTable,
                 "IntToString",

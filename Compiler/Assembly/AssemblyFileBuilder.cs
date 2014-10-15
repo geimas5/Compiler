@@ -51,11 +51,6 @@
             string name,
             IEnumerable<BasicBlock> functionBlocks)
         {
-            if (name == "PrintLine")
-            {
-                name = "printf";
-            }
-
             var parameterOffsets = new Dictionary<string, int>();
             currentOffset = 0;
 
@@ -147,11 +142,6 @@
 
             string name = statement.Function.Name;
 
-            if (name == "PrintLine")
-            {
-                name = "printf";
-            }
-
             yield return new Instruction("call " + name);
         }
 
@@ -196,7 +186,8 @@
                 statement.Operator == BinaryOperator.Add || 
                 statement.Operator == BinaryOperator.Equal || 
                 statement.Operator == BinaryOperator.Multiply || 
-                statement.Operator == BinaryOperator.Subtract || 
+                statement.Operator == BinaryOperator.Subtract ||
+                statement.Operator == BinaryOperator.Mod || 
                 statement.Operator == BinaryOperator.Exponensiation)
             {
                 instructions = CreateMathInstruction(statement, parameterOffsets);
@@ -236,6 +227,8 @@
                     break;
                 case BinaryOperator.Divide:
                     return CreateDivisionInstruction(statement, parameterOffsets);
+                case BinaryOperator.Mod:
+                    return CreateModuloInstruction(statement, parameterOffsets);
                 default:
                     throw new ArgumentException("operation operation not supported");
             }
@@ -265,6 +258,22 @@
 
             yield return new SingleOpcodeInstruction(SingleArgOpcode.IDIV, Register.R11.ToString());
             yield return new OpCodeInstruction(Opcode.MOV, destination, Register.RAX.ToString());
+        }
+
+        private static IEnumerable<Instruction> CreateModuloInstruction(
+            BinaryOperatorStatement statement,
+            IDictionary<string, int> parameterOffsets)
+        {
+            var destination = GetVariableDestination(statement.Return, parameterOffsets);
+
+            // Clear RDX
+            yield return new OpCodeInstruction(Opcode.XOR, Register.RDX.ToString(), Register.RDX.ToString());
+
+            yield return PlaceArgumentInRegister(Register.RAX, statement.Left, parameterOffsets);
+            yield return PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets);
+
+            yield return new SingleOpcodeInstruction(SingleArgOpcode.IDIV, Register.R11.ToString());
+            yield return new OpCodeInstruction(Opcode.MOV, destination, Register.RDX.ToString());
         }
 
         private static IEnumerable<Instruction> CreateComparisonInstruction(

@@ -136,7 +136,12 @@
             ExpressionNode afterthought,
             IEnumerable<StatementNode> body)
         {
-            return new ForStatement(CreateLocation(context), initialization, condition, afterthought, body);
+            return new ForStatement(
+                CreateLocation(context),
+                initialization,
+                condition,
+                afterthought,
+                body.Where(m => m != null));
         }
 
         public ReturnExpressionStatement CreateReturnStatement(
@@ -170,6 +175,9 @@
             ExpressionNode right,
             BinaryOperator op)
         {
+            if (left == null) left = new NopExpression(CreateLocation(context));
+            if (right == null) right = new NopExpression(CreateLocation(context));
+
             return new BinaryOperatorExpression(CreateLocation(context), left, right, op);
         }
 
@@ -247,7 +255,7 @@
 
         public StringConstant CreateStringConstant(ParserRuleContext context, string value)
         {
-            return new StringConstant(CreateLocation(context), value);
+            return new StringConstant(CreateLocation(context), value.Substring(1, value.Length - 2));
         }
 
         public BooleanConstant CreateBooleanConstant(ParserRuleContext context, bool value)

@@ -25,10 +25,18 @@
             this.TestProgram("Program2.m", "Program2Result.txt");
         }
 
+        [TestMethod]
+        [DeploymentItem("Compiling/Programs/Program3.m")]
+        [DeploymentItem("Compiling/Programs/Program3Result.txt")]
+        public void TestProgram3()
+        {
+            this.TestProgram("Program3.m", "Program3Result.txt");
+        }
+
         private void TestProgram(string programFile, string resultFile)
         {
-            var result = this.CompileAndRunProgram(programFile);
-            Assert.AreEqual(File.ReadAllText(resultFile), result);
+            var result = this.CompileAndRunProgram(programFile).Trim();
+            Assert.AreEqual(File.ReadAllText(resultFile).Trim(), result);
         }
 
         private string CompileAndRunProgram(string file)

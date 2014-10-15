@@ -14,9 +14,16 @@
 
         public override void Write(TextWriter writer)
         {
-            string val = Value.Replace("\"", "\"\"");
+            if (string.IsNullOrEmpty(this.Value))
+            {
+                writer.WriteLine("{0} db 0", this.Name);   
+            }
+            else
+            {
+                string val = Value.Replace("\"", "\"\"");
 
-            writer.WriteLine("{0} db \"{1}\",0", this.Name, val);
+                writer.WriteLine("{0} db \"{1}\",0", this.Name, val);
+            }
         }
     }
 }

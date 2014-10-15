@@ -35,7 +35,21 @@
             DataSection.Write(writer);
             CodeSection.Write(writer);
 
+            writer.WriteLine(GetLibaryFunctions());
+
             writer.WriteLine("END");
+        }
+
+        private string GetLibaryFunctions()
+        {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var resourceName = "Compiler.Assembly.LibraryFunctions.asm";
+
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            using (var reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
         }
     }
 }

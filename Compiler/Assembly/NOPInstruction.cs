@@ -6,7 +6,7 @@
     {
         public override void Write(TextWriter writer)
         {
-            writer.WriteLine("NOP");
+            //writer.WriteLine("NOP");
         }
     }
 }

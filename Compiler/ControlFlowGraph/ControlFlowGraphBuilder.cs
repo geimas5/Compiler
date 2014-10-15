@@ -212,7 +212,9 @@
 
             body = body.Join(node.Afterthought.Accept(this));
 
-            return initialization.Join(conditionNode).Join(body).Join(afterStatement);
+            var jumpStatement = new JumpStatement(conditionNode.Enter);
+
+            return initialization.Join(conditionNode).Join(body).Append(jumpStatement).Join(afterStatement);
         }
 
         public override BasicBlock Visit(IndexerExpression node)

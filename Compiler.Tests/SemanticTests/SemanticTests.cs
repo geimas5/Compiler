@@ -106,15 +106,6 @@
             Assert.IsTrue(Parse(program));
         }
 
-        [TestMethod]
-        [DeploymentItem("SemanticTests/Files/SemanticLegal05.m")]
-        public void SemanticLegal05Test()
-        {
-            Assert.Inconclusive();
-            var program = File.ReadAllText("SemanticLegal05.m");
-            Assert.IsTrue(Parse(program));
-        }
-
         private static bool Parse(string program)
         {
             var logger = new Logger();

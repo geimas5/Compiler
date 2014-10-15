@@ -58,6 +58,7 @@
     <Compile Include="Assembly\DataType.cs" />
     <Compile Include="Assembly\Instruction.cs" />
     <Compile Include="Assembly\JumpInstruction.cs" />
+    <EmbeddedResource Include="Assembly\LibraryFunctions.asm" />
     <Compile Include="Assembly\NOPInstruction.cs" />
     <Compile Include="Assembly\Procedure.cs" />
     <Compile Include="Assembly\Register.cs" />

@@ -5,21 +5,34 @@
 
     class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            string program = @"int main()
-{
-	int d = 4;
-	d = d - 1;
-	d = d + 4;
-	d = d / 5;
-	d = d * 6;
+            string program = @"int main(){
+   int r;
+   int number = 1000;
+   int c;
+   int sum = 0;
+   int temp;
 
-	if(d == 6){
-        PrintLine(""OK"");
-    }
+   for( c = 1 ; c <= number ; c = c + 1 )
+   {
+      temp = c;
+      while( temp != 0 )
+      {
+         r = temp % 10;
+         sum = sum + r * r * r;
+         temp = temp / 10;
+      }
 
-    return 0;
+      if ( c == sum ){
+        PrintInt(c);
+        PrintLine("" "");
+      }
+
+      sum = 0;
+   }
+ 
+   return 0;
 }";
             var asembly = new CompilerAssembly { PrintMessages = true };
 
@@ -38,6 +51,7 @@
                         asembly.Logger.TotalInfo);
 
                     Console.ReadLine();
+                    return;
                 }
             }
 
