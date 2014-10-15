@@ -10,7 +10,6 @@
         CMP,
         ADD,
         IMUL,
-        IDIV,
         JMP,
         XOR,
 

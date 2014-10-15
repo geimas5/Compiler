@@ -8,6 +8,7 @@
         JLE,
         JE,
         JNE,
-        JMP
+        JMP,
+        IDIV
     }
 }

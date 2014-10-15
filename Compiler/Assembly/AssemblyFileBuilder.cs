@@ -222,14 +222,49 @@
             BinaryOperatorStatement statement,
             IDictionary<string, int> parameterOffsets)
         {
-            var opcode = ConvertToOpcode(statement.Operator);
+            Opcode opcode;
+            switch (statement.Operator)
+            {
+                case BinaryOperator.Add:
+                    opcode = Opcode.ADD;
+                    break;
+                case BinaryOperator.Subtract:
+                    opcode = Opcode.SUB;
+                    break;
+                case BinaryOperator.Multiply:
+                    opcode = Opcode.IMUL;
+                    break;
+                case BinaryOperator.Divide:
+                    return CreateDivisionInstruction(statement, parameterOffsets);
+                default:
+                    throw new ArgumentException("operation operation not supported");
+            }
 
             var destination = GetVariableDestination(statement.Return, parameterOffsets);
+            var instructions = new List<Instruction>();
 
-            yield return PlaceArgumentInRegister(Register.R10, statement.Left, parameterOffsets);
+            instructions.Add(PlaceArgumentInRegister(Register.R10, statement.Left, parameterOffsets));
+            instructions.Add(PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets));
+            instructions.Add(new OpCodeInstruction(opcode, Register.R10.ToString(), Register.R11.ToString()));
+            instructions.Add(new OpCodeInstruction(Opcode.MOV, destination, Register.R10.ToString()));
+            
+            return instructions;
+        }
+
+        private static IEnumerable<Instruction> CreateDivisionInstruction(
+            BinaryOperatorStatement statement,
+            IDictionary<string, int> parameterOffsets)
+        {
+            var destination = GetVariableDestination(statement.Return, parameterOffsets);
+
+            // Clear RDX
+            yield return new OpCodeInstruction(Opcode.XOR, Register.RDX.ToString(), Register.RDX.ToString());
+
+            yield return PlaceArgumentInRegister(Register.RAX, statement.Left, parameterOffsets);
             yield return PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets);
-            yield return new OpCodeInstruction(opcode, Register.R10.ToString(), Register.R11.ToString());
-            yield return new OpCodeInstruction(Opcode.MOV, destination, Register.R10.ToString());
+
+            yield return new SingleOpcodeInstruction(SingleArgOpcode.IDIV, Register.R11.ToString());
+            yield return new OpCodeInstruction(Opcode.MOV, destination, Register.RAX.ToString());
         }
 
         private static IEnumerable<Instruction> CreateComparisonInstruction(
@@ -317,45 +352,6 @@
             }
 
             yield return new SingleOpcodeInstruction(opcode, "L" + statement.BranchTarget.Id);
-        }
-
-        private static Opcode ConvertToOpcode(BinaryOperator op)
-        {
-            switch (op)
-            {
-                case BinaryOperator.Add:
-                    return Opcode.ADD;
-                case BinaryOperator.Subtract:
-                    return Opcode.SUB;
-                case BinaryOperator.Multiply:
-                    return Opcode.IMUL;
-                case BinaryOperator.Divide:
-                    return Opcode.IDIV;
-                case BinaryOperator.Exponensiation:
-                    break;
-                case BinaryOperator.Mod:
-                    break;
-                case BinaryOperator.Less:
-                    break;
-                case BinaryOperator.LessEqual:
-                    break;
-                case BinaryOperator.Greater:
-                    break;
-                case BinaryOperator.GreaterEqual:
-                    break;
-                case BinaryOperator.And:
-                    break;
-                case BinaryOperator.Or:
-                    break;
-                case BinaryOperator.Equal:
-                    break;
-                case BinaryOperator.NotEqual:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            throw new Exception();
         }
 
         private static Instruction PlaceArgumentInRegister(

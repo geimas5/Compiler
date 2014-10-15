@@ -9,25 +9,19 @@
         {
             string program = @"int main()
 {
-    int d = Fibonacci(10);
+	int d = 4;
+	d = d - 1;
+	d = d + 4;
+	d = d / 5;
+	d = d * 6;
 
-    if(d == 55){
+	if(d == 6){
         PrintLine(""OK"");
     }
 
     return 0;
-}
-
-int Fibonacci(int n)
-{
-   if ( n == 0 )
-      return 0;
-   else if ( n == 1 )
-      return 1;
-   
-   return ( Fibonacci(n-1) + Fibonacci(n-2) );
-} ";
-            var asembly = new CompilerAssembly();
+}";
+            var asembly = new CompilerAssembly { PrintMessages = true };
 
             using (var input = new StringReader(program))
             using (var outputStream = File.Create("output.asm"))
@@ -51,12 +45,6 @@ int Fibonacci(int n)
 
             Console.WriteLine("Compilation successful");
             Console.ReadLine();
-
-            //string d = "set LINKCMD64=C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\amd64\link.exe";
-            //var assebleBat = @"""C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\amd64\ml64"" output.asm /link /subsystem:console /defaultlib:""C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib\x64\Kernel32.Lib"" /entry:main";
-            //File.WriteAllText("Assemble.bat", assebleBat);
-
-            // ml64 output.asm /link /subsystem:console /defaultlib:"C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib\x64\Kernel32.Lib" /entry:main
         }
     }
 }
