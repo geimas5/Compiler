@@ -1,6 +1,7 @@
 ﻿namespace Compiler.ControlFlowGraph
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
@@ -24,6 +25,12 @@
             foreach (var node in rootNode.Functions)
             {
                 this.controlFlowGraph.Functions[node.Name] = this.SplitBlock(node.Accept(this)).ToList();
+
+                this.controlFlowGraph.FunctionParameters[node.Name] = new List<VariableSymbol>();
+                foreach (var param in node.Parameters)
+                {
+                    this.controlFlowGraph.FunctionParameters[node.Name].Add((VariableSymbol)param.Name.Symbol);
+                }
             }
 
             return this.controlFlowGraph;
@@ -91,9 +98,9 @@
         public override BasicBlock Visit(StringConstant node)
         {
             string name = "str" + Math.Abs(node.Text.GetHashCode());
-            if (!controlFlowGraph.Strings.ContainsKey(name))
+            if (!this.controlFlowGraph.Strings.ContainsKey(name))
             {
-                controlFlowGraph.Strings.Add(name, node.Text);
+                this.controlFlowGraph.Strings.Add(name, node.Text);
             }
 
             var variable = this.MakeTempVariable(node, new Type(PrimitiveType.Int));
@@ -310,7 +317,7 @@
 
             foreach (StatementNode statement in statements)
             {
-                BasicBlock block = statement.Accept(this);
+                var block = statement.Accept(this);
                 if (block == null)
                 {
                     continue;
@@ -341,7 +348,7 @@
             {
                 var con = booleanConstant.Constant as BooleanConstant;
 
-                return con.Value ? trueBranch: falseBranch;
+                return con.Value ? trueBranch : falseBranch;
             }
 
             var binaryExpression = expression as BinaryOperatorExpression;
@@ -363,11 +370,13 @@
                     rightArguumment,
                     falseBranch.Enter);
 
-                return beforeBlock.Append(branchStatement)
-                        .Join(trueBranch)
-                        .Append(jumpToAfter)
-                        .Join(falseBranch)
-                        .Append(afterStatement);
+                var temp = beforeBlock.Append(branchStatement);
+                temp = temp.Join(trueBranch);
+                temp = temp.Append(jumpToAfter);
+                temp = temp.Join(falseBranch);
+                temp = temp.Append(afterStatement);
+
+                return temp;
             }
 
             var block = leftBlock;
@@ -420,59 +429,56 @@
 
         private IEnumerable<BasicBlock> SplitBlock(BasicBlock block)
         {
-            var blocks = new List<BasicBlock>();
+            int count = block.Count();
+
             var leaders = new Dictionary<int, bool>();
 
-            bool isNextLeader = true;
+            leaders[block.Enter.Id] = true;
 
             foreach (var statement in block)
             {
-                if (isNextLeader)
-                {
-                    leaders[statement.Id] = true;
-                    isNextLeader = false;
-                }
-
                 var branchStatement = statement as BranchStatement;
                 if (branchStatement != null)
                 {
                     leaders[branchStatement.BranchTarget.Id] = true;
-                    isNextLeader = true;
                 }
 
-                var callStatement = statement as CallStatement;
-                if (callStatement != null)
+                var jumpStatement = statement as JumpStatement;
+                if (jumpStatement != null)
                 {
-                    isNextLeader = true;
+                    leaders[jumpStatement.Target.Id] = true;
+                }
+
+                if ((statement is BranchStatement || statement is JumpStatement || statement is CallStatement)
+                    && statement.Next != null)
+                {
+                    leaders[statement.Next.Id] = true;
                 }
             }
 
-            Statement firstStatement = null;
+            var blocks = new List<BasicBlock>();
+            var currentBlock = new List<Statement>();
+
             foreach (var statement in block.ToArray())
             {
-                if (firstStatement == null)
+                if (leaders.ContainsKey(statement.Id))
                 {
-                    firstStatement = statement;
-                    if (leaders.ContainsKey(statement.Next.Id) && leaders[statement.Next.Id])
+                    if (currentBlock.Any())
                     {
-                        firstStatement = null;
+                        blocks.Add(new BasicBlock(currentBlock.First(), currentBlock.Last()));
+                        currentBlock = new List<Statement>();
                     }
-
-                    continue;
                 }
 
-                if (statement.Next == null)
-                {
-                    blocks.Add(new BasicBlock(firstStatement, statement));
-                    break;
-                }
-
-                if (leaders.ContainsKey(statement.Next.Id) && leaders[statement.Next.Id])
-                {
-                    blocks.Add(new BasicBlock(firstStatement, statement));
-                    firstStatement = null;
-                }
+                currentBlock.Add(statement);
             }
+
+            if (currentBlock.Any())
+            {
+                blocks.Add(new BasicBlock(currentBlock.First(), currentBlock.Last()));
+            }
+
+            Debug.Assert(count == blocks.Sum(m => m.Count()));
 
             return blocks;
         } 

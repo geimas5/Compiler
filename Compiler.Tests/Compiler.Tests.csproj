@@ -54,12 +54,19 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Compiling\CompilingTests.cs" />
     <Compile Include="Parser\MLexerTests.cs" />
     <Compile Include="Parser\ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SemanticTests\SemanticTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assemble.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Compiling\Programs\Program1.m">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Parser\Parsing\ParserLegal09.m">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -7,6 +7,7 @@
         JL,
         JLE,
         JE,
-        JNE
+        JNE,
+        JMP
     }
 }

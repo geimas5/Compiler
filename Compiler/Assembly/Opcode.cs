@@ -11,6 +11,14 @@
         ADD,
         IMUL,
         IDIV,
-        JMP
+        JMP,
+        XOR,
+
+        CMOVE,
+        CMOVNE,
+        CMOVL,
+        CMOVLE,
+        CMOVG,
+        CMOVGE
     }
 }

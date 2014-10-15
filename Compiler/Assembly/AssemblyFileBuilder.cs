@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Data;
 
     using Compiler.Common;
     using Compiler.ControlFlowGraph;
@@ -16,8 +17,14 @@
 
         private static int currentOffset = 0;
 
+        private static string currentFunction = string.Empty;
+
+        private static ControlFlowGraph Graph;
+
         public static void BuildFile(AssemblyFile file, ControlFlowGraph graph)
         {
+            Graph = graph;
+
             AddStrings(file, graph);
             AddFunctions(file, graph);
         }
@@ -34,6 +41,7 @@
         {
             foreach (var function in graph.Functions)
             {
+                currentFunction = function.Key;
                 AddFunction(file, function.Key, function.Value);
             }
         }
@@ -48,10 +56,22 @@
                 name = "printf";
             }
 
-            var procedure = new Procedure(name);
-
             var parameterOffsets = new Dictionary<string, int>();
             currentOffset = 0;
+
+            var procedure = new Procedure(name);
+
+            for (int i = 0; i < Graph.FunctionParameters[name].Count; i++)
+            {
+                var param = Graph.FunctionParameters[name][i];
+                var destination = GetVariableDestination(param, parameterOffsets);
+
+                var register = GetArgumentRegister(i);
+                var block = new Block(name + "params");
+
+                block.Instructions.Add(new OpCodeInstruction(Opcode.MOV, destination, register.ToString()));
+                procedure.Blocks.Add(block);
+            }
 
             foreach (var block in functionBlocks)
             {
@@ -74,6 +94,7 @@
             IEnumerable<Instruction> instructions;
 
             if (statement is ParamStatement) instructions = CreateInstruction((ParamStatement)statement, parameterOffsets);
+            else if (statement is ReturningCallStatement) instructions = CreateInstruction((ReturningCallStatement)statement, parameterOffsets);
             else if (statement is CallStatement) instructions = CreateInstruction((CallStatement)statement, parameterOffsets);
             else if (statement is AssignStatement) instructions = CreateInstruction((AssignStatement)statement, parameterOffsets);
             else if (statement is ReturnStatement) instructions = CreateInstruction((ReturnStatement)statement, parameterOffsets);
@@ -96,27 +117,26 @@
             ParamStatement paramStatement,
             IDictionary<string, int> parameterOffsets)
         {
-            Register paramReg;
+            var paramReg = GetArgumentRegister(currentParam++);
 
-            switch (currentParam++)
+            yield return PlaceArgumentInRegister(paramReg, paramStatement.Argument, parameterOffsets);
+        }
+
+        private static Register GetArgumentRegister(int argumentNum)
+        {
+            switch (argumentNum)
             {
                 case 0:
-                    paramReg = Register.RCX;
-                    break;
+                    return Register.RCX;
                 case 1:
-                    paramReg = Register.RDX;
-                    break;
+                    return Register.RDX;
                 case 2:
-                    paramReg = Register.R8;
-                    break;
+                    return Register.R8;
                 case 3:
-                    paramReg = Register.R9;
-                    break;
+                    return Register.R9;
                 default:
                     throw new ArgumentOutOfRangeException("currentParam");
             }
-
-            yield return PlaceArgumentInRegister(paramReg, paramStatement.Argument, parameterOffsets);
         }
 
         private static IEnumerable<Instruction> CreateInstruction(
@@ -136,10 +156,24 @@
         }
 
         private static IEnumerable<Instruction> CreateInstruction(
+            ReturningCallStatement statement,
+            IDictionary<string, int> parameterOffsets)
+        {
+            currentParam = 0;
+            var name = statement.Function.Name;
+
+            yield return new Instruction("call " + name);
+
+            var destination = GetVariableDestination(statement.Return, parameterOffsets);
+            yield return new OpCodeInstruction(Opcode.MOV, destination, Register.RAX.ToString());
+        }
+
+        private static IEnumerable<Instruction> CreateInstruction(
             ReturnStatement statement,
             IDictionary<string, int> parameterOffsets)
         {
             yield return PlaceArgumentInRegister(Register.RAX, statement.Value, parameterOffsets);
+            yield return new SingleOpcodeInstruction(SingleArgOpcode.JMP, currentFunction + "exit");
         }
 
         private static IEnumerable<Instruction> CreateInstruction(
@@ -156,6 +190,38 @@
             BinaryOperatorStatement statement,
             IDictionary<string, int> parameterOffsets)
         {
+            IEnumerable<Instruction> instructions;
+
+            if (statement.Operator == BinaryOperator.Divide || 
+                statement.Operator == BinaryOperator.Add || 
+                statement.Operator == BinaryOperator.Equal || 
+                statement.Operator == BinaryOperator.Multiply || 
+                statement.Operator == BinaryOperator.Subtract || 
+                statement.Operator == BinaryOperator.Exponensiation)
+            {
+                instructions = CreateMathInstruction(statement, parameterOffsets);
+            }
+            else if (statement.Operator == BinaryOperator.Equal ||
+                statement.Operator == BinaryOperator.Greater ||
+                statement.Operator == BinaryOperator.GreaterEqual ||
+                statement.Operator == BinaryOperator.Less ||
+                statement.Operator == BinaryOperator.LessEqual ||
+                statement.Operator == BinaryOperator.NotEqual)
+            {
+                instructions = CreateComparisonInstruction(statement, parameterOffsets);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("statement", "Unsupported operator");
+            }
+
+            return instructions;
+        }
+
+        private static IEnumerable<Instruction> CreateMathInstruction(
+            BinaryOperatorStatement statement,
+            IDictionary<string, int> parameterOffsets)
+        {
             var opcode = ConvertToOpcode(statement.Operator);
 
             var destination = GetVariableDestination(statement.Return, parameterOffsets);
@@ -164,6 +230,49 @@
             yield return PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets);
             yield return new OpCodeInstruction(opcode, Register.R10.ToString(), Register.R11.ToString());
             yield return new OpCodeInstruction(Opcode.MOV, destination, Register.R10.ToString());
+        }
+
+        private static IEnumerable<Instruction> CreateComparisonInstruction(
+            BinaryOperatorStatement statement,
+            IDictionary<string, int> parameterOffsets)
+        {
+            var destination = GetVariableDestination(statement.Return, parameterOffsets);
+
+            yield return PlaceArgumentInRegister(Register.R10, statement.Left, parameterOffsets);
+            yield return PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets);
+
+            Opcode opcode;
+            switch (statement.Operator)
+            {
+                case BinaryOperator.Equal:
+                    opcode = Opcode.CMOVE;
+                    break;
+                case BinaryOperator.NotEqual:
+                    opcode = Opcode.CMOVNE;
+                    break;
+                case BinaryOperator.Less:
+                    opcode = Opcode.CMOVL;
+                    break;
+                case BinaryOperator.LessEqual:
+                    opcode = Opcode.CMOVLE;
+                    break;
+                case BinaryOperator.Greater:
+                    opcode = Opcode.CMOVG;
+                    break;
+                case BinaryOperator.GreaterEqual:
+                    opcode = Opcode.CMOVGE;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("statement", "Unsupported operator");
+            }
+
+            yield return new OpCodeInstruction(Opcode.XOR, Register.RAX.ToString(), Register.RAX.ToString());
+            yield return new OpCodeInstruction(Opcode.CMP, Register.R10.ToString(), Register.R11.ToString());
+
+            yield return PlaceArgumentInRegister(Register.R8, new IntConstantArgument(1), parameterOffsets);
+            yield return new OpCodeInstruction(opcode, Register.RAX.ToString(), Register.R8.ToString());
+
+            yield return new OpCodeInstruction(Opcode.MOV, destination, Register.RAX.ToString());
         }
 
         private static IEnumerable<Instruction> CreateInstruction(
@@ -186,22 +295,22 @@
             switch (statement.Operator)
             {
                 case BinaryOperator.Less:
-                    opcode = SingleArgOpcode.JL;
+                    opcode = statement.Zero ? SingleArgOpcode.JG : SingleArgOpcode.JL;
                     break;
                 case BinaryOperator.LessEqual:
-                    opcode = SingleArgOpcode.JLE;
+                    opcode = statement.Zero ? SingleArgOpcode.JGE : SingleArgOpcode.JLE;
                     break;
                 case BinaryOperator.Greater:
-                    opcode = SingleArgOpcode.JG;
+                    opcode = statement.Zero ? SingleArgOpcode.JL : SingleArgOpcode.JG;
                     break;
                 case BinaryOperator.GreaterEqual:
-                    opcode = SingleArgOpcode.JGE;
+                    opcode = statement.Zero ? SingleArgOpcode.JLE : SingleArgOpcode.JGE;
                     break;
                 case BinaryOperator.Equal:
-                    opcode = SingleArgOpcode.JE;
+                    opcode = statement.Zero ? SingleArgOpcode.JNE : SingleArgOpcode.JE;
                     break;
                 case BinaryOperator.NotEqual:
-                    opcode = SingleArgOpcode.JNE;
+                    opcode = statement.Zero ? SingleArgOpcode.JE : SingleArgOpcode.JNE;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -304,7 +413,7 @@
             }
             else
             {
-                varOffset = currentOffset -= 4;
+                varOffset = currentOffset -= 8;
                 parameterOffsets[variableSymbol.Name] = currentOffset;
             }
 

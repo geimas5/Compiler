@@ -19,7 +19,6 @@
         {
             writer.WriteLine(this.Name + " PROC");
 
-
             writer.WriteLine("push rbp");
             writer.WriteLine("mov rbp, rsp");
             writer.WriteLine("sub rsp, 0CCh"); // Allocate stackframe space.
@@ -29,12 +28,16 @@
                 block.Write(writer);
             }
 
+            writer.WriteLine("{0}exit:", this.Name);
+
             if (this.Name == "main")
             {
                 writer.WriteLine("call exit");
             }
-            
+
+            writer.WriteLine("mov rsp, rbp");
             writer.WriteLine("pop rbp");
+            writer.WriteLine("ret");
             writer.WriteLine(this.Name + " ENDP");
         }
     }

@@ -8,6 +8,7 @@
         R11,
         RAX,
         RCX,
-        RDX
+        RDX,
+        EAX
     }
 }

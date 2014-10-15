@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assembler.cs" />
     <Compile Include="Assembly\AssemblyFile.cs" />
     <Compile Include="Assembly\AssemblyFileBuilder.cs" />
     <Compile Include="Assembly\AssemblyObject.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Assembly\StringEntry.cs" />
     <Compile Include="Common\ListExtensions.cs" />
     <Compile Include="Common\NotNullList.cs" />
+    <Compile Include="CompilerAssembly.cs" />
     <Compile Include="ControlFlowGraph\Argument.cs" />
     <Compile Include="ControlFlowGraph\AssignStatement.cs" />
     <Compile Include="ControlFlowGraph\BinaryOperatorStatement.cs" />
