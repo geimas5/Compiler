@@ -150,7 +150,6 @@
                 return branch.Append(new AssignStatement(tempVariable, new VariableArgument(tempVariable)));
             }
 
-
             var leftBlock = node.Left.Accept(this);
             var rightBlock = node.Right.Accept(this);
             var beforeBlock = leftBlock.Join(rightBlock);
@@ -454,6 +453,11 @@
                 if (firstStatement == null)
                 {
                     firstStatement = statement;
+                    if (leaders.ContainsKey(statement.Next.Id) && leaders[statement.Next.Id])
+                    {
+                        firstStatement = null;
+                    }
+
                     continue;
                 }
 
