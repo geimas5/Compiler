@@ -5,12 +5,9 @@
         LEA,
         MOV,
         SUB,
-        PUSH,
-        POP,
         CMP,
         ADD,
         IMUL,
-        JMP,
         XOR,
 
         CMOVE,
@@ -18,6 +15,13 @@
         CMOVL,
         CMOVLE,
         CMOVG,
-        CMOVGE
+        CMOVGE,
+
+        MOVD,
+        MOVSD,
+        ADDSD,
+        SUBSD,
+        MULSD,
+        DIVSD
     }
 }

@@ -13,6 +13,7 @@
         {
             RegisterFunction(symbolTable, "PrintLine", new Tuple<string, Type>("str", new Type(PrimitiveType.String)));
             RegisterFunction(symbolTable, "PrintInt", new Tuple<string, Type>("value", new Type(PrimitiveType.Int)));
+            RegisterFunction(symbolTable, "PrintDouble", new Tuple<string, Type>("value", new Type(PrimitiveType.Double)));
             RegisterReturningFunction(
                 symbolTable,
                 "IntToString",

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Globalization;
 
     using Compiler.Common;
     using Compiler.ControlFlowGraph;
@@ -21,12 +22,15 @@
 
         private static ControlFlowGraph Graph;
 
+        private static List<double> Reals = new List<double>(); 
+
         public static void BuildFile(AssemblyFile file, ControlFlowGraph graph)
         {
             Graph = graph;
 
             AddStrings(file, graph);
             AddFunctions(file, graph);
+            AddReals(file);
         }
 
         private static void AddStrings(AssemblyFile file, ControlFlowGraph graph)
@@ -34,6 +38,14 @@
             foreach (var str in graph.Strings)
             {
                 file.DataSection.DataEntries.Add(new StringEntry(str.Key, str.Value));
+            }
+        }
+
+        private static void AddReals(AssemblyFile file)
+        {
+            foreach (var real in Reals)
+            {
+                file.DataSection.DataEntries.Add(new RealEntry("real" + real.GetHashCode(), real));
             }
         }
 
@@ -102,10 +114,7 @@
                 throw new ArgumentException();
             }
 
-            foreach (var instruction in instructions)
-            {
-                yield return instruction;
-            }
+            return instructions;
         }
 
         private static IEnumerable<Instruction> CreateInstruction(
@@ -114,7 +123,7 @@
         {
             var paramReg = GetArgumentRegister(currentParam++);
 
-            yield return PlaceArgumentInRegister(paramReg, paramStatement.Argument, parameterOffsets);
+            return PlaceArgumentInRegister(paramReg, paramStatement.Argument, parameterOffsets);
         }
 
         private static Register GetArgumentRegister(int argumentNum)
@@ -162,18 +171,25 @@
             ReturnStatement statement,
             IDictionary<string, int> parameterOffsets)
         {
-            yield return PlaceArgumentInRegister(Register.RAX, statement.Value, parameterOffsets);
-            yield return new SingleOpcodeInstruction(SingleArgOpcode.JMP, currentFunction + "exit");
+            var instructions = new List<Instruction>();
+
+            instructions.AddRange(PlaceArgumentInRegister(Register.RAX, statement.Value, parameterOffsets));
+            instructions.Add(new SingleOpcodeInstruction(SingleArgOpcode.JMP, currentFunction + "exit"));
+
+            return instructions;
         }
 
         private static IEnumerable<Instruction> CreateInstruction(
             AssignStatement statement,
             IDictionary<string, int> parameterOffsets)
         {
+            var instructions = new List<Instruction>();
             var destination = GetVariableDestination(statement.Return, parameterOffsets);
 
-            yield return PlaceArgumentInRegister(Register.R10, statement.Argument, parameterOffsets);
-            yield return new OpCodeInstruction(Opcode.MOV, destination, Register.R10.ToString());
+            instructions.AddRange(PlaceArgumentInRegister(Register.R10, statement.Argument, parameterOffsets));
+            instructions.Add(new OpCodeInstruction(Opcode.MOV, destination, Register.R10.ToString()));
+
+            return instructions;
         }
 
         private static IEnumerable<Instruction> CreateInstruction(
@@ -213,33 +229,75 @@
             BinaryOperatorStatement statement,
             IDictionary<string, int> parameterOffsets)
         {
+
+            var argument1 = Register.R10;
+            var argument2 = Register.R11;
+
             Opcode opcode;
-            switch (statement.Operator)
+
+            if (statement.Return.Type.PrimitiveType == PrimitiveType.Double)
             {
-                case BinaryOperator.Add:
-                    opcode = Opcode.ADD;
-                    break;
-                case BinaryOperator.Subtract:
-                    opcode = Opcode.SUB;
-                    break;
-                case BinaryOperator.Multiply:
-                    opcode = Opcode.IMUL;
-                    break;
-                case BinaryOperator.Divide:
-                    return CreateDivisionInstruction(statement, parameterOffsets);
-                case BinaryOperator.Mod:
-                    return CreateModuloInstruction(statement, parameterOffsets);
-                default:
-                    throw new ArgumentException("operation operation not supported");
+                argument1 = Register.XMM0;
+                argument2 = Register.XMM1;
+
+                switch (statement.Operator)
+                {
+                    case BinaryOperator.Add:
+                        opcode = Opcode.ADDSD;
+                        break;
+                    case BinaryOperator.Subtract:
+                        opcode = Opcode.SUBSD;
+                        break;
+                    case BinaryOperator.Multiply:
+                        opcode = Opcode.MULSD;
+                        break;
+                    case BinaryOperator.Divide:
+                        opcode = Opcode.DIVSD;
+                        break;
+                    case BinaryOperator.Mod:
+                        throw new ArgumentException();
+                    default:
+                        throw new ArgumentException("operation operation not supported");
+                }
+            }
+            else
+            {
+                switch (statement.Operator)
+                {
+                    case BinaryOperator.Add:
+                        opcode = Opcode.ADD;
+                        break;
+                    case BinaryOperator.Subtract:
+                        opcode = Opcode.SUB;
+                        break;
+                    case BinaryOperator.Multiply:
+                        opcode = Opcode.IMUL;
+                        break;
+                    case BinaryOperator.Divide:
+                        return CreateDivisionInstruction(statement, parameterOffsets);
+                    case BinaryOperator.Mod:
+                        return CreateModuloInstruction(statement, parameterOffsets);
+                    default:
+                        throw new ArgumentException("operation operation not supported");
+                } 
             }
 
             var destination = GetVariableDestination(statement.Return, parameterOffsets);
             var instructions = new List<Instruction>();
 
-            instructions.Add(PlaceArgumentInRegister(Register.R10, statement.Left, parameterOffsets));
-            instructions.Add(PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets));
-            instructions.Add(new OpCodeInstruction(opcode, Register.R10.ToString(), Register.R11.ToString()));
-            instructions.Add(new OpCodeInstruction(Opcode.MOV, destination, Register.R10.ToString()));
+            instructions.AddRange(PlaceArgumentInRegister(argument1, statement.Left, parameterOffsets));
+            instructions.AddRange(PlaceArgumentInRegister(argument2, statement.Right, parameterOffsets));
+            instructions.Add(new OpCodeInstruction(opcode, argument1.ToString(), argument2.ToString()));
+
+            if (statement.Return.Type.PrimitiveType == PrimitiveType.Double)
+            {
+                instructions.Add(new OpCodeInstruction(Opcode.MOVD, Register.R9.ToString(), argument1.ToString()));  
+                instructions.Add(new OpCodeInstruction(Opcode.MOV, destination, Register.R9.ToString()));  
+            }
+            else
+            {
+                instructions.Add(new OpCodeInstruction(Opcode.MOV, destination, argument1.ToString()));    
+            }
             
             return instructions;
         }
@@ -253,8 +311,15 @@
             // Clear RDX
             yield return new OpCodeInstruction(Opcode.XOR, Register.RDX.ToString(), Register.RDX.ToString());
 
-            yield return PlaceArgumentInRegister(Register.RAX, statement.Left, parameterOffsets);
-            yield return PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets);
+            foreach (var instruction in PlaceArgumentInRegister(Register.RAX, statement.Left, parameterOffsets))
+            {
+                yield return instruction;
+            }
+
+            foreach (var instruction in PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets))
+            {
+                yield return instruction;
+            }
 
             yield return new SingleOpcodeInstruction(SingleArgOpcode.IDIV, Register.R11.ToString());
             yield return new OpCodeInstruction(Opcode.MOV, destination, Register.RAX.ToString());
@@ -264,26 +329,30 @@
             BinaryOperatorStatement statement,
             IDictionary<string, int> parameterOffsets)
         {
+            var instructions = new List<Instruction>();
             var destination = GetVariableDestination(statement.Return, parameterOffsets);
 
             // Clear RDX
-            yield return new OpCodeInstruction(Opcode.XOR, Register.RDX.ToString(), Register.RDX.ToString());
+            instructions.Add(new OpCodeInstruction(Opcode.XOR, Register.RDX.ToString(), Register.RDX.ToString()));
 
-            yield return PlaceArgumentInRegister(Register.RAX, statement.Left, parameterOffsets);
-            yield return PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets);
+            instructions.AddRange(PlaceArgumentInRegister(Register.RAX, statement.Left, parameterOffsets));
+            instructions.AddRange(PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets));
 
-            yield return new SingleOpcodeInstruction(SingleArgOpcode.IDIV, Register.R11.ToString());
-            yield return new OpCodeInstruction(Opcode.MOV, destination, Register.RDX.ToString());
+            instructions.Add(new SingleOpcodeInstruction(SingleArgOpcode.IDIV, Register.R11.ToString()));
+            instructions.Add(new OpCodeInstruction(Opcode.MOV, destination, Register.RDX.ToString()));
+
+            return instructions;
         }
 
         private static IEnumerable<Instruction> CreateComparisonInstruction(
             BinaryOperatorStatement statement,
             IDictionary<string, int> parameterOffsets)
         {
+            var instructions = new List<Instruction>();
             var destination = GetVariableDestination(statement.Return, parameterOffsets);
 
-            yield return PlaceArgumentInRegister(Register.R10, statement.Left, parameterOffsets);
-            yield return PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets);
+            instructions.AddRange(PlaceArgumentInRegister(Register.R10, statement.Left, parameterOffsets));
+            instructions.AddRange(PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets));
 
             Opcode opcode;
             switch (statement.Operator)
@@ -310,13 +379,15 @@
                     throw new ArgumentOutOfRangeException("statement", "Unsupported operator");
             }
 
-            yield return new OpCodeInstruction(Opcode.XOR, Register.RAX.ToString(), Register.RAX.ToString());
-            yield return new OpCodeInstruction(Opcode.CMP, Register.R10.ToString(), Register.R11.ToString());
+            instructions.Add(new OpCodeInstruction(Opcode.XOR, Register.RAX.ToString(), Register.RAX.ToString()));
+            instructions.Add(new OpCodeInstruction(Opcode.CMP, Register.R10.ToString(), Register.R11.ToString()));
 
-            yield return PlaceArgumentInRegister(Register.R8, new IntConstantArgument(1), parameterOffsets);
-            yield return new OpCodeInstruction(opcode, Register.RAX.ToString(), Register.R8.ToString());
+            instructions.AddRange(PlaceArgumentInRegister(Register.R8, new IntConstantArgument(1), parameterOffsets));
+            instructions.Add(new OpCodeInstruction(opcode, Register.RAX.ToString(), Register.R8.ToString()));
 
-            yield return new OpCodeInstruction(Opcode.MOV, destination, Register.RAX.ToString());
+            instructions.Add(new OpCodeInstruction(Opcode.MOV, destination, Register.RAX.ToString()));
+
+            return instructions;
         }
 
         private static IEnumerable<Instruction> CreateInstruction(
@@ -330,9 +401,11 @@
             BranchStatement statement,
             IDictionary<string, int> parameterOffsets)
         {
-            yield return PlaceArgumentInRegister(Register.R10, statement.Left, parameterOffsets);
-            yield return PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets);
-            yield return new OpCodeInstruction(Opcode.CMP, Register.R10.ToString(), Register.R11.ToString());
+            var instructions = new List<Instruction>();
+
+           instructions.AddRange(PlaceArgumentInRegister(Register.R10, statement.Left, parameterOffsets));
+            instructions.AddRange(PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets));
+            instructions.Add(new OpCodeInstruction(Opcode.CMP, Register.R10.ToString(), Register.R11.ToString()));
 
             SingleArgOpcode opcode;
 
@@ -360,10 +433,12 @@
                     throw new ArgumentOutOfRangeException();
             }
 
-            yield return new SingleOpcodeInstruction(opcode, "L" + statement.BranchTarget.Id);
+            instructions.Add(new SingleOpcodeInstruction(opcode, "L" + statement.BranchTarget.Id));
+
+            return instructions;
         }
 
-        private static Instruction PlaceArgumentInRegister(
+        private static IEnumerable<Instruction> PlaceArgumentInRegister(
             Register register,
             Argument argument,
             IDictionary<string, int> parameterOffsets)
@@ -379,22 +454,54 @@
             }
             else if (argument is IntConstantArgument)
             {
-                argument2 = ((IntConstantArgument)argument).Value.ToString();
+                argument2 = ((IntConstantArgument)argument).Value.ToString(CultureInfo.InvariantCulture);
             }
             else if (argument is BooleanConstantArgument)
             {
-                argument2 = Convert.ToInt32(((BooleanConstantArgument)argument).Value).ToString();
+                argument2 = Convert.ToInt32(((BooleanConstantArgument)argument).Value).ToString(CultureInfo.InvariantCulture);
+            }
+            else if (argument is DoubleConstantArgument)
+            {
+                var value = ((DoubleConstantArgument)argument).Value;
+                if (!Reals.Contains(value))
+                {
+                    Reals.Add(value);
+                }
+
+                argument2 = "real" + value.GetHashCode();
+
+                if (register != Register.XMM0 && register != Register.XMM1)
+                {
+                    return new[]
+                               {
+                                   new OpCodeInstruction(Opcode.MOVSD, Register.XMM2.ToString(), argument2),
+                                   new OpCodeInstruction(Opcode.MOVD, register.ToString(), Register.XMM2.ToString())
+                               };
+                }
+
+                return new[] { new OpCodeInstruction(Opcode.MOVSD, register.ToString(), argument2) };
             }
             else if (argument is VariableArgument)
             {
                 argument2 = GetVariableDestination(((VariableArgument)argument).Variable, parameterOffsets);
+                
+                if (register == Register.XMM0 || register == Register.XMM1)
+                {
+                    return new[]
+                               {
+                                   new OpCodeInstruction(Opcode.MOV, Register.R8.ToString(), argument2),
+                                   new OpCodeInstruction(Opcode.MOVD, register.ToString(), Register.R8.ToString())
+                               };
+                }
+                
+                return new[] { new OpCodeInstruction(code, argument1, argument2) };
             }
             else
             {
                 throw new Exception();
             }
 
-            return new OpCodeInstruction(code, argument1, argument2);
+            return new[] { new OpCodeInstruction(code, argument1, argument2) };
         }
 
         private static string GetVariableDestination(

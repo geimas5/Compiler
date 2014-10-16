@@ -61,6 +61,7 @@
     <EmbeddedResource Include="Assembly\LibraryFunctions.asm" />
     <Compile Include="Assembly\NOPInstruction.cs" />
     <Compile Include="Assembly\Procedure.cs" />
+    <Compile Include="Assembly\RealEntry.cs" />
     <Compile Include="Assembly\Register.cs" />
     <Compile Include="Assembly\Section.cs" />
     <Compile Include="Assembly\SingleArgOpcode.cs" />

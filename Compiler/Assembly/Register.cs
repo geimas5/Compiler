@@ -9,6 +9,9 @@
         RAX,
         RCX,
         RDX,
-        EAX
+        
+        XMM0,
+        XMM1,
+        XMM2
     }
 }
