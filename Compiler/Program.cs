@@ -7,15 +7,32 @@
     {
         private static void Main(string[] args)
         {
-            string program = @"int main() {
-   double d = 3.5;
-   d = d - 10.5;
-   print(d);
-   return 0;
-}
+            string program = @"int main(){
+   int r = 3 % 10;
+   int number = 1000;
+   int c;
+   int sum = 0;
+   int temp;
 
-void print(double e){
-    PrintDouble(e);
+   for( c = 1 ; c <= number ; c = c + 1 )
+   {
+      temp = c;
+      while( temp != 0 )
+      {
+         r = temp % 10;
+         sum = sum + r * r * r;
+         temp = temp / 10;
+      }
+
+      if ( c == sum ){
+        PrintInt(c);
+        PrintLine("""");
+      }
+
+      sum = 0;
+   }
+ 
+   return 0;
 }";
             var asembly = new CompilerAssembly { PrintMessages = true };
 

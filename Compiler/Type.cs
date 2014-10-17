@@ -6,6 +6,8 @@
     {
 
         static Type noTypeInstance;
+        static Type intTypeInstance;
+        static Type doubleTypeInstance;
 
         public Type(PrimitiveType primitiveType)
         {
@@ -28,6 +30,22 @@
             get
             {
                 return noTypeInstance ?? (noTypeInstance = new Type(PrimitiveType.NoType));
+            }
+        }
+
+        public static Type IntType
+        {
+            get
+            {
+                return intTypeInstance ?? (intTypeInstance = new Type(PrimitiveType.Int));
+            }
+        }
+
+        public static Type DoubleType
+        {
+            get
+            {
+                return doubleTypeInstance ?? (doubleTypeInstance = new Type(PrimitiveType.Double));
             }
         }
 

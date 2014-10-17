@@ -2,6 +2,8 @@
 {
     using System;
 
+    using Antlr4.Runtime;
+
     using Compiler.SymbolTable;
     using Compiler.SyntaxTree;
 
@@ -134,6 +136,14 @@
                 this.logger.LogError(node.Condition.Location, "The condition in the for loop must be a boolean");
             }
 
+            foreach (var statementNode in node.Body)
+            {
+                statementNode.Accept(this);
+            }
+
+            node.Afterthought.Accept(this);
+            node.Initialization.Accept(this);
+
             return null;
         }
 
@@ -170,29 +180,32 @@
                 case BinaryOperator.Multiply:
                 case BinaryOperator.Divide:
                 case BinaryOperator.Exponensiation:
-                case BinaryOperator.Mod:
-                    if (leftType.Dimensions != 0 || rightType.Dimensions != 0)
+                    if (!(Equals(leftType, Type.DoubleType) || Equals(leftType, Type.IntType)) ||
+                        !(Equals(rightType, Type.DoubleType) || Equals(rightType, Type.IntType)))
                     {
-                        this.logger.LogError(node.Location, "The operator '{0}' is not valid on arrays", node.Operator);
+                        this.logger.LogError(node.Location, "The operator '{0}' is only available on the types Int and double", node.Operator);
                         return Type.NoType;
                     }
 
-                    if (!(leftType.PrimitiveType == PrimitiveType.Double || leftType.PrimitiveType == PrimitiveType.Int) ||
-                        !(rightType.PrimitiveType == PrimitiveType.Double || rightType.PrimitiveType == PrimitiveType.Int))
+                    var returnType = Type.IntType;
+                    if (Equals(leftType, Type.DoubleType) || Equals(rightType, Type.DoubleType))
                     {
-                        this.logger.LogError(node.Location, "The operator '{0}' is only available on the types Int and double");
-                        return Type.NoType;
-                    }
-
-                    var returnType = new Type(PrimitiveType.Int);
-                    if (leftType.PrimitiveType == PrimitiveType.Double
-                        || rightType.PrimitiveType == PrimitiveType.Double)
-                    {
-                        returnType = new Type(PrimitiveType.Double);
+                        returnType = Type.DoubleType;
                     }
 
                     node.ResultingType = returnType;
                     return returnType;
+                case BinaryOperator.Mod:
+
+                    if (!Equals(leftType, Type.IntType) || !Equals(rightType, Type.IntType))
+                    {
+                        this.logger.LogError(node.Location, "The operator '{0}' is only available on the types Int", node.Operator);
+                        return Type.NoType;
+                    }
+
+                    node.ResultingType = Type.IntType;
+                    return Type.IntType;
+
                 case BinaryOperator.Less:
                 case BinaryOperator.LessEqual:
                 case BinaryOperator.Greater:
