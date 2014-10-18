@@ -233,8 +233,8 @@
 
         public IntegerConstant CreateIntegerConstant(ParserRuleContext context, string value)
         {
-            int intValue;
-            if (!int.TryParse(value, out intValue))
+            long intValue;
+            if (!long.TryParse(value, out intValue))
             {
                 this.logger.LogError(CreateLocation(context), "The integer value is either too large or too small.");
             }

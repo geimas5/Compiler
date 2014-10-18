@@ -22,6 +22,8 @@
         ADDSD,
         SUBSD,
         MULSD,
-        DIVSD
+        DIVSD,
+
+        CVTSI2SD
     }
 }

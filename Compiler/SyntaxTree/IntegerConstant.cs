@@ -4,13 +4,13 @@
 
     public class IntegerConstant : ConstantNode
     {
-        public IntegerConstant(Location location, int value)
+        public IntegerConstant(Location location, long value)
             : base(location)
         {
             this.Value = value;
         }
 
-        public int Value { get; private set; }
+        public long Value { get; private set; }
 
         public override T Accept<T>(IVisitor<T> visitor)
         {

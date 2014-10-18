@@ -79,6 +79,7 @@
     <Compile Include="ControlFlowGraph\ControlFlowGraph.cs" />
     <Compile Include="ControlFlowGraph\ControlFlowGraphBuilder.cs" />
     <Compile Include="ControlFlowGraph\BasicBlock.cs" />
+    <Compile Include="ControlFlowGraph\ConvertToDoubleStatement.cs" />
     <Compile Include="ControlFlowGraph\DoubleConstantArgument.cs" />
     <Compile Include="ControlFlowGraph\GlobalArgument.cs" />
     <Compile Include="ControlFlowGraph\IntConstantArgument.cs" />

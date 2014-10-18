@@ -108,6 +108,7 @@
             else if (statement is BinaryOperatorStatement) instructions = CreateInstruction((BinaryOperatorStatement)statement, parameterOffsets);
             else if (statement is JumpStatement) instructions = CreateInstruction((JumpStatement)statement, parameterOffsets);
             else if (statement is BranchStatement) instructions = CreateInstruction((BranchStatement)statement, parameterOffsets);
+            else if (statement is ConvertToDoubleStatement) instructions = CreateInstruction((ConvertToDoubleStatement)statement, parameterOffsets);
             else if (statement is NopStatement) instructions = new[] { new NOPInstruction() };
             else
             {
@@ -432,7 +433,7 @@
         {
             var instructions = new List<Instruction>();
 
-           instructions.AddRange(PlaceArgumentInRegister(Register.R10, statement.Left, parameterOffsets));
+            instructions.AddRange(PlaceArgumentInRegister(Register.R10, statement.Left, parameterOffsets));
             instructions.AddRange(PlaceArgumentInRegister(Register.R11, statement.Right, parameterOffsets));
             instructions.Add(new OpCodeInstruction(Opcode.CMP, Register.R10.ToString(), Register.R11.ToString()));
 
@@ -463,6 +464,22 @@
             }
 
             instructions.Add(new SingleOpcodeInstruction(opcode, "L" + statement.BranchTarget.Id));
+
+            return instructions;
+        }
+
+        private static IEnumerable<Instruction> CreateInstruction(
+            ConvertToDoubleStatement statement,
+            IDictionary<string, int> parameterOffsets)
+        {
+            var instructions = new List<Instruction>();
+            var destination = GetVariableDestination(statement.Return, parameterOffsets);
+
+            instructions.AddRange(PlaceArgumentInRegister(Register.R11, statement.Argument, parameterOffsets));
+            instructions.Add(new OpCodeInstruction(Opcode.CVTSI2SD, Register.XMM0.ToString(), Register.R11.ToString()));
+
+            instructions.Add(new OpCodeInstruction(Opcode.MOVD, Register.R10.ToString(), Register.XMM0.ToString()));
+            instructions.Add(new OpCodeInstruction(Opcode.MOV, destination, Register.R10.ToString()));
 
             return instructions;
         }

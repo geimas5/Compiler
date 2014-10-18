@@ -1,7 +1,6 @@
 ﻿namespace Compiler.ControlFlowGraph
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
@@ -60,7 +59,6 @@
         {
             var initBlock = node.Initialization.Accept(this);
             var argument = new VariableArgument(((IReturningStatement)initBlock.Exit).Return);
-
             var statemment = new AssignStatement((VariableSymbol)node.Variable.Name.Symbol, argument);
 
             return initBlock.Append(statemment);
@@ -128,7 +126,7 @@
 
         public override BasicBlock Visit(DoubleConstant node)
         {
-            var variable = this.MakeTempVariable(node, new Type(PrimitiveType.Int));
+            var variable = this.MakeTempVariable(node, new Type(PrimitiveType.Double));
 
             var assignment = new AssignStatement(variable, new DoubleConstantArgument(node.Value));
             return new BasicBlock(assignment);
@@ -163,6 +161,23 @@
 
             var leftArgument = new VariableArgument(((IReturningStatement)leftBlock.Exit).Return);
             var rightArguumment = new VariableArgument(((IReturningStatement)rightBlock.Exit).Return);
+
+            if (Equals(node.ResultingType, Type.DoubleType))
+            {
+                if (Equals(leftArgument.Variable.Type, Type.IntType))
+                {
+                    var leftTempVariable = this.MakeTempVariable(node, Type.DoubleType);
+                    beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(leftTempVariable, leftArgument));
+                    leftArgument = new VariableArgument(((IReturningStatement)beforeBlock.Exit).Return);
+                }
+
+                if (Equals(rightArguumment.Variable.Type, Type.IntType))
+                {
+                    var rightTempVariable = this.MakeTempVariable(node, Type.DoubleType);
+                    beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(rightTempVariable, rightArguumment));
+                    rightArguumment = new VariableArgument(((IReturningStatement)beforeBlock.Exit).Return);
+                }
+            }
 
             var statement = new BinaryOperatorStatement(tempVariable, node.Operator, leftArgument, rightArguumment);
 
