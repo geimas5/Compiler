@@ -96,6 +96,10 @@
     <Compile Include="ControlFlowGraph\VariableArgument.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Ml64Runner.cs" />
+    <Compile Include="Optimization\EqualAssignmentEliminatior.cs" />
+    <Compile Include="Optimization\Optimizations.cs" />
+    <Compile Include="Optimization\Optimizer.cs" />
+    <Compile Include="Optimization\OptimizerBase.cs" />
     <Compile Include="Parser\Antlr\AntlrErrorListener.cs" />
     <Compile Include="Parser\Antlr\MParser.cs" />
     <Compile Include="Parser\Antlr\NodeFactory.cs" />

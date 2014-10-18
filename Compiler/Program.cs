@@ -3,12 +3,14 @@
     using System;
     using System.IO;
 
+    using Compiler.Optimization;
+
     class Program
     {
         private static void Main(string[] args)
         {
             string program = @"int main(){
-   int r = 3 % 10;
+   int r;
    int number = 1000;
    int c;
    int sum = 0;
@@ -34,7 +36,12 @@
  
    return 0;
 }";
-            var asembly = new CompilerAssembly { PrintMessages = true };
+            var asembly = new CompilerAssembly
+                              {
+                                  PrintMessages = true,
+                                  PrintIR = true,
+                                  ActivatedOptimizations = { Optimizations.EliminateEqualAssignments }
+                              };
 
             using (var input = new StringReader(program))
             using (var outputStream = File.Create("output.asm"))

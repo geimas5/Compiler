@@ -52,12 +52,16 @@ PrintLine PROC
     ret
 PrintLine ENDP
 
-;PrintInt PROC
-;    push rbp
-;    mov rbp, rsp
-;    sub rsp, 0CCh
+Power PROC
+    push rbp
+    mov rbp, rsp
+    sub rsp, 0CCh
+	
+	sub rsp, 40
+    call pow    
+	add rsp, 40
 
-;    mov rsp, rbp
-;    pop rbp
-;    ret
-;PrintInt ENDP
+    mov rsp, rbp
+    pop rbp
+    ret
+Power ENDP

@@ -6,6 +6,8 @@
 
     public class BranchStatement : Statement
     {
+        private Statement branchTarget;
+
         public BranchStatement(bool zero, BinaryOperator @operator, Argument left, Argument right, Statement branchTarget)
         {
             this.BranchTarget = branchTarget;
@@ -23,7 +25,23 @@
 
         public Argument Right { get; private set; }
 
-        public Statement BranchTarget { get; private set; }
+        public Statement BranchTarget
+        {
+            get
+            {
+                return this.branchTarget;
+            }
+            set
+            {
+                if (this.branchTarget != null)
+                {
+                    this.branchTarget.JumpSources.Remove(this);
+                }
+
+                this.branchTarget = value;
+                this.branchTarget.JumpSources.Add(this);
+            }
+        }
 
         public override string ToString()
         {

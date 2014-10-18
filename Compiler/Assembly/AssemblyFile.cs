@@ -31,6 +31,7 @@
 
             writer.WriteLine("externdef printf : near");
             writer.WriteLine("externdef exit : near");
+            writer.WriteLine("externdef pow : near");
 
             DataSection.Write(writer);
             CodeSection.Write(writer);

@@ -24,7 +24,7 @@
         public override string ToString()
         {
             string op = string.Empty;
-            switch (Operator)
+            switch (this.Operator)
             {
                 case BinaryOperator.Add:
                     op = "+";

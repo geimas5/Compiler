@@ -9,6 +9,7 @@
         JE,
         JNE,
         JMP,
-        IDIV
+        IDIV,
+        CALL
     }
 }

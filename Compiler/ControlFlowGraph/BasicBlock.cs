@@ -28,14 +28,14 @@
         {   
         }
 
-        public Statement Enter { get; private set; }
+        public Statement Enter { get; set; }
 
-        public Statement Exit { get; private set; }
+        public Statement Exit { get; set; }
 
         public BasicBlock Append(Statement statement)
         {
             this.Exit.Next = statement;
-            statement.Predecessors.Add(this.Exit);
+            statement.Previous = this.Exit;
             statement.BasicBlock = this;
 
             return new BasicBlock(this.Enter, statement);
@@ -44,7 +44,7 @@
         public BasicBlock Join(BasicBlock block)
         {
             this.Exit.Next = block.Enter;
-            block.Enter.Predecessors.Add(this.Exit);
+            block.Enter.Previous = this.Exit;
 
             return new BasicBlock(this.Enter, block.Exit);
         }

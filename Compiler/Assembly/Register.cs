@@ -9,6 +9,7 @@
         RAX,
         RCX,
         RDX,
+        RSP,
         
         XMM0,
         XMM1,

@@ -205,7 +205,6 @@
 
                     node.ResultingType = Type.IntType;
                     return Type.IntType;
-
                 case BinaryOperator.Less:
                 case BinaryOperator.LessEqual:
                 case BinaryOperator.Greater:

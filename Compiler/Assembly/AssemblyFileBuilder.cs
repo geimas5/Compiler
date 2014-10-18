@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Globalization;
 
     using Compiler.Common;
@@ -11,6 +10,7 @@
     using Compiler.SyntaxTree;
 
     using ReturnStatement = Compiler.ControlFlowGraph.ReturnStatement;
+    using Type = Compiler.Type;
 
     public static class AssemblyFileBuilder
     {
@@ -45,7 +45,7 @@
         {
             foreach (var real in Reals)
             {
-                file.DataSection.DataEntries.Add(new RealEntry("real" + real.GetHashCode(), real));
+                file.DataSection.DataEntries.Add(new RealEntry("real" + Math.Abs(real.GetHashCode()), real));
             }
         }
 
@@ -151,7 +151,7 @@
 
             string name = statement.Function.Name;
 
-            yield return new Instruction("call " + name);
+            yield return new SingleOpcodeInstruction(SingleArgOpcode.CALL, name);
         }
 
         private static IEnumerable<Instruction> CreateInstruction(
@@ -161,7 +161,7 @@
             currentParam = 0;
             var name = statement.Function.Name;
 
-            yield return new Instruction("call " + name);
+            yield return new SingleOpcodeInstruction(SingleArgOpcode.CALL, name);
 
             var destination = GetVariableDestination(statement.Return, parameterOffsets);
             yield return new OpCodeInstruction(Opcode.MOV, destination, Register.RAX.ToString());
@@ -254,8 +254,8 @@
                     case BinaryOperator.Divide:
                         opcode = Opcode.DIVSD;
                         break;
-                    case BinaryOperator.Mod:
-                        throw new ArgumentException();
+                    case BinaryOperator.Exponensiation:
+                        return CreateExponentiantionInstruction(statement, parameterOffsets);
                     default:
                         throw new ArgumentException("operation operation not supported");
                 }
@@ -277,6 +277,8 @@
                         return CreateDivisionInstruction(statement, parameterOffsets);
                     case BinaryOperator.Mod:
                         return CreateModuloInstruction(statement, parameterOffsets);
+                    case BinaryOperator.Exponensiation:
+                        return CreateExponentiantionInstruction(statement, parameterOffsets);
                     default:
                         throw new ArgumentException("operation operation not supported");
                 } 
@@ -340,6 +342,33 @@
 
             instructions.Add(new SingleOpcodeInstruction(SingleArgOpcode.IDIV, Register.R11.ToString()));
             instructions.Add(new OpCodeInstruction(Opcode.MOV, destination, Register.RDX.ToString()));
+
+            return instructions;
+        }
+
+        private static IEnumerable<Instruction> CreateExponentiantionInstruction(
+            BinaryOperatorStatement statement,
+            IDictionary<string, int> parameterOffsets)
+        {
+            var instructions = new List<Instruction>();
+            var destination = GetVariableDestination(statement.Return, parameterOffsets);
+
+            if (Equals(statement.Return.Type, Type.DoubleType))
+            {
+                instructions.AddRange(PlaceArgumentInRegister(Register.XMM0, statement.Left, parameterOffsets));
+                instructions.AddRange(PlaceArgumentInRegister(Register.XMM1, statement.Right, parameterOffsets));
+                
+                instructions.Add(new SingleOpcodeInstruction(SingleArgOpcode.CALL, "Power"));
+                instructions.Add(new OpCodeInstruction(Opcode.MOVD, Register.R10.ToString(), Register.XMM0.ToString()));
+                instructions.Add(new OpCodeInstruction(Opcode.MOV, destination, Register.R10.ToString()));
+            }
+            else
+            {
+                instructions.AddRange(PlaceArgumentInRegister(Register.RCX, statement.Left, parameterOffsets));
+                instructions.AddRange(PlaceArgumentInRegister(Register.RDX, statement.Right, parameterOffsets));
+                instructions.Add(new SingleOpcodeInstruction(SingleArgOpcode.CALL, "Power"));
+                instructions.Add(new OpCodeInstruction(Opcode.MOV, destination, Register.RAX.ToString()));
+            }
 
             return instructions;
         }
@@ -468,7 +497,7 @@
                     Reals.Add(value);
                 }
 
-                argument2 = "real" + value.GetHashCode();
+                argument2 = "real" + Math.Abs(value.GetHashCode());
 
                 if (register != Register.XMM0 && register != Register.XMM1)
                 {

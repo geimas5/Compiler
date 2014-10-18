@@ -15,7 +15,7 @@
 
         public override void Write(TextWriter writer)
         {
-            writer.WriteLine("{0} REAL8 {1}", this.Name, this.Value.ToString(CultureInfo.InvariantCulture));
+            writer.WriteLine("{0} REAL8 {1}", this.Name, this.Value.ToString("0.0##################", CultureInfo.InvariantCulture));
         }
     }
 }

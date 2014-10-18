@@ -55,6 +55,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Compiling\CompilingTests.cs" />
+    <Compile Include="Compiling\EqualAsssignmentEliminationTests.cs" />
     <Compile Include="Parser\MLexerTests.cs" />
     <Compile Include="Parser\ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -188,6 +189,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

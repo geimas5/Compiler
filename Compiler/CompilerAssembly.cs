@@ -1,19 +1,24 @@
 ﻿namespace Compiler
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
 
     using Compiler.Assembly;
     using Compiler.ControlFlowGraph;
+    using Compiler.Optimization;
     using Compiler.Parser.Antlr;
     using Compiler.SemanticAnalysis;
     using Compiler.SyntaxTree;
 
     public class CompilerAssembly
     {
+        private readonly Optimizer optimizer;
+
         public CompilerAssembly()
         {
             this.Logger = new Logger();
+            this.optimizer = new Optimizer();
         }
 
         public Logger Logger { get; private set; }
@@ -23,6 +28,14 @@
         public bool PrintIR { get; set; }
 
         public bool PrintMessages { get; set; }
+
+        public IList<Optimizations> ActivatedOptimizations
+        {
+            get
+            {
+                return this.optimizer.ActivatedOptimizations;
+            }
+        }
 
         public bool CompileProgram(TextReader input, TextWriter output)
         {
@@ -43,6 +56,8 @@
 
             var builder = new ControlFlowGraphBuilder();
             var controlGraph = builder.BuildGraph(result.SynataxTree.RootNode);
+
+            this.optimizer.RunOptimizations(controlGraph);
 
             if (this.PrintIR) this.PrintIrCode(controlGraph);
 
