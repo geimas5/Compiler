@@ -1,32 +1,17 @@
 ﻿namespace Compiler.Optimization
 {
-    using System.Linq;
-
     using Compiler.ControlFlowGraph;
 
     public class EqualAssignmentEliminator : OptimizerBase
     {
-        public override bool RunOptimization(ControlFlowGraph graph)
-        {
-            bool somethingChanged = false;
-
-            foreach (var block in graph.Functions.SelectMany(function => function.Value))
-            {
-                somethingChanged = this.ProcessBlock(block) || somethingChanged;
-            }
-
-            return somethingChanged;
-        }
-
-        private bool ProcessBlock(BasicBlock block)
+        public override void VisitBlock(BasicBlock block)
         {
             if (block.Enter == block.Exit)
             {
-                return false;
+                return;
             }
 
             bool remove = true;
-            bool somethingHasChanged = false;
 
             while (remove)
             {
@@ -41,55 +26,15 @@
                     {
                         toRemove = statement;
                         remove = true;
-                        somethingHasChanged = true;
+                        this.SetSomethingChanged();
                         break;
                     }
                 }
 
                 if (toRemove != null)
                 {
-                    this.RemoveStatement(toRemove);
+                    CFGUtilities.RemoveStatement(toRemove);
                 }
-            }
-
-            return somethingHasChanged;
-        }
-
-        private void RemoveStatement(Statement statement)
-        {
-            if (statement.Next != null)
-            {
-                statement.Next.Previous = statement.Previous;
-
-                foreach (var jumpSource in statement.JumpSources.ToArray())
-                {
-                    if (jumpSource is BranchStatement)
-                    {
-                        ((BranchStatement)jumpSource).BranchTarget = statement.Next;
-                        continue;
-                    }
-
-                    if (jumpSource is JumpStatement)
-                    {
-                        ((JumpStatement)jumpSource).Target = statement.Next;
-                        continue;
-                    }
-                }
-            }
-
-            if (statement.Previous != null)
-            {
-                statement.Previous.Next = statement.Next;
-            }
-
-            if (statement.BasicBlock.Enter == statement)
-            {
-                statement.BasicBlock.Enter = statement.Next;
-            }
-
-            if (statement.BasicBlock.Exit == statement)
-            {
-                statement.BasicBlock.Exit = statement.Previous;
             }
         }
     }

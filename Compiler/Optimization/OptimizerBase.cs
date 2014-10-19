@@ -1,7 +1,28 @@
 ﻿namespace Compiler.Optimization
 {
+    using System.Linq;
+
+    using Compiler.ControlFlowGraph;
+
     public abstract class OptimizerBase
     {
-        public abstract bool RunOptimization(ControlFlowGraph.ControlFlowGraph graph);
+        private bool somethingChanged = false;
+
+        public bool RunOptimization(ControlFlowGraph graph)
+        {
+             foreach (var block in graph.Functions.SelectMany(m => m.Value))
+            {
+                this.VisitBlock(block);
+            }
+
+            return this.somethingChanged;
+        }
+
+        public abstract void VisitBlock(BasicBlock block);
+
+        protected void SetSomethingChanged()
+        {
+            this.somethingChanged = true;
+        }
     }
 }

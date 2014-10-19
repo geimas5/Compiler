@@ -9,18 +9,31 @@
     {
         private static void Main(string[] args)
         {
-            string program = @"int main(){
-    double d = 33.1*3;
+            string program = @"int main()
+{
+    int d = Fibonacci(10);
 
-    PrintDouble(d);
- 
-   return 0;
-}";
+    if(d == 55){
+        PrintLine(""OK"");
+    }
+
+    return 0;
+}
+
+int Fibonacci(int n)
+{
+   if ( n == 0 )
+      return 0;
+   else if ( n == 1 )
+      return 1;
+   
+   return ( Fibonacci(n-1) + Fibonacci(n-2) );
+} ";
             var asembly = new CompilerAssembly
                               {
                                   PrintMessages = true,
                                   PrintIR = true,
-                                  ActivatedOptimizations = { Optimizations.EliminateEqualAssignments }
+                                  ActivatedOptimizations = { Optimizations.EliminateEqualAssignments, Optimizations.LocalCopyPropagation }
                               };
 
             using (var input = new StringReader(program))

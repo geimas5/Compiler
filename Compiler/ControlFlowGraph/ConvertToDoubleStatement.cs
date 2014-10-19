@@ -13,5 +13,10 @@
         public VariableSymbol Return { get; private set; }
 
         public Argument Argument { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0} = ConvertToDouble({1})", this.Return, this.Argument);
+        }
     }
 }

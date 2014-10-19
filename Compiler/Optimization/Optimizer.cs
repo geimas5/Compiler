@@ -2,6 +2,8 @@
 {
     using System.Collections.Generic;
 
+    using Compiler.ControlFlowGraph;
+
     public class Optimizer
     {
         public Optimizer()
@@ -11,12 +13,31 @@
 
         public IList<Optimizations> ActivatedOptimizations { get; private set; }
 
-        public void RunOptimizations(ControlFlowGraph.ControlFlowGraph graph)
+        public void RunOptimizations(ControlFlowGraph graph)
         {
+            bool somethingChanged = true;
+
+            while (somethingChanged)
+            {
+                somethingChanged = this.RunOptimizationPass(graph);
+            }
+        }
+
+        private bool RunOptimizationPass(ControlFlowGraph graph)
+        {
+            bool somethingChanged = false;
+
             if (this.ActivatedOptimizations.Contains(Optimizations.EliminateEqualAssignments))
             {
-                new EqualAssignmentEliminator().RunOptimization(graph);
+                somethingChanged = new EqualAssignmentEliminator().RunOptimization(graph) || somethingChanged;
             }
+
+            if (this.ActivatedOptimizations.Contains(Optimizations.LocalCopyPropagation))
+            {
+                somethingChanged = new LocalCopyPropagation().RunOptimization(graph) || somethingChanged;
+            }
+
+            return somethingChanged;
         }
     }
 }
