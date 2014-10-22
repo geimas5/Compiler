@@ -37,6 +37,11 @@
                 somethingChanged = new LocalCopyPropagation().RunOptimization(graph) || somethingChanged;
             }
 
+            if (this.ActivatedOptimizations.Contains(Optimizations.DeadCodeElimination))
+            {
+                somethingChanged = new DeadcodeEliminator().RunOptimization(graph) || somethingChanged;
+            }
+
             return somethingChanged;
         }
     }

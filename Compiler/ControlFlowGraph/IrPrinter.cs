@@ -30,7 +30,7 @@
                 }
             }
 
-            Console.Write(sb);
+            Console.Write(sb.ToString());
         }
     }
 }

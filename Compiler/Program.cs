@@ -42,7 +42,12 @@ int Fibonacci(int n)
                               {
                                   PrintMessages = true,
                                   PrintIR = true,
-                                  ActivatedOptimizations = { Optimizations.EliminateEqualAssignments, Optimizations.LocalCopyPropagation }
+                                  ActivatedOptimizations =
+                                      {
+                                          Optimizations.EliminateEqualAssignments, 
+                                          Optimizations.LocalCopyPropagation,
+                                          Optimizations.DeadCodeElimination
+                                      }
                               };
 
             using (var input = new StringReader(program))

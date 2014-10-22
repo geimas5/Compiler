@@ -108,6 +108,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Ml64Runner.cs" />
     <Compile Include="Optimization\CFGUtilities.cs" />
+    <Compile Include="Optimization\DeadcodeEliminator.cs" />
     <Compile Include="Optimization\EqualAssignmentEliminatior.cs" />
     <Compile Include="Optimization\LocalCopyPropagation.cs" />
     <Compile Include="Optimization\Optimizations.cs" />

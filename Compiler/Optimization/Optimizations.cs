@@ -3,6 +3,7 @@
     public enum Optimizations
     {
         EliminateEqualAssignments,
-        LocalCopyPropagation
+        LocalCopyPropagation,
+        DeadCodeElimination
     }
 }

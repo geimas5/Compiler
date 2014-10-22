@@ -22,6 +22,7 @@
                 else if (statement is ParamStatement) this.HandleStatement((ParamStatement)statement);
                 else if (statement is ReturnStatement) this.HandleStatement((ReturnStatement)statement);
                 else if (statement is AssignStatement) this.HandleStatement((AssignStatement)statement);
+                else if (statement is BranchStatement) this.HandleStatement((BranchStatement)statement);
                 else if (statement is IReturningStatement) this.HandleGenericReturningStatement((IReturningStatement)statement);
             }
         }
@@ -41,6 +42,27 @@
                 statement.Operator,
                 copyArg1 ?? statement.Left,
                 copyArg2 ?? statement.Right);
+
+            CFGUtilities.ReplaceStatement(statement, newOperatorStatement);
+            this.SetSomethingChanged();
+        }
+
+        private void HandleStatement(BranchStatement statement)
+        {
+            var copyArg1 = this.GetCopy(statement.Left);
+            var copyArg2 = this.GetCopy(statement.Right);
+
+            if (copyArg1 == null && copyArg2 == null)
+            {
+                return;
+            }
+
+            var newOperatorStatement = new BranchStatement(
+                statement.Zero,
+                statement.Operator,
+                copyArg1 ?? statement.Left,
+                copyArg2 ?? statement.Right,
+                statement.BranchTarget);
 
             CFGUtilities.ReplaceStatement(statement, newOperatorStatement);
             this.SetSomethingChanged();

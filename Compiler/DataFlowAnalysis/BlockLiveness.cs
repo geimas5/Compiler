@@ -1,5 +1,6 @@
 ﻿namespace Compiler.DataFlowAnalysis
 {
+    using System.Collections.Generic;
     using System.Linq;
 
     using Compiler.ControlFlowGraph;
@@ -8,8 +9,6 @@
     public class BlockLiveness : DataflowBlock
     {
         private readonly BasicBlock block;
-
-        private readonly LivenessAnalysis analysis;
 
         public VariableBitset Use { get; private set; }
 
@@ -23,11 +22,31 @@
             this.Def = new VariableBitset(analysis.VariableRegister);
 
             this.block = block;
-            this.analysis = analysis;
             this.CalculateGetDef();
         }
 
-        public void CalculateGetDef()
+        public IEnumerable<Statement> FindDeadStatements()
+        {
+            var liveVariables = this.Out.Clone();
+
+            foreach (var statement in this.block.Reverse())
+            {
+                var returningStatement = statement as IReturningStatement;
+                if (returningStatement != null && !liveVariables.Get(returningStatement.Return))
+                {
+                    yield return statement;
+
+                    liveVariables.Clear(returningStatement.Return);
+                }
+
+                foreach (var variable in StatementHelper.GetStatementVariableUsages(statement))
+                {
+                    liveVariables.Set(variable);
+                }
+            }
+        }  
+
+        private void CalculateGetDef()
         {
             foreach (var statement in this.block.Reverse())
             {

@@ -10,6 +10,8 @@
 
         public bool RunOptimization(ControlFlowGraph graph)
         {
+            this.Init(graph);
+
              foreach (var block in graph.Functions.SelectMany(m => m.Value))
             {
                 this.VisitBlock(block);
@@ -23,6 +25,11 @@
         protected void SetSomethingChanged()
         {
             this.somethingChanged = true;
+        }
+
+        protected virtual void Init(ControlFlowGraph graph)
+        {
+            
         }
     }
 }
