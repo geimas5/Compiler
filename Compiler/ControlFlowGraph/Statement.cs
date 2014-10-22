@@ -4,6 +4,16 @@
 
     public abstract class Statement
     {
+        protected bool Equals(Statement other)
+        {
+            return this.Id == other.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id;
+        }
+
         private static int nextId;
 
         public Statement()
@@ -30,8 +40,41 @@
             }
         }
 
+        public IEnumerable<Statement> Successors
+        {
+            get
+            {
+                if (this.Next != null) yield return this.Next;
+                if (this is JumpStatement)
+                {
+                    yield return ((JumpStatement)this).Target;
+                }
+                else if (this is BranchStatement)
+                {
+                    yield return ((BranchStatement)this).BranchTarget;
+                }
+            }
+        } 
+
         public Statement Next { get; set; }
 
         public BasicBlock BasicBlock { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+            return Equals((Statement)obj);
+        }
     }
 }

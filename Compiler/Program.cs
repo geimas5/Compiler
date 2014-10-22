@@ -29,6 +29,15 @@ int Fibonacci(int n)
    
    return ( Fibonacci(n-1) + Fibonacci(n-2) );
 } ";
+
+//            string program = @"int main()
+//            {
+//               int d = 34;
+//               int f = 42;
+//               d = 43 + f;
+//               return d;
+//            }
+//          ";
             var asembly = new CompilerAssembly
                               {
                                   PrintMessages = true,

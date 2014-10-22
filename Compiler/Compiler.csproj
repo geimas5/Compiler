@@ -38,8 +38,12 @@
     <Reference Include="Antlr4.Runtime.net45">
       <HintPath>..\packages\Antlr4.Runtime.4.3.0\lib\net45\Antlr4.Runtime.net45.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Experimental.Collections">
+      <HintPath>..\packages\Microsoft.Experimental.Collections.1.0.3-alpha\lib\portable-net45+win8+wp8\Microsoft.Experimental.Collections.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Linq" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -95,6 +99,12 @@
     <Compile Include="ControlFlowGraph\Statement.cs" />
     <Compile Include="ControlFlowGraph\UnaryOperatorStatement.cs" />
     <Compile Include="ControlFlowGraph\VariableArgument.cs" />
+    <Compile Include="DataFlowAnalysis\DataflowBlock.cs" />
+    <Compile Include="DataFlowAnalysis\BlockLiveness.cs" />
+    <Compile Include="DataFlowAnalysis\LivenessAnalysis.cs" />
+    <Compile Include="DataFlowAnalysis\StatementHelper.cs" />
+    <Compile Include="DataFlowAnalysis\VariableBitset.cs" />
+    <Compile Include="DataFlowAnalysis\VariableRegister.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Ml64Runner.cs" />
     <Compile Include="Optimization\CFGUtilities.cs" />

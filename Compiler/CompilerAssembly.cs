@@ -6,6 +6,7 @@
 
     using Compiler.Assembly;
     using Compiler.ControlFlowGraph;
+    using Compiler.DataFlowAnalysis;
     using Compiler.Optimization;
     using Compiler.Parser.Antlr;
     using Compiler.SemanticAnalysis;

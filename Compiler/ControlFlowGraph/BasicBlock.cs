@@ -2,6 +2,7 @@
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class BasicBlock : IEnumerable<Statement>
     {
@@ -31,6 +32,22 @@
         public Statement Enter { get; set; }
 
         public Statement Exit { get; set; }
+
+        public IEnumerable<BasicBlock> Predecessors
+        {
+            get
+            {
+                return this.Exit.Predecessors.Select(statement => statement.BasicBlock);
+            }
+        }
+
+        public IEnumerable<BasicBlock> Successors
+        {
+            get
+            {
+                return this.Exit.Successors.Select(statement => statement.BasicBlock);
+            }
+        } 
 
         public BasicBlock Append(Statement statement)
         {
