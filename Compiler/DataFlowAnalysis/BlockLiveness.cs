@@ -14,7 +14,6 @@
 
         public VariableBitset Def { get; private set; }
 
-
         public BlockLiveness(BasicBlock block, LivenessAnalysis analysis)
             : base(analysis.VariableRegister)
         {
