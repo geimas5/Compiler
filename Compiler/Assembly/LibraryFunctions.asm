@@ -65,3 +65,17 @@ Power PROC
     pop rbp
     ret
 Power ENDP
+
+Alloc PROC
+    push rbp
+    mov rbp, rsp
+    sub rsp, 0CCh
+	
+	sub rsp, 40
+    call malloc    
+	add rsp, 40
+
+    mov rsp, rbp
+    pop rbp
+    ret
+Alloc ENDP

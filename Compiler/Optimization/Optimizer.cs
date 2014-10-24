@@ -42,6 +42,11 @@
                 somethingChanged = new DeadcodeEliminator().RunOptimization(graph) || somethingChanged;
             }
 
+            if (this.ActivatedOptimizations.Contains(Optimizations.AlgebraicOptimization))
+            {
+                somethingChanged = new AlgebraicOptimization().RunOptimization(graph) || somethingChanged;
+            }
+
             return somethingChanged;
         }
     }

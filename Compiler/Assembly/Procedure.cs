@@ -1,5 +1,6 @@
 ﻿namespace Compiler.Assembly
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
 
@@ -15,13 +16,15 @@
 
         public IList<Block> Blocks { get; private set; }
 
+        public int NumberOfLocalVariables { get; set; }
+
         public override void Write(TextWriter writer)
         {
             writer.WriteLine(this.Name + " PROC");
 
             writer.WriteLine("push rbp");
             writer.WriteLine("mov rbp, rsp");
-            writer.WriteLine("sub rsp, 0CCh"); // Allocate stackframe space.
+            writer.WriteLine("sub rsp, {0}", 16 * Math.Ceiling(((double)this.NumberOfLocalVariables * 8) / 16)); // Allocate stackframe space.
 
             foreach (var block in this.Blocks)
             {

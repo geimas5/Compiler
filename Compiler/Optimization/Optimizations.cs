@@ -4,6 +4,7 @@
     {
         EliminateEqualAssignments,
         LocalCopyPropagation,
-        DeadCodeElimination
+        DeadCodeElimination,
+        AlgebraicOptimization
     }
 }

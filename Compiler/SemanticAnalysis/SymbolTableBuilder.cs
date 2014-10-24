@@ -216,9 +216,19 @@
 
         public override void Visit(FunctionCallExpression node)
         {
-            var symbol = this.currentSymbolTable.GetSymbol(node.Name, SymbolType.Function);
+            node.Symbol = this.currentSymbolTable.GetSymbol(node.Name, SymbolType.Function);
             node.SymbolTable = this.currentSymbolTable;
-            node.Symbol = symbol;
+
+            if (node.Symbol == null)
+            {
+                this.logger.LogError(node.Location, "The function '{0}' is not defined.", node.Name);
+                node.Symbol = new FunctionSymbol(node.Name, new string[0]);
+            }
+
+            foreach (var expressionNode in node.Arguments)
+            {
+                expressionNode.Accept(this);
+            }
 
             base.Visit(node);
         }

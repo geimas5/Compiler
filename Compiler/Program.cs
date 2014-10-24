@@ -10,43 +10,37 @@
         private static void Main(string[] args)
         {
             string program = @"int main()
-{
-    int d = Fibonacci(10);
+            {
+               int[][] d = new int[6][6];
 
-    if(d == 55){
-        PrintLine(""OK"");
-    }
+               d[0][5] = 1;
+               d[1][4] = 2;
+               d[2][3] = 3;       
+               d[3][2] = 4;
+               d[4][1] = 5;
+               d[5][0] = 6;       
+               
+               int i;
+               int j;
+              for(i = 0; i < 6; i = i + 1) {
+                    for(j = 0; j < 6; j = j + 1) {
+                        PrintLine("""");
+                        PrintInt(d[i][j]);
+                    }
+               }
 
-    return 0;
-}
-
-int Fibonacci(int n)
-{
-   if ( n == 0 )
-      return 0;
-   else if ( n == 1 )
-      return 1;
-   
-   return ( Fibonacci(n-1) + Fibonacci(n-2) );
-} ";
-
-//            string program = @"int main()
-//            {
-//               int[][] d = new int[3][2];
-//
-//               d[2][1] = 2;
-//               return 1;
-//            }
-//          ";
+               return 1;
+            }";
             var asembly = new CompilerAssembly
                               {
                                   PrintMessages = true,
                                   PrintIR = true,
                                   ActivatedOptimizations =
                                       {
-                                          Optimizations.EliminateEqualAssignments, 
-                                          Optimizations.LocalCopyPropagation,
-                                          Optimizations.DeadCodeElimination
+                                          //Optimizations.EliminateEqualAssignments, 
+                                          //Optimizations.LocalCopyPropagation,
+                                          //Optimizations.DeadCodeElimination,
+                                          //Optimizations.AlgebraicOptimization
                                       }
                               };
 

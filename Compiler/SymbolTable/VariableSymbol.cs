@@ -1,7 +1,6 @@
 ﻿namespace Compiler.SymbolTable
 {
     using System;
-    using System.Diagnostics;
 
     using Type = Compiler.Type;
 

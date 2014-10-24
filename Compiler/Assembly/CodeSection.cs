@@ -17,7 +17,7 @@
         {
             writer.WriteLine(".code");
 
-            foreach (var procedure in Procedures)
+            foreach (var procedure in this.Procedures)
             {
                 procedure.Write(writer);
             }

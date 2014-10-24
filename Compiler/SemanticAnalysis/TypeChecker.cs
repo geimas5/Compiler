@@ -158,6 +158,16 @@
                 this.logger.LogError(node.Condition.Location, "The condition in the if statement must be a boolean");
             }
 
+            foreach (var statement in node.Body)
+            {
+                statement.Accept(this);
+            }
+
+            foreach (var statement in node.ElseStatements)
+            {
+                statement.Accept(this);
+            }
+
             return null;
         }
 
@@ -291,7 +301,10 @@
                 var parameterType =
                     ((ITypedSymbol)functionSymbol.SymbolTable.GetSymbol(functionSymbol.Parameters[i], SymbolType.Variable)).Type;
 
-                this.CheckAssigmentCompatability(expressionNode, parameterType, expressionType);
+                node.Arguments[i].ResultingType = this.CheckAssigmentCompatability(
+                    expressionNode,
+                    parameterType,
+                    expressionType);
             }
 
             var symbol = node.Symbol as ITypedSymbol;

@@ -1,6 +1,5 @@
 ﻿namespace Compiler.DataFlowAnalysis
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -11,21 +10,32 @@
     {
         public static  IEnumerable<VariableSymbol> GetStatementVariableUsages(Statement statement)
         {
-            if (statement is BinaryOperatorStatement) return GetStatementVariableUsages((BinaryOperatorStatement)statement);
-            if (statement is BranchStatement) return GetStatementVariableUsages((BranchStatement)statement);
-            if (statement is ConvertToDoubleStatement) return GetStatementVariableUsages((ConvertToDoubleStatement)statement);
-            if (statement is ParamStatement) return GetStatementVariableUsages((ParamStatement)statement);
-            if (statement is UnaryOperatorStatement) return GetStatementVariableUsages((UnaryOperatorStatement)statement);
-            if (statement is AssignStatement) return GetStatementVariableUsages((AssignStatement)statement);
-            if (statement is ReturnStatement) return GetStatementVariableUsages((ReturnStatement)statement);
-            if (statement is AllocStatement) return GetStatementVariableUsages((AllocStatement)statement);
+            var symbols = new List<VariableSymbol>();
+
+            var returningStatement = statement as IReturningStatement;
+            if (returningStatement != null)
+            {
+                if (returningStatement.Return is PointerDestination)
+                {
+                    symbols.Add(((PointerDestination)returningStatement.Return).Destination);
+                }
+            }
+
+            if (statement is BinaryOperatorStatement) symbols.AddRange(GetStatementVariableUsages((BinaryOperatorStatement)statement));
+            if (statement is BranchStatement) symbols.AddRange(GetStatementVariableUsages((BranchStatement)statement));
+            if (statement is ConvertToDoubleStatement) symbols.AddRange(GetStatementVariableUsages((ConvertToDoubleStatement)statement));
+            if (statement is ParamStatement) symbols.AddRange(GetStatementVariableUsages((ParamStatement)statement));
+            if (statement is UnaryOperatorStatement) symbols.AddRange(GetStatementVariableUsages((UnaryOperatorStatement)statement));
+            if (statement is AssignStatement) symbols.AddRange(GetStatementVariableUsages((AssignStatement)statement));
+            if (statement is ReturnStatement) symbols.AddRange(GetStatementVariableUsages((ReturnStatement)statement));
+            if (statement is AllocStatement) symbols.AddRange(GetStatementVariableUsages((AllocStatement)statement));
 
             if (statement is CallStatement || statement is JumpStatement || statement is NopStatement)
             {
                 return new VariableSymbol[0];
             }
 
-            throw new ArgumentException("The statement type is not supported", "statement");
+            return symbols;
         }
 
         private static IEnumerable<VariableSymbol> GetStatementVariableUsages(BinaryOperatorStatement statement)
@@ -70,7 +80,10 @@
 
         private static IEnumerable<VariableSymbol> GetVariables(params Argument[] arguments)
         {
-            return arguments.OfType<VariableArgument>().Select(argument => argument.Variable);
+            return
+                arguments.OfType<VariableArgument>()
+                    .Select(argument => argument.Variable)
+                    .Union(arguments.OfType<PointerArgument>().Select(argument => argument.Variable));
         }
     }
 }

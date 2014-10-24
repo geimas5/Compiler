@@ -46,7 +46,7 @@
             return new VoidFunctionDecleration(
                 CreateLocation(context),
                 name,
-                parameters.Reverse(),
+                parameters.OrderBy(m => m.Location.Column).ToArray(),
                 statements.Where(m => m != null));
         }
 
@@ -60,7 +60,7 @@
             return new ReturningFunctionDecleration(
                 CreateLocation(context),
                 name,
-                parameters.Reverse(),
+                parameters.OrderBy(m => m.Location.Column).ToArray(),
                 statements.Where(m => m != null),
                 type);
         }

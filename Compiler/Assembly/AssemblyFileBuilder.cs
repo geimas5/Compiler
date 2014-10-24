@@ -67,17 +67,18 @@
 
             var procedure = new Procedure(name);
 
+            var paramsBlock = new Block(name + "params");
             for (int i = 0; i < Graph.FunctionParameters[name].Count; i++)
             {
                 var param = Graph.FunctionParameters[name][i];
                 var destination = GetVariableDestination(param, parameterOffsets);
 
                 var register = GetArgumentRegister(i);
-                var block = new Block(name + "params");
 
-                block.Instructions.Add(new BinaryOpCodeInstruction(Opcode.MOV, destination, new RegisterOperand(register)));
-                procedure.Blocks.Add(block);
+                paramsBlock.Instructions.Add(new BinaryOpCodeInstruction(Opcode.MOV, destination, new RegisterOperand(register)));    
             }
+
+            procedure.Blocks.Add(paramsBlock);
 
             foreach (var block in functionBlocks)
             {
@@ -91,6 +92,8 @@
             }
 
             file.CodeSection.Procedures.Add(procedure);
+
+            procedure.NumberOfLocalVariables = Math.Abs(currentOffset) / 8;
         }
 
         private static IEnumerable<Instruction> CreateInstruction(
@@ -489,7 +492,13 @@
             AllocStatement statement,
             IDictionary<string, int> parameterOffsets)
         {
-            return new Instruction[0];
+            var instructions = new List<Instruction>();
+
+            instructions.AddRange(PlaceArgumentInRegister(GetArgumentRegister(0), statement.Size, parameterOffsets));
+            instructions.Add(new CallInstruction("Alloc"));
+            instructions.AddRange(WriteRegisterToDestination(statement.Return, Register.RAX, parameterOffsets));
+
+            return instructions;
         }
 
         private static IEnumerable<Instruction> PlaceArgumentInRegister(
@@ -552,8 +561,23 @@
             }
             else if (argument is PointerArgument)
             {
-                throw new Exception();
+                var pointerArgument = (PointerArgument)argument;
 
+                var instructions = new List<Instruction>();
+
+                instructions.AddRange(
+                    PlaceArgumentInRegister(
+                        Register.R12,
+                        new VariableArgument(pointerArgument.Variable),
+                        parameterOffsets));
+
+                instructions.Add(
+                    new BinaryOpCodeInstruction(
+                        Opcode.MOV,
+                        new RegisterOperand(register),
+                        new MemoryOperand(Register.R12)));
+
+                return instructions;
             }
             else
             {
@@ -570,17 +594,29 @@
         {
             var instructions = new List<Instruction>();
 
-            if (destination is VariableDestination)
+            var variableDestination = destination as VariableDestination;
+            if (variableDestination != null)
             {
                 var destinationOperand = GetVariableDestination(
-                    ((VariableDestination)destination).Variable,
+                    variableDestination.Variable,
                     parameterOffsets);
 
                 instructions.Add(new BinaryOpCodeInstruction(Opcode.MOV, destinationOperand, new RegisterOperand(register)));    
             }
             else if (destination is PointerDestination)
             {
-                throw new NotImplementedException();
+                var pointerDestination = (PointerDestination)destination;
+
+                instructions.AddRange(PlaceArgumentInRegister(
+                    Register.R12,
+                    new VariableArgument(pointerDestination.Destination),
+                    parameterOffsets));
+
+                instructions.Add(
+                    new BinaryOpCodeInstruction(
+                        Opcode.MOV,
+                        new MemoryOperand(Register.R12),
+                        new RegisterOperand(register)));
             }
 
             return instructions;

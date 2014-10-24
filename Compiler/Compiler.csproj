@@ -119,6 +119,7 @@
     <Compile Include="DataFlowAnalysis\VariableRegister.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Ml64Runner.cs" />
+    <Compile Include="Optimization\AlgebraicOptimization.cs" />
     <Compile Include="Optimization\CFGUtilities.cs" />
     <Compile Include="Optimization\DeadcodeEliminator.cs" />
     <Compile Include="Optimization\EqualAssignmentEliminatior.cs" />

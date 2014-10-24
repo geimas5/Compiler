@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
-    using System.Linq.Expressions;
 
     using Compiler.SymbolTable;
     using Compiler.SyntaxTree;
@@ -382,7 +381,7 @@
         public override BasicBlock Visit(AssignmentExpression node)
         {
             var beforeBlock = node.RightSide.Accept(this);
-            var argument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
+            var argument = this.ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
 
             Destination destination;
 
@@ -675,6 +674,23 @@
 
                 intermediateCalculation = result;
             }
+
+            var withDataFieldSize = this.MakeTempVariable(expression, Type.IntType);
+            block = block.Append(
+                    new BinaryOperatorStatement(
+                        new VariableDestination(withDataFieldSize),
+                        BinaryOperator.Multiply,
+                        new VariableArgument(intermediateCalculation),
+                        new IntConstantArgument(dataItemSize)));
+
+
+            var resultVariable = this.MakeTempVariable(expression, Type.IntType);
+            block = block.Append(
+                    new BinaryOperatorStatement(
+                        new VariableDestination(resultVariable),
+                        BinaryOperator.Add,
+                        new VariableArgument(indexBaseVariable),
+                        new VariableArgument(withDataFieldSize)));
 
             return block;
         }

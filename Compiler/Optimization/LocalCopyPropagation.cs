@@ -1,6 +1,5 @@
 ﻿namespace Compiler.Optimization
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -23,6 +22,7 @@
                 else if (statement is ReturnStatement) this.HandleStatement((ReturnStatement)statement);
                 else if (statement is AssignStatement) this.HandleStatement((AssignStatement)statement);
                 else if (statement is BranchStatement) this.HandleStatement((BranchStatement)statement);
+                else if (statement is AllocStatement) this.HandleStatement((AllocStatement)statement);
                 else if (statement is IReturningStatement) this.HandleGenericReturningStatement((IReturningStatement)statement);
             }
         }
@@ -96,6 +96,17 @@
             if (copyArg == null) return;
 
             var newStatement = new ReturnStatement(copyArg);
+
+            CFGUtilities.ReplaceStatement(statement, newStatement);
+            this.SetSomethingChanged();
+        }
+
+        private void HandleStatement(AllocStatement statement)
+        {
+            var copyArg = this.GetCopy(statement.Size);
+            if (copyArg == null) return;
+
+            var newStatement = new AllocStatement(statement.Return, copyArg);
 
             CFGUtilities.ReplaceStatement(statement, newStatement);
             this.SetSomethingChanged();
