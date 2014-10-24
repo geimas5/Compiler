@@ -18,6 +18,7 @@
             if (statement is UnaryOperatorStatement) return GetStatementVariableUsages((UnaryOperatorStatement)statement);
             if (statement is AssignStatement) return GetStatementVariableUsages((AssignStatement)statement);
             if (statement is ReturnStatement) return GetStatementVariableUsages((ReturnStatement)statement);
+            if (statement is AllocStatement) return GetStatementVariableUsages((AllocStatement)statement);
 
             if (statement is CallStatement || statement is JumpStatement || statement is NopStatement)
             {
@@ -60,6 +61,11 @@
         private static IEnumerable<VariableSymbol> GetStatementVariableUsages(ReturnStatement statement)
         {
             return GetVariables(statement.Value);
+        }
+
+        private static IEnumerable<VariableSymbol> GetStatementVariableUsages(AllocStatement statement)
+        {
+            return GetVariables(statement.Size);
         }
 
         private static IEnumerable<VariableSymbol> GetVariables(params Argument[] arguments)

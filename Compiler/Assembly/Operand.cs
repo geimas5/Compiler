@@ -1,8 +1,6 @@
 ﻿namespace Compiler.Assembly
 {
-    public enum SingleArgOpcode
+    public abstract class Operand
     {
-
-        IDIV
     }
 }

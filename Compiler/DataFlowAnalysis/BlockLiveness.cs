@@ -31,11 +31,12 @@
             foreach (var statement in this.block.Reverse())
             {
                 var returningStatement = statement as IReturningStatement;
-                if (returningStatement != null && !liveVariables.Get(returningStatement.Return))
+                if (returningStatement != null && returningStatement.Return is VariableDestination
+                    && !liveVariables.Get(((VariableDestination)returningStatement.Return).Variable))
                 {
                     yield return statement;
 
-                    liveVariables.Clear(returningStatement.Return);
+                    liveVariables.Clear(((VariableDestination)returningStatement.Return).Variable);
                 }
 
                 foreach (var variable in StatementHelper.GetStatementVariableUsages(statement))
@@ -52,9 +53,9 @@
                 VariableSymbol definition = null;
 
                 var returningStatement = statement as IReturningStatement;
-                if (returningStatement != null)
+                if (returningStatement != null && returningStatement.Return is VariableDestination)
                 {
-                    definition = returningStatement.Return;
+                    definition = ((VariableDestination)returningStatement.Return).Variable;
                 }
 
                 if (definition != null)

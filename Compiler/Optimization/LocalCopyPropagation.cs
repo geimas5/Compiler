@@ -103,12 +103,15 @@
 
         private void HandleGenericReturningStatement(IReturningStatement statement)
         {
-            this.values.Remove(statement.Return);
+            if (statement.Return is VariableDestination) this.values.Remove(((VariableDestination)statement.Return).Variable);
         }
 
         private void HandleStatement(AssignStatement statement)
         {
-            this.values[statement.Return] = statement.Argument;
+            if (statement.Return is VariableDestination)
+            {
+                this.values[((VariableDestination)statement.Return).Variable] = statement.Argument;
+            }
         }
 
         private Argument GetCopy(Argument argument)

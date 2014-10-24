@@ -1,5 +1,10 @@
 ﻿namespace Compiler.SymbolTable
 {
+    using System;
+    using System.Diagnostics;
+
+    using Type = Compiler.Type;
+
     public class VariableSymbol : ITypedSymbol
     {
         protected bool Equals(VariableSymbol other)
@@ -14,6 +19,11 @@
 
         public VariableSymbol(string name, Type type)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException("type");
+            }
+            
             this.Type = type;
             this.Name = name;
         }
@@ -45,7 +55,7 @@
 
         public override string ToString()
         {
-            return Name; // + ":" + Type;
+            return Name;
         }
     }
 }

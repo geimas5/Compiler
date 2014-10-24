@@ -32,10 +32,10 @@ int Fibonacci(int n)
 
 //            string program = @"int main()
 //            {
-//               int d = 34;
-//               int f = 42;
-//               d = 43 + f;
-//               return d;
+//               int[][] d = new int[3][2];
+//
+//               d[2][1] = 2;
+//               return 1;
 //            }
 //          ";
             var asembly = new CompilerAssembly

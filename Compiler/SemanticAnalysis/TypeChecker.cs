@@ -2,8 +2,6 @@
 {
     using System;
 
-    using Antlr4.Runtime;
-
     using Compiler.SymbolTable;
     using Compiler.SyntaxTree;
 
@@ -25,7 +23,7 @@
 
         public override Type Visit(ArrayCreatorExpression node)
         {
-            return new Type(node.Type, node.Sizes.Count);
+            return node.ResultingType = new Type(node.Type, node.Sizes.Count);
         }
 
         public override Type Visit(WhileStatement node)

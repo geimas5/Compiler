@@ -4,7 +4,7 @@
 
     public class ReturningCallStatement : CallStatement, IReturningStatement
     {
-        public ReturningCallStatement(FunctionSymbol function, int numberOfArguments, VariableSymbol destination)
+        public ReturningCallStatement(FunctionSymbol function, int numberOfArguments, Destination destination)
             : base(function, numberOfArguments)
         {
             this.Return = destination;
@@ -15,6 +15,6 @@
             return string.Format("{0} = Call {1}, {2}", this.Return, this.Function.Name, this.NumberOfArguments);
         }
 
-        public VariableSymbol Return { get; private set; }
+        public Destination Return { get; private set; }
     }
 }

@@ -1,10 +1,8 @@
 ﻿namespace Compiler.ControlFlowGraph
 {
-    using Compiler.SymbolTable;
-
     public class AssignStatement : Statement, IReturningStatement
     {
-        public AssignStatement(VariableSymbol destination, Argument argument)
+        public AssignStatement(Destination destination, Argument argument)
         {
             this.Argument = argument;
             this.Return = destination;
@@ -17,6 +15,6 @@
             return string.Format("{0} = {1}", this.Return, Argument);
         }
 
-        public VariableSymbol Return { get; private set; }
+        public Destination Return { get; private set; }
     }
 }

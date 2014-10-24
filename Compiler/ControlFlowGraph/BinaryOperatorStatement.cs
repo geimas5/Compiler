@@ -2,12 +2,11 @@
 {
     using System;
 
-    using Compiler.SymbolTable;
     using Compiler.SyntaxTree;
 
     public class BinaryOperatorStatement : Statement, IReturningStatement
     {
-        public BinaryOperatorStatement(VariableSymbol @return, BinaryOperator @operator, Argument left, Argument right)
+        public BinaryOperatorStatement(Destination @return, BinaryOperator @operator, Argument left, Argument right)
         {
             this.Operator = @operator;
             this.Left = left;
@@ -75,6 +74,6 @@
             return string.Format("{0} = {1} {2} {3}", this.Return, this.Left, op, this.Right);
         }
 
-        public VariableSymbol Return { get; private set; }
+        public Destination Return { get; private set; }
     }
 }

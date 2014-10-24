@@ -4,16 +4,19 @@
 
     public class JumpInstruction : Instruction
     {
-        public JumpInstruction(string target)
+        public JumpInstruction(JumpOpCodes opCode, string target)
         {
             this.Target = target;
+            this.OpCode = opCode;
         }
 
-        public string Target { get; set; }
+        public string Target { get; private set; }
+
+        public JumpOpCodes OpCode { get; private set; }
 
         public override void Write(TextWriter writer)
         {
-            writer.WriteLine("JMP {0}", this.Target);
+            writer.WriteLine("{0} {1}", OpCode, this.Target);
         }
     }
 }

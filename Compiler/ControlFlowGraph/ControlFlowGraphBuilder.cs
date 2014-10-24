@@ -4,15 +4,20 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Linq.Expressions;
 
     using Compiler.SymbolTable;
     using Compiler.SyntaxTree;
 
     using ConstantExpression = Compiler.SyntaxTree.ConstantExpression;
     using Type = Compiler.Type;
+    using UnaryExpression = Compiler.SyntaxTree.UnaryExpression;
 
     public class ControlFlowGraphBuilder : Visitor<BasicBlock>
     {
+        private const int dataItemSize = 8; // In bytes.
+
+
         private ControlFlowGraph controlFlowGraph;
 
         private readonly Stack<Statement> loopExits = new Stack<Statement>(); 
@@ -58,8 +63,8 @@
         public override BasicBlock Visit(InitializedVariableDecleration node)
         {
             var initBlock = node.Initialization.Accept(this);
-            var argument = new VariableArgument(((IReturningStatement)initBlock.Exit).Return);
-            var statemment = new AssignStatement((VariableSymbol)node.Variable.Name.Symbol, argument);
+            var argument = this.ToArgument(((IReturningStatement)initBlock.Exit).Return);
+            var statemment = new AssignStatement(new VariableDestination((VariableSymbol)node.Variable.Name.Symbol), argument);
 
             return initBlock.Append(statemment);
         }
@@ -68,7 +73,7 @@
         {
             var variable = this.MakeTempVariable(node, new Type(PrimitiveType.Int));
 
-            var assignment = new AssignStatement(variable, new IntConstantArgument(node.Value));
+            var assignment = new AssignStatement(new VariableDestination(variable), new IntConstantArgument(node.Value));
             return new BasicBlock(assignment);
         }
 
@@ -76,14 +81,14 @@
         {
             var variable = this.MakeTempVariable(node, new Type(PrimitiveType.Boolean));
 
-            var assignment = new AssignStatement(variable, new BooleanConstantArgument(node.Value));
+            var assignment = new AssignStatement(new VariableDestination(variable), new BooleanConstantArgument(node.Value));
             return new BasicBlock(assignment);
         }
 
         public override BasicBlock Visit(VariableExpression node)
         {
             var assignment = new AssignStatement(
-                (VariableSymbol)node.VariableId.Symbol,
+                new VariableDestination((VariableSymbol)node.VariableId.Symbol),
                 new VariableArgument((VariableSymbol)node.VariableId.Symbol));
             return new BasicBlock(assignment);
         }
@@ -103,13 +108,85 @@
 
             var variable = this.MakeTempVariable(node, new Type(PrimitiveType.Int));
 
-            var assignment = new AssignStatement(variable, new GlobalArgument(name));
+            var assignment = new AssignStatement(new VariableDestination(variable), new GlobalArgument(name));
             return new BasicBlock(assignment);
         }
 
         public override BasicBlock Visit(ArrayCreatorExpression node)
         {
-            throw new NotImplementedException();
+            BasicBlock basicBlock = null;
+
+            var sizes = new List<VariableSymbol>();
+            VariableSymbol totalNumberOfElements = null;
+
+            foreach (var size in node.Sizes)
+            {
+                basicBlock = basicBlock == null ? size.Accept(this) : basicBlock.Join(size.Accept(this));
+
+                sizes.Add(((VariableDestination)((IReturningStatement)basicBlock.Exit).Return).Variable);
+
+                if (totalNumberOfElements == null)
+                {
+                    totalNumberOfElements = this.MakeTempVariable(node, Type.IntType);
+                    basicBlock = basicBlock.Append(new AssignStatement(new VariableDestination(totalNumberOfElements), new VariableArgument(sizes.Last())));
+                }
+                else
+                {
+                    var newtotalNumberOfElements = this.MakeTempVariable(node, Type.IntType);
+                    basicBlock =
+                        basicBlock.Append(
+                            new BinaryOperatorStatement(
+                                new VariableDestination(newtotalNumberOfElements),
+                                BinaryOperator.Multiply,
+                                new VariableArgument(sizes.Last()),
+                                new VariableArgument(totalNumberOfElements)));
+
+                    totalNumberOfElements = newtotalNumberOfElements;
+                }
+            }
+
+            var totalElemmentSize = this.MakeTempVariable(node, Type.IntType);
+            basicBlock = basicBlock.Append(
+                    new BinaryOperatorStatement(
+                        new VariableDestination(totalElemmentSize),
+                        BinaryOperator.Multiply,
+                        new VariableArgument(totalNumberOfElements), 
+                        new IntConstantArgument(dataItemSize)));
+
+
+            var totalSize = this.MakeTempVariable(node, Type.IntType);
+            basicBlock = basicBlock.Append(
+                    new BinaryOperatorStatement(
+                        new VariableDestination(totalSize),
+                        BinaryOperator.Add,
+                        new VariableArgument(totalElemmentSize), 
+                        new IntConstantArgument(node.Sizes.Count * dataItemSize)));
+
+
+            // Allocate the array, store the pointer in variable2.
+            var allocVariable = this.MakeTempVariable(node, node.ResultingType);
+            basicBlock = basicBlock.Append(new AllocStatement(new VariableDestination(allocVariable), new VariableArgument(totalSize)));
+
+
+            // Store variable dimention sizes.
+            for (int i = 0; i < sizes.Count; i++)
+            {
+                var sizeOffsetVariable = this.MakeTempVariable(node, node.ResultingType);
+                basicBlock =
+                    basicBlock.Append(
+                        new BinaryOperatorStatement(
+                            new VariableDestination(sizeOffsetVariable), 
+                            BinaryOperator.Add,
+                            new VariableArgument(allocVariable),
+                            new IntConstantArgument(i * dataItemSize)));
+
+                basicBlock = basicBlock.Append(new AssignStatement(new PointerDestination(sizeOffsetVariable, Type.IntType), new VariableArgument(sizes[i])));
+            }
+
+            // Needed to have the variable at the end of the block to join with next statement.
+            var statemment = new AssignStatement(new VariableDestination(allocVariable), new VariableArgument(allocVariable));
+
+            return basicBlock.Append(statemment);
         }
 
         public override BasicBlock Visit(UnaryExpression node)
@@ -117,9 +194,9 @@
             var tempVariable = this.MakeTempVariable(node, node.ResultingType);
 
             var beforeBlock = node.Expression.Accept(this);
-            var leftArgument = new VariableArgument(((IReturningStatement)beforeBlock.Exit).Return);
+            var leftArgument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
 
-            var statement = new UnaryOperatorStatement(tempVariable, node.Operator, leftArgument);
+            var statement = new UnaryOperatorStatement(new VariableDestination(tempVariable), node.Operator, leftArgument);
 
             return beforeBlock.Append(statement);
         }
@@ -128,14 +205,14 @@
         {
             var variable = this.MakeTempVariable(node, new Type(PrimitiveType.Double));
 
-            var assignment = new AssignStatement(variable, new DoubleConstantArgument(node.Value));
+            var assignment = new AssignStatement(new VariableDestination(variable), new DoubleConstantArgument(node.Value));
             return new BasicBlock(assignment);
         }
 
         public override BasicBlock Visit(ReturnExpressionStatement node)
         {
             var block = node.Expression.Accept(this);
-            var argument = new VariableArgument(((IReturningStatement)block.Exit).Return);
+            var argument = ToArgument(((IReturningStatement)block.Exit).Return);
             var statement = new ReturnStatement(argument);
 
             return block.Append(statement);
@@ -147,39 +224,39 @@
             
             if (node.Operator == BinaryOperator.And || node.Operator == BinaryOperator.Or)
             {
-                var trueBranch = new BasicBlock(new AssignStatement(tempVariable, new BooleanConstantArgument(true)));
-                var falseBranch = new BasicBlock(new AssignStatement(tempVariable, new BooleanConstantArgument(false)));
+                var trueBranch = new BasicBlock(new AssignStatement(new VariableDestination(tempVariable), new BooleanConstantArgument(true)));
+                var falseBranch = new BasicBlock(new AssignStatement(new VariableDestination(tempVariable), new BooleanConstantArgument(false)));
 
                 var branch = this.CreateBranchNode(node, trueBranch, falseBranch);
 
-                return branch.Append(new AssignStatement(tempVariable, new VariableArgument(tempVariable)));
+                return branch.Append(new AssignStatement(new VariableDestination(tempVariable), new VariableArgument(tempVariable)));
             }
 
             var leftBlock = node.Left.Accept(this);
             var rightBlock = node.Right.Accept(this);
             var beforeBlock = leftBlock.Join(rightBlock);
 
-            var leftArgument = new VariableArgument(((IReturningStatement)leftBlock.Exit).Return);
-            var rightArguumment = new VariableArgument(((IReturningStatement)rightBlock.Exit).Return);
+            var leftArgument = ToArgument(((IReturningStatement)leftBlock.Exit).Return);
+            var rightArguumment = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
 
             if (Equals(node.ResultingType, Type.DoubleType))
             {
-                if (Equals(leftArgument.Variable.Type, Type.IntType))
+                if (Equals(node.Left.ResultingType, Type.IntType))
                 {
                     var leftTempVariable = this.MakeTempVariable(node, Type.DoubleType);
-                    beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(leftTempVariable, leftArgument));
-                    leftArgument = new VariableArgument(((IReturningStatement)beforeBlock.Exit).Return);
+                    beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(new VariableDestination(leftTempVariable), leftArgument));
+                    leftArgument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
                 }
 
-                if (Equals(rightArguumment.Variable.Type, Type.IntType))
+                if (Equals(node.Left.ResultingType, Type.IntType))
                 {
                     var rightTempVariable = this.MakeTempVariable(node, Type.DoubleType);
-                    beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(rightTempVariable, rightArguumment));
-                    rightArguumment = new VariableArgument(((IReturningStatement)beforeBlock.Exit).Return);
+                    beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(new VariableDestination(rightTempVariable), rightArguumment));
+                    rightArguumment = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
                 }
             }
 
-            var statement = new BinaryOperatorStatement(tempVariable, node.Operator, leftArgument, rightArguumment);
+            var statement = new BinaryOperatorStatement(new VariableDestination(tempVariable), node.Operator, leftArgument, rightArguumment);
 
             return beforeBlock.Append(statement);
         }
@@ -234,7 +311,13 @@
 
         public override BasicBlock Visit(IndexerExpression node)
         {
-            return base.Visit(node);
+            var indexer = this.BuildIndexerLocationVariable(node);
+            var tempVariable = this.MakeTempVariable(node, Type.IntType);
+
+            var assignment = new AssignStatement(
+               new VariableDestination(tempVariable),
+               new PointerArgument(((VariableDestination)((IReturningStatement)indexer.Exit).Return).Variable));
+            return indexer.Join(new BasicBlock(assignment));
         }
 
         public override BasicBlock Visit(FunctionCallExpression node)
@@ -243,11 +326,11 @@
 
             if (node.Arguments.Any())
             {
-                var arguments = new List<VariableArgument>();
+                var arguments = new List<Argument>();
                 foreach (var expressionNode in node.Arguments)
                 {
                     var nodeStatements = expressionNode.Accept(this);
-                    arguments.Add(new VariableArgument(((IReturningStatement)nodeStatements.Exit).Return));
+                    arguments.Add(this.ToArgument(((IReturningStatement)nodeStatements.Exit).Return));
 
                     block = block == null ? nodeStatements : block.Join(nodeStatements);
                 }
@@ -264,7 +347,7 @@
             {
                 var temp = this.MakeTempVariable(node, ((ReturningFunctionSymbol)node.Symbol).Type);
 
-                callStatement = new ReturningCallStatement((FunctionSymbol)node.Symbol, node.Arguments.Count, temp);
+                callStatement = new ReturningCallStatement((FunctionSymbol)node.Symbol, node.Arguments.Count, new VariableDestination(temp));
             }
             else
             {
@@ -299,20 +382,25 @@
         public override BasicBlock Visit(AssignmentExpression node)
         {
             var beforeBlock = node.RightSide.Accept(this);
-            var argument = new VariableArgument(((IReturningStatement)beforeBlock.Exit).Return);
+            var argument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
 
-            VariableSymbol symbol;
+            Destination destination;
 
             if (node.LeftSide is VariableExpression)
             {
-                symbol = (VariableSymbol)((VariableExpression)node.LeftSide).VariableId.Symbol;
+                destination = new VariableDestination((VariableSymbol)((VariableExpression)node.LeftSide).VariableId.Symbol);
             }
             else
             {
-                throw new NotImplementedException();
+                beforeBlock = beforeBlock.Join(this.BuildIndexerLocationVariable((IndexerExpression)node.LeftSide));
+
+                destination =
+                    new PointerDestination(
+                        ((VariableDestination)((IReturningStatement)beforeBlock.Exit).Return).Variable,
+                        node.ResultingType);
             }
 
-            var statement = new AssignStatement(symbol, argument);
+            var statement = new AssignStatement(destination, argument);
             return beforeBlock.Append(statement);
         }
 
@@ -371,13 +459,13 @@
             var binaryExpression = expression as BinaryOperatorExpression;
 
             var leftBlock = binaryExpression.Left.Accept(this);
-            var leftArgument = new VariableArgument(((IReturningStatement)leftBlock.Exit).Return);
+            var leftArgument = ToArgument(((IReturningStatement)leftBlock.Exit).Return);
 
             if (binaryExpression.Operator != BinaryOperator.And
                 && binaryExpression.Operator != BinaryOperator.Or)
             {
                 var rightBlock = binaryExpression.Right.Accept(this);
-                var rightArguumment = new VariableArgument(((IReturningStatement)rightBlock.Exit).Return);
+                var rightArguumment = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
                 var beforeBlock = leftBlock.Join(rightBlock);
 
                 var branchStatement = new BranchStatement(
@@ -408,7 +496,7 @@
                     falseBranch.Enter);
 
                 var rightBlock = binaryExpression.Right.Accept(this);
-                var rightArguumment = new VariableArgument(((IReturningStatement)rightBlock.Exit).Return);
+                var rightArguumment = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
 
                 var seccondBranch = new BranchStatement(
                     true,
@@ -429,7 +517,7 @@
                    trueBranch.Enter);
 
                 var rightBlock = binaryExpression.Right.Accept(this);
-                var rightArguumment = new VariableArgument(((IReturningStatement)rightBlock.Exit).Return);
+                var rightArguumment = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
 
                 var seccondBranch = new BranchStatement(
                     true,
@@ -498,6 +586,97 @@
             Debug.Assert(count == blocks.Sum(m => m.Count()));
 
             return blocks;
-        } 
+        }
+
+        private Argument ToArgument(Destination destination)
+        {
+            var variableDestination = destination as VariableDestination;
+            if (variableDestination != null)
+            {
+                return new VariableArgument(variableDestination.Variable);
+            }
+
+            var pointerDestination = destination as PointerDestination;
+            if (pointerDestination != null)
+            {
+                return new PointerArgument(pointerDestination.Destination);
+            }
+
+            throw new ArgumentException("The destination type can not be converted to a argument", "destination");
+        }
+
+        private BasicBlock BuildIndexerLocationVariable(IndexerExpression expression)
+        {
+            var indexes = new List<Argument>();
+
+            var currentIndexer = expression;
+
+            BasicBlock block = null;
+            VariableSymbol arrayVariable = null;
+
+            do
+            {
+                block = block == null ? currentIndexer.Index.Accept(this) : block.Join(currentIndexer.Index.Accept(this));
+
+                indexes.Add(this.ToArgument(((IReturningStatement)block.Exit).Return));
+
+                if (currentIndexer.Name is VariableExpression)
+                {
+                    arrayVariable = (VariableSymbol)((VariableExpression)currentIndexer.Name).VariableId.Symbol;
+                }
+
+                currentIndexer = currentIndexer.Name as IndexerExpression;
+            }
+            while (currentIndexer != null);
+
+            var indexBaseVariable = this.MakeTempVariable(expression, Type.IntType);
+            block = block.Append(
+                    new BinaryOperatorStatement(
+                        new VariableDestination(indexBaseVariable),
+                        BinaryOperator.Add,
+                        new VariableArgument(arrayVariable),
+                        new IntConstantArgument(indexes.Count * dataItemSize)));
+
+
+            VariableSymbol intermediateCalculation = this.MakeTempVariable(expression, Type.IntType);
+            block = block.Append(new AssignStatement(new VariableDestination(intermediateCalculation), indexes[0]));
+
+            for (int i = 1; i < indexes.Count; i++)
+            {
+                var rowItemNumLocation = this.MakeTempVariable(expression, Type.IntType);
+                block = block.Append(new BinaryOperatorStatement(
+                            new VariableDestination(rowItemNumLocation),
+                            BinaryOperator.Add,
+                            new VariableArgument(arrayVariable),
+                            new IntConstantArgument(i * dataItemSize)));
+
+                var rowElements = this.MakeTempVariable(expression, Type.IntType);
+                block = block.Append(new AssignStatement(
+                            new VariableDestination(rowElements),
+                            new PointerArgument(rowItemNumLocation)));
+
+                var rowLocation = this.MakeTempVariable(expression, Type.IntType);
+
+                block = block.Append(
+                        new BinaryOperatorStatement(
+                            new VariableDestination(rowLocation),
+                            BinaryOperator.Multiply,
+                            new VariableArgument(intermediateCalculation),
+                            new VariableArgument(rowElements)));
+
+                var result = this.MakeTempVariable(expression, Type.IntType);
+
+                block = block.Append(
+                        new BinaryOperatorStatement(
+                            new VariableDestination(result),
+                            BinaryOperator.Add,
+                            new VariableArgument(rowLocation),
+                            indexes[i]));
+
+                intermediateCalculation = result;
+            }
+
+            return block;
+        }
     }
 }

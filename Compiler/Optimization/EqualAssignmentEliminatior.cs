@@ -21,8 +21,8 @@
                 foreach (var statement in block)
                 {
                     var assignStatement = statement as AssignStatement;
-                    if (assignStatement != null && (assignStatement.Argument is VariableArgument)
-                        && ((VariableArgument)assignStatement.Argument).Variable == assignStatement.Return)
+                    if (assignStatement != null && (assignStatement.Argument is VariableArgument) && assignStatement.Return is VariableDestination
+                        && ((VariableArgument)assignStatement.Argument).Variable == ((VariableDestination)assignStatement.Return).Variable)
                     {
                         toRemove = statement;
                         remove = true;
