@@ -1,13 +1,27 @@
 ﻿
 namespace Compiler.Optimization
 {
+    using System.Collections.Generic;
     using System.Linq;
 
     using Compiler.ControlFlowGraph;
-    using Compiler.SyntaxTree;
+    using Compiler.Optimization.AlgeabraicRules;
 
     public class AlgebraicOptimization : OptimizerBase
     {
+        private static readonly List<IAlgeabraicRule> rules = new List<IAlgeabraicRule>();
+
+        public AlgebraicOptimization()
+        {
+            if (!rules.Any())
+            {
+                rules.Add(new IntBinaryOperatorConstantRule());
+                rules.Add(new IntAddZeroRule());
+                rules.Add(new IntMultiplyZeroRule());
+                rules.Add(new IntMultiplyOneRule());
+            }
+        }
+
         public override void VisitBlock(BasicBlock block)
         {
             foreach (var statement in block.ToArray())
@@ -18,64 +32,14 @@ namespace Compiler.Optimization
 
         private void ProcessStatement(Statement statement)
         {
-            if (statement is BinaryOperatorStatement) this.ProcessStatement((BinaryOperatorStatement)statement);
-        }
-
-        private void ProcessStatement(BinaryOperatorStatement statement)
-        {
-            if (statement.Left is IntConstantArgument && statement.Right is IntConstantArgument)
+            foreach (var algeabraicRule in rules)
             {
-                this.ProcessIntBinaryOperator(statement);
-            }
-            else if (statement.Right is IntConstantArgument && ((IntConstantArgument)statement.Right).Value == 0 && statement.Operator == BinaryOperator.Add)
-            {
-                CFGUtilities.ReplaceStatement(statement, new AssignStatement(statement.Return, statement.Left));
-                this.SetSomethingChanged();
-            }
-            else if (statement.Left is IntConstantArgument && ((IntConstantArgument)statement.Left).Value == 0 && statement.Operator == BinaryOperator.Add)
-            {
-                CFGUtilities.ReplaceStatement(statement, new AssignStatement(statement.Return, statement.Right));
-                this.SetSomethingChanged();
-            }
-        }
-
-        private void ProcessIntBinaryOperator(BinaryOperatorStatement statement)
-        {
-            long newValue;
-
-            switch (statement.Operator)
-            {
-                case BinaryOperator.Add:
-                    newValue = ((IntConstantArgument)statement.Left).Value + ((IntConstantArgument)statement.Right).Value;
-                    break;
-                case BinaryOperator.Subtract:
-                    newValue = ((IntConstantArgument)statement.Left).Value - ((IntConstantArgument)statement.Right).Value;
-                    break;
-                case BinaryOperator.Multiply:
-                    newValue = ((IntConstantArgument)statement.Left).Value * ((IntConstantArgument)statement.Right).Value;
-                    break;
-                case BinaryOperator.Divide:
-                    if (((IntConstantArgument)statement.Right).Value == 0)
-                    {
-                        return;
-                    }
-
-                    newValue = ((IntConstantArgument)statement.Left).Value / ((IntConstantArgument)statement.Right).Value;
-                    break;
-                case BinaryOperator.Mod:
-                    if (((IntConstantArgument)statement.Right).Value == 0)
-                    {
-                        return;
-                    }
-
-                    newValue = ((IntConstantArgument)statement.Left).Value % ((IntConstantArgument)statement.Right).Value;
-                    break;
-                default:
+                if (algeabraicRule.ProcessStatement(statement))
+                {
+                    this.SetSomethingChanged();
                     return;
+                }
             }
-
-            CFGUtilities.ReplaceStatement(statement, new AssignStatement(statement.Return, new IntConstantArgument(newValue)));
-            this.SetSomethingChanged();
         }
     }
 }

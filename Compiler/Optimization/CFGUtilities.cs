@@ -41,6 +41,9 @@
 
             if (before.Previous != null) before.Previous.Next = after;
             if (before.Next != null) before.Next.Previous = after;
+
+            if (before.BasicBlock.Enter == before) before.BasicBlock.Enter = after;
+            if (before.BasicBlock.Exit == before) before.BasicBlock.Exit = after;
         }
 
         private static void UpdateJumpSourcesToNewStatement(Statement beforeStatement, Statement newStatement)

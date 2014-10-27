@@ -4,11 +4,18 @@
     using System.Collections.Generic;
     using System.IO;
 
+    using Compiler.SymbolTable;
+
     public class Procedure : AssemblyObject
     {
-        public Procedure(string name)
+        readonly Dictionary<string, int> parameterOffsets = new Dictionary<string, int>();
+
+        private static int currentOffset;
+
+        public Procedure(string name, AssemblyFile assemblyFile)
         {
             this.Name = name;
+            this.AssemblyFile = assemblyFile;
             this.Blocks = new List<Block>();
         }
 
@@ -16,7 +23,15 @@
 
         public IList<Block> Blocks { get; private set; }
 
-        public int NumberOfLocalVariables { get; set; }
+        public AssemblyFile AssemblyFile { get; private set; }
+
+        public int NumberOfLocalVariables
+        {
+            get
+            {
+                return Math.Abs(currentOffset) / 8;
+            }
+        }
 
         public override void Write(TextWriter writer)
         {
@@ -24,7 +39,7 @@
 
             writer.WriteLine("push rbp");
             writer.WriteLine("mov rbp, rsp");
-            writer.WriteLine("sub rsp, {0}", 16 * Math.Ceiling(((double)this.NumberOfLocalVariables * 8) / 16)); // Allocate stackframe space.
+            writer.WriteLine("sub rsp, {0}", 16 * Math.Ceiling(((double)this.NumberOfLocalVariables * 8) / 16)); // Allocate stackframe space, and allign to 16 bit.
 
             foreach (var block in this.Blocks)
             {
@@ -42,6 +57,23 @@
             writer.WriteLine("pop rbp");
             writer.WriteLine("ret");
             writer.WriteLine(this.Name + " ENDP");
+        }
+
+        public MemoryOperand GetVarialeLocation(VariableSymbol variableSymbol)
+        {
+            int varOffset;
+
+            if (this.parameterOffsets.ContainsKey(variableSymbol.Name))
+            {
+                varOffset = this.parameterOffsets[variableSymbol.Name];
+            }
+            else
+            {
+                varOffset = currentOffset -= 8;
+                this.parameterOffsets[variableSymbol.Name] = currentOffset;
+            }
+
+            return new MemoryOperand(Register.RBP, varOffset);
         }
     }
 }

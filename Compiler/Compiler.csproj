@@ -53,9 +53,12 @@
   <ItemGroup>
     <Compile Include="Assembler.cs" />
     <Compile Include="Assembly\AssemblyFile.cs" />
-    <Compile Include="Assembly\AssemblyFileBuilder.cs" />
+    <Compile Include="Assembly\Builder\AssemblyFileBuilder.cs" />
     <Compile Include="Assembly\AssemblyObject.cs" />
     <Compile Include="Assembly\Block.cs" />
+    <Compile Include="Assembly\Builder\AssignOperatorBuilder.cs" />
+    <Compile Include="Assembly\Builder\BinaryOperatorBuilder.cs" />
+    <Compile Include="Assembly\Builder\BuilderHelper.cs" />
     <Compile Include="Assembly\CallInstruction.cs" />
     <Compile Include="Assembly\CodeSection.cs" />
     <Compile Include="Assembly\ConstantOperand.cs" />
@@ -74,6 +77,7 @@
     <Compile Include="Assembly\RealEntry.cs" />
     <Compile Include="Assembly\Register.cs" />
     <Compile Include="Assembly\RegisterOperand.cs" />
+    <Compile Include="Assembly\RegisterUtility.cs" />
     <Compile Include="Assembly\Section.cs" />
     <Compile Include="Assembly\SingleArgOpcode.cs" />
     <Compile Include="Assembly\SingleOpcodeInstruction.cs" />
@@ -119,6 +123,11 @@
     <Compile Include="DataFlowAnalysis\VariableRegister.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Ml64Runner.cs" />
+    <Compile Include="Optimization\AlgeabraicRules\IAlgeabraicRule.cs" />
+    <Compile Include="Optimization\AlgeabraicRules\IntAddZeroRule.cs" />
+    <Compile Include="Optimization\AlgeabraicRules\IntBinaryOperatorConstantRule.cs" />
+    <Compile Include="Optimization\AlgeabraicRules\IntMultiplyOneRule.cs" />
+    <Compile Include="Optimization\AlgeabraicRules\IntMultiplyZeroRule.cs" />
     <Compile Include="Optimization\AlgebraicOptimization.cs" />
     <Compile Include="Optimization\CFGUtilities.cs" />
     <Compile Include="Optimization\DeadcodeEliminator.cs" />

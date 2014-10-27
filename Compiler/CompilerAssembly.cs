@@ -5,6 +5,7 @@
     using System.IO;
 
     using Compiler.Assembly;
+    using Compiler.Assembly.Builder;
     using Compiler.ControlFlowGraph;
     using Compiler.Optimization;
     using Compiler.Parser.Antlr;
