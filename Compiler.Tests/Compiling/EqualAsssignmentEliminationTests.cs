@@ -35,6 +35,22 @@
             this.TestProgram("Program3.m", "Program3Result.txt");
         }
 
+        [TestMethod]
+        [DeploymentItem("Compiling/Programs/Program4.m")]
+        [DeploymentItem("Compiling/Programs/Program4Result.txt")]
+        public void TestProgram4()
+        {
+            this.TestProgram("Program4.m", "Program4Result.txt");
+        }
+
+        [TestMethod]
+        [DeploymentItem("Compiling/Programs/Program5.m")]
+        [DeploymentItem("Compiling/Programs/Program5Result.txt")]
+        public void TestProgram5()
+        {
+            this.TestProgram("Program5.m", "Program5Result.txt");
+        }
+
         private void TestProgram(string programFile, string resultFile)
         {
             var result = this.CompileAndRunProgram(programFile).Trim();

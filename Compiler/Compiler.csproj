@@ -123,6 +123,8 @@
     <Compile Include="DataFlowAnalysis\VariableRegister.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Ml64Runner.cs" />
+    <Compile Include="Optimization\AlgeabraicRules\ConvertToDoubleIntConstantRule.cs" />
+    <Compile Include="Optimization\AlgeabraicRules\DoubleBinaryOperatorConstantRulle.cs" />
     <Compile Include="Optimization\AlgeabraicRules\IAlgeabraicRule.cs" />
     <Compile Include="Optimization\AlgeabraicRules\IntAddZeroRule.cs" />
     <Compile Include="Optimization\AlgeabraicRules\IntBinaryOperatorConstantRule.cs" />

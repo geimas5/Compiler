@@ -111,7 +111,7 @@
                 instructions.Add(
                     new BinaryOpCodeInstruction(
                         Opcode.MOV,
-                        new MemoryOperand(Register.R12),
+                        new MemoryOperand(Register.R11),
                         new RegisterOperand(register)));
             }
 

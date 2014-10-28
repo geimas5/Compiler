@@ -54,7 +54,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Compiling\FullOptimizationTests.cs" />
     <Compile Include="Compiling\CompilingTests.cs" />
+    <Compile Include="Compiling\AlgebraicOptimizationTests.cs" />
     <Compile Include="Compiling\LocalCopyPropagationTests.cs" />
     <Compile Include="Compiling\EqualAsssignmentEliminationTests.cs" />
     <Compile Include="Parser\MLexerTests.cs" />
@@ -76,6 +78,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Compiling\Programs\Program2.m">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Compiling\Programs\Program5.m">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -183,6 +188,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Compiling\Programs\Program5Result.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Compiling\Programs\Program4Result.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -236,7 +236,7 @@
             var beforeBlock = leftBlock.Join(rightBlock);
 
             var leftArgument = ToArgument(((IReturningStatement)leftBlock.Exit).Return);
-            var rightArguumment = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
+            var rightArgument = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
 
             if (Equals(node.ResultingType, Type.DoubleType))
             {
@@ -247,15 +247,15 @@
                     leftArgument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
                 }
 
-                if (Equals(node.Left.ResultingType, Type.IntType))
+                if (Equals(node.Right.ResultingType, Type.IntType))
                 {
                     var rightTempVariable = this.MakeTempVariable(node, Type.DoubleType);
-                    beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(new VariableDestination(rightTempVariable), rightArguumment));
-                    rightArguumment = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
+                    beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(new VariableDestination(rightTempVariable), rightArgument));
+                    rightArgument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
                 }
             }
 
-            var statement = new BinaryOperatorStatement(new VariableDestination(tempVariable), node.Operator, leftArgument, rightArguumment);
+            var statement = new BinaryOperatorStatement(new VariableDestination(tempVariable), node.Operator, leftArgument, rightArgument);
 
             return beforeBlock.Append(statement);
         }
@@ -382,6 +382,13 @@
         {
             var beforeBlock = node.RightSide.Accept(this);
             var argument = this.ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
+
+            if (Equals(node.ResultingType, Type.DoubleType) && Equals(node.RightSide.ResultingType, Type.IntType))
+            {
+                var tempVariable = this.MakeTempVariable(node, Type.DoubleType);
+                beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(new VariableDestination(tempVariable), argument));
+                argument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
+            }
 
             Destination destination;
 

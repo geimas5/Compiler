@@ -29,7 +29,7 @@
         {
             get
             {
-                return Math.Abs(currentOffset) / 8;
+                return (Math.Abs(currentOffset) + 8) / 8;
             }
         }
 
@@ -39,7 +39,7 @@
 
             writer.WriteLine("push rbp");
             writer.WriteLine("mov rbp, rsp");
-            writer.WriteLine("sub rsp, {0}", 16 * Math.Ceiling(((double)this.NumberOfLocalVariables * 8) / 16)); // Allocate stackframe space, and allign to 16 bit.
+            writer.WriteLine("sub rsp, {0}", (16 * Math.Ceiling(((double)this.NumberOfLocalVariables * 8) / 16)) + 8); // Allocate stackframe space, and allign to 16 bit.
 
             foreach (var block in this.Blocks)
             {

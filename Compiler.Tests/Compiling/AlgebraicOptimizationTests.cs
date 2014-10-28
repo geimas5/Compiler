@@ -3,11 +3,13 @@
     using System.Diagnostics;
     using System.IO;
 
+    using Compiler.Optimization;
+
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     [DeploymentItem("Assemble.bat")]
-    public class CompilingTests
+    public class AlgebraicOptimizationTests
     {
         [TestMethod]
         [DeploymentItem("Compiling/Programs/Program1.m")]
@@ -57,7 +59,13 @@
 
         private string CompileAndRunProgram(string file)
         {
-            var asembly = new CompilerAssembly();
+            var asembly = new CompilerAssembly
+                              {
+                                  ActivatedOptimizations =
+                                      {
+                                          Optimizations.AlgebraicOptimization
+                                      }
+                              };
 
             using (var input = new StringReader(File.ReadAllText(file)))
             using (var outputStream = File.Create("output.asm"))
@@ -75,11 +83,11 @@
         private string RunProgram()
         {
             var procStartInfo = new ProcessStartInfo("output.exe")
-                                    {
-                                        RedirectStandardOutput = true,
-                                        UseShellExecute = false,
-                                        CreateNoWindow = true
-                                    };
+            {
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
 
 
             var proc = new Process { StartInfo = procStartInfo };

@@ -1,7 +1,6 @@
 ﻿namespace Compiler.Optimization
 {
     using System.Linq;
-    using System.Runtime.Remoting.Messaging;
 
     using Compiler.ControlFlowGraph;
 

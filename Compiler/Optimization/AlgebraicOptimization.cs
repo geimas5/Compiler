@@ -9,16 +9,18 @@ namespace Compiler.Optimization
 
     public class AlgebraicOptimization : OptimizerBase
     {
-        private static readonly List<IAlgeabraicRule> rules = new List<IAlgeabraicRule>();
+        private static readonly List<IAlgeabraicRule> Rules = new List<IAlgeabraicRule>();
 
         public AlgebraicOptimization()
         {
-            if (!rules.Any())
+            if (!Rules.Any())
             {
-                rules.Add(new IntBinaryOperatorConstantRule());
-                rules.Add(new IntAddZeroRule());
-                rules.Add(new IntMultiplyZeroRule());
-                rules.Add(new IntMultiplyOneRule());
+                Rules.Add(new IntBinaryOperatorConstantRule());
+                Rules.Add(new IntAddZeroRule());
+                Rules.Add(new IntMultiplyZeroRule());
+                Rules.Add(new IntMultiplyOneRule());
+                Rules.Add(new DoubleBinaryOperatorConstantRule());
+                Rules.Add(new ConvertToDoubleIntConstantRule());
             }
         }
 
@@ -32,7 +34,7 @@ namespace Compiler.Optimization
 
         private void ProcessStatement(Statement statement)
         {
-            foreach (var algeabraicRule in rules)
+            foreach (var algeabraicRule in Rules)
             {
                 if (algeabraicRule.ProcessStatement(statement))
                 {

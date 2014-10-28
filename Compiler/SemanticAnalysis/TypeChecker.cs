@@ -187,7 +187,6 @@
                 case BinaryOperator.Subtract:
                 case BinaryOperator.Multiply:
                 case BinaryOperator.Divide:
-                case BinaryOperator.Exponensiation:
                     if (!(Equals(leftType, Type.DoubleType) || Equals(leftType, Type.IntType)) ||
                         !(Equals(rightType, Type.DoubleType) || Equals(rightType, Type.IntType)))
                     {
@@ -203,6 +202,15 @@
 
                     node.ResultingType = returnType;
                     return returnType;
+                case BinaryOperator.Exponensiation:
+                    if (!(Equals(leftType, Type.DoubleType) || Equals(leftType, Type.IntType)) ||
+                        !(Equals(rightType, Type.DoubleType) || Equals(rightType, Type.IntType)))
+                    {
+                        this.logger.LogError(node.Location, "The operator '{0}' is only available on the types Int and double", node.Operator);
+                        return Type.NoType;
+                    }
+
+                    return node.ResultingType = Type.DoubleType;;
                 case BinaryOperator.Mod:
 
                     if (!Equals(leftType, Type.IntType) || !Equals(rightType, Type.IntType))
