@@ -1,5 +1,4 @@
-﻿
-namespace Compiler.Optimization
+﻿namespace Compiler.Optimization
 {
     using System.Collections.Generic;
     using System.Linq;

@@ -45,6 +45,31 @@
             if (before.BasicBlock.Exit == before) before.BasicBlock.Exit = after;
         }
 
+        public static void AddBefore(Statement statement, Statement newStatement)
+        {
+            if (statement.Previous != null)
+            {
+                statement.Previous.Next = newStatement;
+                newStatement.Previous = statement.Previous;
+            }
+
+            newStatement.Next = statement;
+            statement.Previous = newStatement;
+            newStatement.BasicBlock = statement.BasicBlock;
+
+            if (statement.BasicBlock.Enter == statement)
+            {
+                newStatement.BasicBlock.Enter = newStatement;
+            }
+
+            if (statement.BasicBlock.Exit == statement)
+            {
+                newStatement.BasicBlock.Exit = newStatement;
+            }
+
+            UpdateJumpSourcesToNewStatement(statement, newStatement);
+        }
+
         private static void UpdateJumpSourcesToNewStatement(Statement beforeStatement, Statement newStatement)
         {
             foreach (var jumpSource in beforeStatement.JumpSources.ToArray())

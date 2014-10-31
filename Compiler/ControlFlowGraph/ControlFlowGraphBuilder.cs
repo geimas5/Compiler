@@ -5,6 +5,8 @@
     using System.Diagnostics;
     using System.Linq;
 
+    using Antlr4.Runtime.Atn;
+
     using Compiler.SymbolTable;
     using Compiler.SyntaxTree;
 
@@ -15,7 +17,6 @@
     public class ControlFlowGraphBuilder : Visitor<BasicBlock>
     {
         private const int dataItemSize = 8; // In bytes.
-
 
         private ControlFlowGraph controlFlowGraph;
 
@@ -299,13 +300,14 @@
 
             loopExits.Pop();
 
-            var conditionNode = this.CreateBranchNode(node.Condition, body, afterStatement);
-
             body = body.Join(node.Afterthought.Accept(this));
+            var beforeBranch = new NopStatement();
+            var jumpStatement = new JumpStatement(beforeBranch);
+            body = body.Append(jumpStatement);
 
-            var jumpStatement = new JumpStatement(conditionNode.Enter);
+            var conditionNode = this.CreateBranchNode(node.Condition, body, new BasicBlock(new JumpStatement(afterStatement.Enter)));
 
-            return initialization.Join(conditionNode).Join(body).Append(jumpStatement).Join(afterStatement);
+            return initialization.Append(beforeBranch).Join(conditionNode).Join(afterStatement);
         }
 
         public override BasicBlock Visit(IndexerExpression node)
@@ -467,8 +469,7 @@
             var leftBlock = binaryExpression.Left.Accept(this);
             var leftArgument = ToArgument(((IReturningStatement)leftBlock.Exit).Return);
 
-            if (binaryExpression.Operator != BinaryOperator.And
-                && binaryExpression.Operator != BinaryOperator.Or)
+            if (binaryExpression.Operator != BinaryOperator.And && binaryExpression.Operator != BinaryOperator.Or)
             {
                 var rightBlock = binaryExpression.Right.Accept(this);
                 var rightArguumment = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
@@ -542,28 +543,28 @@
         {
             int count = block.Count();
 
-            var leaders = new Dictionary<int, bool>();
+            var leaders = new HashSet<int>();
 
-            leaders[block.Enter.Id] = true;
+            leaders.Add(block.Enter.Id);
 
             foreach (var statement in block)
             {
                 var branchStatement = statement as BranchStatement;
                 if (branchStatement != null)
                 {
-                    leaders[branchStatement.BranchTarget.Id] = true;
+                    leaders.Add(branchStatement.BranchTarget.Id);
                 }
 
                 var jumpStatement = statement as JumpStatement;
                 if (jumpStatement != null)
                 {
-                    leaders[jumpStatement.Target.Id] = true;
+                    leaders.Add(jumpStatement.Target.Id);
                 }
 
                 if ((statement is BranchStatement || statement is JumpStatement || statement is CallStatement)
                     && statement.Next != null)
                 {
-                    leaders[statement.Next.Id] = true;
+                    leaders.Add(statement.Next.Id);
                 }
             }
 
@@ -572,7 +573,7 @@
 
             foreach (var statement in block.ToArray())
             {
-                if (leaders.ContainsKey(statement.Id))
+                if (leaders.Contains(statement.Id))
                 {
                     if (currentBlock.Any())
                     {

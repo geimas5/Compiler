@@ -5,6 +5,7 @@
     public class IntConstantArgument : Argument
     {
         public IntConstantArgument(long value)
+            : base(Type.IntType)
         {
             this.Value = value;
         }

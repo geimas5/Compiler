@@ -38,8 +38,8 @@
                 {
                     return new[]
                                {
-                                   new BinaryOpCodeInstruction(Opcode.MOVSD, new RegisterOperand(Register.XMM2), argument2),
-                                   new BinaryOpCodeInstruction(Opcode.MOVD, new RegisterOperand(register), new RegisterOperand(Register.XMM2))
+                                   new BinaryOpCodeInstruction(Opcode.MOVSD, new RegisterOperand(Register.XMM15), argument2),
+                                   new BinaryOpCodeInstruction(Opcode.MOVD, new RegisterOperand(register), new RegisterOperand(Register.XMM15))
                                };
                 }
 
@@ -47,7 +47,20 @@
             }
             else if (argument is VariableArgument)
             {
-                argument2 = currentProcedure.GetVarialeLocation(((VariableArgument)argument).Variable);
+                var variableArgument = (VariableArgument)argument;
+
+                if (variableArgument.Variable.Register.HasValue)
+                {
+                    return new[]
+                               {
+                                   new BinaryOpCodeInstruction(
+                                       Opcode.MOV,
+                                       argument1, 
+                                       new RegisterOperand(variableArgument.Variable.Register.Value)),
+                               };
+                }
+
+                argument2 = currentProcedure.GetVarialeLocation(variableArgument.Variable);
 
                 if (RegisterUtility.IsXMM(register))
                 {
@@ -66,6 +79,16 @@
 
                 var instructions = new List<Instruction>();
 
+                if (pointerArgument.Variable.Register.HasValue)
+                {
+                    instructions.Add(
+                        new BinaryOpCodeInstruction(
+                            Opcode.MOV,
+                            new RegisterOperand(register),
+                            new MemoryOperand(pointerArgument.Variable.Register.Value)));
+                    return instructions;
+                }
+                
                 instructions.Add(
                     new BinaryOpCodeInstruction(
                         Opcode.MOV,
@@ -95,9 +118,20 @@
             var variableDestination = destination as VariableDestination;
             if (variableDestination != null)
             {
-                var destinationOperand = currentProcedure.GetVarialeLocation(variableDestination.Variable);
+                if (variableDestination.Variable.Register.HasValue)
+                {
+                    instructions.Add(
+                        new BinaryOpCodeInstruction(
+                            Opcode.MOV,
+                            new RegisterOperand(variableDestination.Variable.Register.Value),
+                            new RegisterOperand(register)));
+                }
+                else
+                {
+                    var destinationOperand = currentProcedure.GetVarialeLocation(variableDestination.Variable);
 
-                instructions.Add(new BinaryOpCodeInstruction(Opcode.MOV, destinationOperand, new RegisterOperand(register)));
+                    instructions.Add(new BinaryOpCodeInstruction(Opcode.MOV, destinationOperand, new RegisterOperand(register)));
+                }
             }
             else if (destination is PointerDestination)
             {

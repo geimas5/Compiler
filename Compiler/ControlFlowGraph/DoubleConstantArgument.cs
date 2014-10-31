@@ -5,6 +5,7 @@
     public class DoubleConstantArgument : Argument
     {
         public DoubleConstantArgument(double value)
+            : base(Type.DoubleType)
         {
             this.Value = value;
         }

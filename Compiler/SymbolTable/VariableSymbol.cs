@@ -2,6 +2,8 @@
 {
     using System;
 
+    using Compiler.Assembly;
+
     using Type = Compiler.Type;
 
     public class VariableSymbol : ITypedSymbol
@@ -31,6 +33,7 @@
 
         public Type Type { get; private set; }
 
+        public Register? Register { get; set; }
 
         public override bool Equals(object obj)
         {

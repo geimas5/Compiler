@@ -1,5 +1,6 @@
 ﻿namespace Compiler.DataFlowAnalysis
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -9,6 +10,8 @@
     public class BlockLiveness : DataflowBlock
     {
         private readonly BasicBlock block;
+
+        private Dictionary<Statement, VariableBitset> liveVariables;
 
         public VariableBitset Use { get; private set; }
 
@@ -44,7 +47,21 @@
                     liveVariables.Set(variable);
                 }
             }
-        }  
+        }
+
+        public IDictionary<Statement, VariableBitset> LiveVariables
+        {
+            get
+            {
+                if (this.liveVariables == null)
+                {
+                    this.liveVariables = new Dictionary<Statement, VariableBitset>();
+                    this.BuildLiveVariables();
+                }
+
+                return this.liveVariables;
+            }
+        }
 
         private void CalculateGetDef()
         {
@@ -63,7 +80,7 @@
                     this.Use.Clear(definition);
                 }
 
-                foreach (var variable in StatementHelper.GetStatementVariableUsages(statement).Where(variable => !this.Def.Get(variable)))
+                foreach (var variable in StatementHelper.GetStatementVariableUsages(statement))
                 {
                     this.Use.Set(variable);
                 }
@@ -72,6 +89,28 @@
                 {
                     this.Def.Set(definition);
                 }
+            }
+        }
+
+        private void BuildLiveVariables()
+        {
+            var liveVariables = this.Out.Clone();
+
+            foreach (var statement in this.block.Reverse())
+            {
+                var returningStatement = statement as IReturningStatement;
+                if (returningStatement != null && returningStatement.Return is VariableDestination)
+                {
+                    liveVariables.Clear(((VariableDestination)returningStatement.Return).Variable);
+                }
+
+                foreach (var variable in StatementHelper.GetStatementVariableUsages(statement))
+                {
+                    liveVariables.Set(variable);
+                }
+
+
+                this.liveVariables[statement] = liveVariables.Clone();
             }
         }
     }

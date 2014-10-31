@@ -1,10 +1,13 @@
 ﻿namespace Compiler.DataFlowAnalysis
 {
+    using System.Collections;
+    using System.Collections.Generic;
+
     using Antlr4.Runtime.Sharpen;
 
     using Compiler.SymbolTable;
 
-    public class VariableBitset
+    public class VariableBitset : IEnumerable<VariableSymbol>
     {
         private readonly BitSet internalBitset = new BitSet();
 
@@ -29,6 +32,11 @@
         public override int GetHashCode()
         {
             return (this.internalBitset != null ? this.internalBitset.GetHashCode() : 0);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
 
         public VariableBitset And(VariableBitset variableBitset)
@@ -96,6 +104,14 @@
             }
 
             return Equals((VariableBitset)obj);
+        }
+
+        public IEnumerator<VariableSymbol> GetEnumerator()
+        {
+            for (int i = this.internalBitset.NextSetBit(0); i != -1; i = this.internalBitset.NextSetBit(i + 1))
+            {
+                yield return this.register.GetVariable(i);
+            }
         }
 
         public override string ToString()

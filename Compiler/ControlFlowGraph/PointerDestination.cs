@@ -24,7 +24,12 @@
 
         public override string ToString()
         {
-            return string.Format("*({0})", this.Destination);
+            if (Destination.Register.HasValue)
+            {
+                return string.Format("*({0})", this.Destination.Register);    
+            }
+
+            return string.Format("*({0})", this.Destination);    
         }
     }
 }

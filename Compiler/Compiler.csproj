@@ -56,9 +56,12 @@
     <Compile Include="Assembly\Builder\AssemblyFileBuilder.cs" />
     <Compile Include="Assembly\AssemblyObject.cs" />
     <Compile Include="Assembly\Block.cs" />
-    <Compile Include="Assembly\Builder\AssignOperatorBuilder.cs" />
+    <Compile Include="Assembly\Builder\AssignStatementBuilder.cs" />
     <Compile Include="Assembly\Builder\BinaryOperatorBuilder.cs" />
+    <Compile Include="Assembly\Builder\BranchStatementBuilder.cs" />
     <Compile Include="Assembly\Builder\BuilderHelper.cs" />
+    <Compile Include="Assembly\Builder\StatementBuilder.cs" />
+    <Compile Include="Assembly\CallingConvention.cs" />
     <Compile Include="Assembly\CallInstruction.cs" />
     <Compile Include="Assembly\CodeSection.cs" />
     <Compile Include="Assembly\ConstantOperand.cs" />
@@ -96,6 +99,7 @@
     <Compile Include="ControlFlowGraph\ControlFlowGraphBuilder.cs" />
     <Compile Include="ControlFlowGraph\BasicBlock.cs" />
     <Compile Include="ControlFlowGraph\ConvertToDoubleStatement.cs" />
+    <Compile Include="ControlFlowGraph\MachineExpander.cs" />
     <Compile Include="ControlFlowGraph\Destination.cs" />
     <Compile Include="ControlFlowGraph\DoubleConstantArgument.cs" />
     <Compile Include="ControlFlowGraph\GlobalArgument.cs" />
@@ -115,6 +119,8 @@
     <Compile Include="ControlFlowGraph\UnaryOperatorStatement.cs" />
     <Compile Include="ControlFlowGraph\VariableArgument.cs" />
     <Compile Include="ControlFlowGraph\VariableDestination.cs" />
+    <Compile Include="DataFlowAnalysis\AvailableExpressionsAnalyser.cs" />
+    <Compile Include="DataFlowAnalysis\DataflowAnalyser.cs" />
     <Compile Include="DataFlowAnalysis\DataflowBlock.cs" />
     <Compile Include="DataFlowAnalysis\BlockLiveness.cs" />
     <Compile Include="DataFlowAnalysis\LivenessAnalysis.cs" />
@@ -122,7 +128,6 @@
     <Compile Include="DataFlowAnalysis\VariableBitset.cs" />
     <Compile Include="DataFlowAnalysis\VariableRegister.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="Ml64Runner.cs" />
     <Compile Include="Optimization\AlgeabraicRules\ConvertToDoubleIntConstantRule.cs" />
     <Compile Include="Optimization\AlgeabraicRules\DoubleBinaryOperatorConstantRulle.cs" />
     <Compile Include="Optimization\AlgeabraicRules\IAlgeabraicRule.cs" />
@@ -142,6 +147,9 @@
     <Compile Include="Parser\Antlr\MParser.cs" />
     <Compile Include="Parser\Antlr\NodeFactory.cs" />
     <Compile Include="Parser\Antlr\Utility.cs" />
+    <Compile Include="RegisterAllocation\InterferenceGraph.cs" />
+    <Compile Include="RegisterAllocation\InterferenceNode.cs" />
+    <Compile Include="RegisterAllocation\RegisterAllocator.cs" />
     <Compile Include="SemanticAnalysis\AssignmentChecker.cs" />
     <Compile Include="SemanticAnalysis\BreakStatementChecker.cs" />
     <Compile Include="SemanticAnalysis\ReturnChecker.cs" />

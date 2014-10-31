@@ -5,6 +5,7 @@
     public class BooleanConstantArgument : Argument
     {
         public BooleanConstantArgument(bool value)
+            : base(Type.IntType)
         {
             this.Value = value;
         }

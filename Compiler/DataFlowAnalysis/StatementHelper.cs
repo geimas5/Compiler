@@ -29,8 +29,9 @@
             if (statement is AssignStatement) symbols.AddRange(GetStatementVariableUsages((AssignStatement)statement));
             if (statement is ReturnStatement) symbols.AddRange(GetStatementVariableUsages((ReturnStatement)statement));
             if (statement is AllocStatement) symbols.AddRange(GetStatementVariableUsages((AllocStatement)statement));
+            if (statement is CallStatement) symbols.AddRange(GetStatementVariableUsages((CallStatement)statement));
 
-            if (statement is CallStatement || statement is JumpStatement || statement is NopStatement)
+            if (statement is JumpStatement || statement is NopStatement)
             {
                 return new VariableSymbol[0];
             }
@@ -76,6 +77,11 @@
         private static IEnumerable<VariableSymbol> GetStatementVariableUsages(AllocStatement statement)
         {
             return GetVariables(statement.Size);
+        }
+
+        private static IEnumerable<VariableSymbol> GetStatementVariableUsages(CallStatement statement)
+        {
+            return statement.CallVariables;
         }
 
         private static IEnumerable<VariableSymbol> GetVariables(params Argument[] arguments)

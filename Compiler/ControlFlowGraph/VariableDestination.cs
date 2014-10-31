@@ -25,7 +25,12 @@
 
         public override string ToString()
         {
-            return this.Variable.ToString();
+            if (Variable.Register.HasValue)
+            {
+                return Variable.Register.Value.ToString();
+            }
+
+            return Variable.Name;
         }
     }
 }

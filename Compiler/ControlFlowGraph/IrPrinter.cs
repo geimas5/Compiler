@@ -7,15 +7,17 @@
 
     public class IrPrinter
     {
-        public void PrintIr(ControlFlowGraph graph)
+        public string PrintIr(ControlFlowGraph graph)
         {
             var sb = new StringBuilder();
 
             var analysis = new LivenessAnalysis(graph).RunAnalysis();
 
-            foreach (var blocks in graph.Functions)
+            foreach (var function in graph.Functions)
             {
-                foreach (var block in blocks.Value)
+                sb.AppendLine("--------" + function.Key + "--------");
+
+                foreach (var block in function.Value)
                 {
                     var liveBlock = analysis[block];
 
@@ -30,7 +32,8 @@
                 }
             }
 
-            Console.Write(sb.ToString());
+            Console.Write(sb);
+            return sb.ToString();
         }
     }
 }

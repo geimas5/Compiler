@@ -9,6 +9,7 @@
     using Compiler.ControlFlowGraph;
     using Compiler.Optimization;
     using Compiler.Parser.Antlr;
+    using Compiler.RegisterAllocation;
     using Compiler.SemanticAnalysis;
     using Compiler.SyntaxTree;
 
@@ -20,6 +21,7 @@
         {
             this.Logger = new Logger();
             this.optimizer = new Optimizer();
+            this.AllocateRegisters = true;
         }
 
         public Logger Logger { get; private set; }
@@ -28,7 +30,11 @@
 
         public bool PrintIR { get; set; }
 
+        public bool OutputIr { get; set; }
+
         public bool PrintMessages { get; set; }
+
+        public bool AllocateRegisters { get; set; }
 
         public IList<Optimizations> ActivatedOptimizations
         {
@@ -46,7 +52,7 @@
 
             if (this.PrintTree) this.PrintSyntaxTree(result.SynataxTree);
 
-            this.RunSemanticCheck(result.SynataxTree);
+            var symbolTable = this.RunSemanticCheck(result.SynataxTree);
 
             if (this.PrintMessages) this.Logger.PrintMessages();
 
@@ -60,7 +66,15 @@
 
             this.optimizer.RunOptimizations(controlGraph);
 
+            MachineExpander.ConvertToMachineDependant(controlGraph, symbolTable);
+
+            if (this.AllocateRegisters)
+            {
+                new RegisterAllocator().AllocateRegisters(controlGraph);
+            }
+
             if (this.PrintIR) this.PrintIrCode(controlGraph);
+            if (this.OutputIr) this.OutputIrCode(controlGraph);
 
             var assemblyFile = new AssemblyFile();
             AssemblyFileBuilder.BuildFile(assemblyFile, controlGraph);
@@ -83,13 +97,18 @@
             Console.WriteLine("Ir:");
             Console.WriteLine();
 
-            new IrPrinter().PrintIr(controlFlowGraph);
+            Console.WriteLine(new IrPrinter().PrintIr(controlFlowGraph));
         }
 
-        private void RunSemanticCheck(SyntaxTree.SyntaxTree syntaxTree)
+        private void OutputIrCode(ControlFlowGraph.ControlFlowGraph controlFlowGraph)
+        {
+            File.WriteAllText("OutputIr.txt", new IrPrinter().PrintIr(controlFlowGraph));
+        }
+
+        private SymbolTable.SymbolTable RunSemanticCheck(SyntaxTree.SyntaxTree syntaxTree)
         {
             var semanticChecker = new SemanticChecker(Logger);
-            semanticChecker.RunCheck(syntaxTree);
+            return semanticChecker.RunCheck(syntaxTree);
         }
     }
 }

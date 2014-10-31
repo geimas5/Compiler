@@ -3,6 +3,7 @@
     public class GlobalArgument : Argument
     {
         public GlobalArgument(string name)
+            : base(Type.IntType)
         {
             this.Name = name;
         }

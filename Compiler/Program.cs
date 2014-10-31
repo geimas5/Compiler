@@ -11,51 +11,54 @@
         {
 //            string program = @"int main()
 //            {
-//               int[][] d = new int[6][6];
+//                int[][] d = new int[6][6];
 //
-//               d[0][5] = 1;
-//               d[1][4] = 2;
-//               d[2][3] = 3;       
-//               d[3][2] = 4;
-//               d[4][1] = 5;
-//               d[5][0] = 6;       
+//                d[0][5] = 1;
+//                d[1][4] = 2;
+//                d[2][3] = 3;
+//                d[3][2] = 4;
+//                d[4][1] = 5;
+//                d[5][0] = 6;       
 //               
-//               int i;
-//               int j;
-//              for(i = 0; i < 6; i = i + 1) {
+//                int i;
+//                int j;
+//                int c = 0;
+//                for(i = 0; i < 6; i = i + 1) {
 //                    for(j = 0; j < 6; j = j + 1) {
-//                        PrintLine("""");
-//                        PrintInt(d[i][j]);
+//                        PrintLine(""ergeg"");
+//                        c=c+1;
 //                    }
-//               }
+//                }
+//                PrintInt(c);
 //
 //               return 1;
 //            }";
 
             string program = @"int main()
-            {
-                double e;
-                e = 3 ** 2;
-                e = e / 2;
-                e = e * 5.3;
-                e = e - 134;
-                e = e + 12;
+{
+    double e;
+    e = 3 ** 2.2;
+//    e = e / 2;
+//    e = e * 5.3;
+//    e = e - 134;
+//    e = e + 12;
 
-                PrintDouble(e);
+    PrintDouble(e);
                 
-                return 0;
-            }";
+    return 0;
+}";
 
             var asembly = new CompilerAssembly
                               {
                                   PrintMessages = true,
                                   PrintIR = true,
+                                  OutputIr = true,
                                   ActivatedOptimizations =
                                       {
-                                          Optimizations.EliminateEqualAssignments, 
-                                          Optimizations.LocalCopyPropagation,
-                                          Optimizations.DeadCodeElimination,
-                                          Optimizations.AlgebraicOptimization
+                                          //Optimizations.EliminateEqualAssignments, 
+                                          //Optimizations.LocalCopyPropagation,
+                                          //Optimizations.DeadCodeElimination,
+                                          //Optimizations.AlgebraicOptimization
                                       }
                               };
 

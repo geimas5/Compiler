@@ -17,6 +17,7 @@
             {
                 throw new ArgumentException("The first argument may not be a constant", "argument1");
             }
+            
 
             this.Opcode = opcode;
             this.Argument1 = argument1;

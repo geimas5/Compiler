@@ -1,4 +1,4 @@
-﻿namespace Compiler.ControlFlowGraph
+namespace Compiler.ControlFlowGraph
 {
     public enum Opcode
     {
@@ -26,4 +26,4 @@
 
         CVTSI2SD
     }
-}
+}                                                                                                                                                                                                                                                                                                                           

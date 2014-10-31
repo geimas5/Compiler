@@ -1,54 +1,30 @@
 ﻿namespace Compiler.Assembly.Builder
 {
     using System;
-    using System.Collections.Generic;
 
     using Compiler.ControlFlowGraph;
     using Compiler.SyntaxTree;
 
-    using Type = Compiler.Type;
-
-    internal sealed class BinaryOperatorBuilder
+    public sealed class BinaryOperatorBuilder : StatementBuilder<BinaryOperatorStatement>
     {
-        private readonly BinaryOperatorStatement statement;
-
-        private readonly Procedure procedure;
-
-        private readonly List<Instruction> instructions = new List<Instruction>();
-
-        private BinaryOperatorBuilder(BinaryOperatorStatement binaryOperatorStatement, Procedure procedure)
+        protected override void Build()
         {
-            this.statement = binaryOperatorStatement;
-            this.procedure = procedure;
-        }
-
-        public static IEnumerable<Instruction> BuildOperator(
-            BinaryOperatorStatement binaryOperatorStatement,
-            Procedure procedure)
-        {
-            var builder = new BinaryOperatorBuilder(binaryOperatorStatement, procedure);
-
-            return builder.Build();
-        }
-
-        private IEnumerable<Instruction> Build()
-        {
-            if (statement.Operator == BinaryOperator.Divide 
-                || statement.Operator == BinaryOperator.Add
-                || statement.Operator == BinaryOperator.Equal 
-                || statement.Operator == BinaryOperator.Multiply
-                || statement.Operator == BinaryOperator.Subtract 
-                || statement.Operator == BinaryOperator.Mod
-                || statement.Operator == BinaryOperator.Exponensiation)
+            if (Statement.Operator == BinaryOperator.Divide 
+                || Statement.Operator == BinaryOperator.Add
+                || Statement.Operator == BinaryOperator.Equal 
+                || Statement.Operator == BinaryOperator.Multiply
+                || Statement.Operator == BinaryOperator.Subtract 
+                || Statement.Operator == BinaryOperator.Mod
+                || Statement.Operator == BinaryOperator.Exponensiation)
             {
                 CreateMathInstruction();
             }
-            else if (this.statement.Operator == BinaryOperator.Equal 
-                || this.statement.Operator == BinaryOperator.Greater
-                || this.statement.Operator == BinaryOperator.GreaterEqual
-                || this.statement.Operator == BinaryOperator.Less 
-                || this.statement.Operator == BinaryOperator.LessEqual
-                || this.statement.Operator == BinaryOperator.NotEqual)
+            else if (this.Statement.Operator == BinaryOperator.Equal
+                || this.Statement.Operator == BinaryOperator.Greater
+                || this.Statement.Operator == BinaryOperator.GreaterEqual
+                || this.Statement.Operator == BinaryOperator.Less
+                || this.Statement.Operator == BinaryOperator.LessEqual
+                || this.Statement.Operator == BinaryOperator.NotEqual)
             {
                 CreateComparisonInstruction();
             }
@@ -56,13 +32,11 @@
             {
                 throw new ArgumentOutOfRangeException("statement", "Unsupported operator");    
             }
-
-            return this.instructions;
         }
 
         private void CreateMathInstruction()
         {
-            if (this.statement.Return.Type.PrimitiveType == PrimitiveType.Double)
+            if (this.Statement.Return.Type.PrimitiveType == PrimitiveType.Double)
             {
                 this.CreateFloatingPointMathInstructions();
             }
@@ -76,7 +50,7 @@
         {
             Opcode opcode;
 
-            switch (this.statement.Operator)
+            switch (this.Statement.Operator)
             {
                 case BinaryOperator.Add:
                     opcode = Opcode.ADD;
@@ -101,29 +75,71 @@
             }
 
             var argument1 = new RegisterOperand(Register.R10);
-            Operand argument2;
-            instructions.AddRange(BuilderHelper.PlaceArgumentInRegister(Register.R10, statement.Left, procedure));
+            Operand argument2 = this.GetRightIntegerOperand(false);
 
-            if (statement.Right is IntConstantArgument)
+            this.PlaceArgumentInRegister(Statement.Left, Register.R10);
+
+            this.WriteBinaryInstruction(opcode, argument1, argument2);
+
+            this.WriteRegisterToDestination(this.Statement.Return, Register.R10);
+        }
+
+        private Operand GetRightIntegerOperand(bool leftIsMemory)
+        {
+            var variableArgument = Statement.Right as VariableArgument;
+            if (variableArgument != null)
             {
-                argument2 = new ConstantOperand(((IntConstantArgument)statement.Right).Value);
+                if (variableArgument.Variable.Register.HasValue)
+                {
+                    return new RegisterOperand(variableArgument.Variable.Register.Value);
+                }
+
+                var memoryOperand = this.Procedure.GetVarialeLocation(variableArgument.Variable);
+                if (!leftIsMemory) return memoryOperand;
+
+                this.WriteBinaryInstruction(Opcode.MOV, new RegisterOperand(Register.R11), memoryOperand);
+                return new RegisterOperand(Register.R11);
             }
-            else
+
+            var intConstantArgument = Statement.Right as IntConstantArgument;
+            if (intConstantArgument != null)
             {
-                argument2 = new RegisterOperand(Register.R11);
-                instructions.AddRange(BuilderHelper.PlaceArgumentInRegister(Register.R11, statement.Right, procedure));    
+                if (leftIsMemory)
+                {
+                    this.PlaceArgumentInRegister(intConstantArgument, Register.R11);
+                    return new RegisterOperand(Register.R11);
+                }
+
+                return new ConstantOperand(intConstantArgument.Value);
             }
 
-            instructions.Add(new BinaryOpCodeInstruction(opcode, argument1, argument2));
+            var globalConstantArgument = Statement.Right as GlobalArgument;
+            if (globalConstantArgument != null)
+            {
+                this.PlaceArgumentInRegister(globalConstantArgument, Register.R11);
+                return new RegisterOperand(Register.R11);
+            }
 
-            instructions.AddRange(BuilderHelper.WriteRegisterToDestination(statement.Return, Register.R10, procedure));
-        } 
+            var pointerArgument = Statement.Right as PointerArgument;
+            if (pointerArgument != null)
+            {
+                if (pointerArgument.Variable.Register.HasValue)
+                {
+                    return new MemoryOperand(pointerArgument.Variable.Register.Value);
+                }
+
+                this.PlaceArgumentInRegister(pointerArgument, Register.R11);
+                return new RegisterOperand(Register.R11);
+            }
+
+            throw new NotImplementedException();
+        }
 
         private void CreateFloatingPointMathInstructions()
         {
             Opcode opcode;
 
-            switch (statement.Operator)
+            switch (Statement.Operator)
             {
                 case BinaryOperator.Add:
                     opcode = Opcode.ADDSD;
@@ -144,69 +160,62 @@
                     throw new ArgumentException("operation operation not supported");
             }
 
-            var argument1 = new RegisterOperand(Register.XMM0);
-            var argument2 = new RegisterOperand(Register.XMM1);
-            instructions.AddRange(BuilderHelper.PlaceArgumentInRegister(Register.XMM0, statement.Left, procedure));
-            instructions.AddRange(BuilderHelper.PlaceArgumentInRegister(Register.XMM1, statement.Right, procedure));
+            var argument1 = new RegisterOperand(Register.XMM14);
+            var argument2 = new RegisterOperand(Register.XMM15);
+            PlaceArgumentInRegister(Statement.Left, Register.XMM14);
+            PlaceArgumentInRegister(Statement.Right, Register.XMM15);
 
-            instructions.Add(new BinaryOpCodeInstruction(opcode, argument1, argument2));
+            this.WriteBinaryInstruction(opcode, argument1, argument2);
 
-            instructions.Add(new BinaryOpCodeInstruction(Opcode.MOVD, new RegisterOperand(Register.R10), argument1));
-            instructions.AddRange(BuilderHelper.WriteRegisterToDestination(statement.Return, Register.R10, procedure));
+            this.WriteBinaryInstruction(Opcode.MOVD, new RegisterOperand(Register.R10), argument1);
+            this.WriteRegisterToDestination(this.Statement.Return, Register.R10);
         }
 
         private void CreateDivisionInstruction()
         {
             // Clear RDX
-            instructions.Add(new BinaryOpCodeInstruction(Opcode.XOR, new RegisterOperand(Register.RDX), new RegisterOperand(Register.RDX)));
+            this.WriteBinaryInstruction(Opcode.XOR, new RegisterOperand(Register.RDX), new RegisterOperand(Register.RDX));
+            this.PlaceArgumentInRegister(Statement.Left, Register.RAX);
+            this.PlaceArgumentInRegister(Statement.Right, Register.R10);
+            
+            this.WriteInstruction(new SingleOpcodeInstruction(SingleArgOpcode.IDIV, new RegisterOperand(Register.R10)));
 
-            foreach (var instruction in BuilderHelper.PlaceArgumentInRegister(Register.RAX, statement.Left, procedure))
-            {
-                instructions.Add(instruction);
-            }
-
-            foreach (var instruction in BuilderHelper.PlaceArgumentInRegister(Register.R10, statement.Right, procedure))
-            {
-                instructions.Add(instruction);
-            }
-
-            instructions.Add(new SingleOpcodeInstruction(SingleArgOpcode.IDIV, new RegisterOperand(Register.R10)));
-            instructions.AddRange(BuilderHelper.WriteRegisterToDestination(statement.Return, Register.RAX, procedure));
+            this.WriteRegisterToDestination(this.Statement.Return, Register.RAX);
         }
 
         private void CreateModuloInstruction()
         {
             // Clear RDX
-            instructions.Add(new BinaryOpCodeInstruction(Opcode.XOR, new RegisterOperand(Register.RDX), new RegisterOperand(Register.RDX)));
+            this.WriteBinaryInstruction(Opcode.XOR, new RegisterOperand(Register.RDX), new RegisterOperand(Register.RDX));
 
-            instructions.AddRange(BuilderHelper.PlaceArgumentInRegister(Register.RAX, statement.Left, procedure));
-            instructions.AddRange(BuilderHelper.PlaceArgumentInRegister(Register.R10, statement.Right, procedure));
+            PlaceArgumentInRegister(Statement.Left, Register.RAX);
+            PlaceArgumentInRegister(Statement.Right, Register.R10);
 
-            instructions.Add(new SingleOpcodeInstruction(SingleArgOpcode.IDIV, new RegisterOperand(Register.R10)));
+            this.WriteInstruction(new SingleOpcodeInstruction(SingleArgOpcode.IDIV, new RegisterOperand(Register.R10)));
 
-            instructions.AddRange(BuilderHelper.WriteRegisterToDestination(statement.Return, Register.RDX, procedure));
+            this.WriteRegisterToDestination(this.Statement.Return, Register.RDX);
         }
 
         private void CreateExponentiantionInstruction()
         {
-            instructions.AddRange(BuilderHelper.PlaceArgumentInRegister(Register.XMM0, statement.Left, procedure));
-            instructions.AddRange(BuilderHelper.PlaceArgumentInRegister(Register.XMM1, statement.Right, procedure));
+            PlaceArgumentInRegister(Statement.Left, Register.XMM14);
+            PlaceArgumentInRegister(Statement.Right, Register.XMM15);
 
-            instructions.Add(new BinaryOpCodeInstruction(Opcode.SUB, new RegisterOperand(Register.RSP), new ConstantOperand(40)));
-            instructions.Add(new CallInstruction("Power"));
-            instructions.Add(new BinaryOpCodeInstruction(Opcode.ADD, new RegisterOperand(Register.RSP), new ConstantOperand(40)));
+            this.WriteBinaryInstruction(Opcode.SUB, new RegisterOperand(Register.RSP), new ConstantOperand(40));
+            this.WriteInstruction(new CallInstruction("Power"));
+            this.WriteBinaryInstruction(Opcode.ADD, new RegisterOperand(Register.RSP), new ConstantOperand(40));
 
-            instructions.Add(new BinaryOpCodeInstruction(Opcode.MOVD, new RegisterOperand(Register.R10), new RegisterOperand(Register.XMM0)));
-            instructions.AddRange(BuilderHelper.WriteRegisterToDestination(statement.Return, Register.R10, procedure));
+            this.WriteBinaryInstruction(Opcode.MOVD, new RegisterOperand(Register.R10), new RegisterOperand(Register.XMM14));
+            this.WriteRegisterToDestination(this.Statement.Return, Register.R10);
         }
 
         private void CreateComparisonInstruction()
         {
-            instructions.AddRange(BuilderHelper.PlaceArgumentInRegister(Register.R10, statement.Left, procedure));
-            instructions.AddRange(BuilderHelper.PlaceArgumentInRegister(Register.R11, statement.Right, procedure));
+            PlaceArgumentInRegister(Statement.Left, Register.R10);
+            PlaceArgumentInRegister(Statement.Right, Register.R11);
 
             Opcode opcode;
-            switch (statement.Operator)
+            switch (Statement.Operator)
             {
                 case BinaryOperator.Equal:
                     opcode = Opcode.CMOVE;
@@ -230,24 +239,13 @@
                     throw new ArgumentOutOfRangeException("statement", "Unsupported operator");
             }
 
-            instructions.Add(new BinaryOpCodeInstruction(Opcode.XOR, new RegisterOperand(Register.RAX), new RegisterOperand(Register.RAX)));
-            instructions.Add(new BinaryOpCodeInstruction(Opcode.CMP, new RegisterOperand(Register.R10), new RegisterOperand(Register.R11)));
+            this.WriteBinaryInstruction(Opcode.XOR, new RegisterOperand(Register.RAX), new RegisterOperand(Register.RAX));
+            this.WriteBinaryInstruction(Opcode.CMP, new RegisterOperand(Register.R10), new RegisterOperand(Register.R11));
 
-            instructions.AddRange(BuilderHelper.PlaceArgumentInRegister(Register.R10, new IntConstantArgument(1), procedure));
-            instructions.Add(new BinaryOpCodeInstruction(opcode, new RegisterOperand(Register.RAX), new RegisterOperand(Register.R10)));
+            PlaceArgumentInRegister(new IntConstantArgument(1), Register.R10);
+            this.WriteBinaryInstruction(opcode, new RegisterOperand(Register.RAX), new RegisterOperand(Register.R10));
 
-            instructions.AddRange(BuilderHelper.WriteRegisterToDestination(statement.Return, Register.RAX, procedure));
-        }        
-
-        private bool IsDestinationSameAsLeft()
-        {
-            if (this.statement.Return is VariableDestination && this.statement.Left is VariableArgument)
-            {
-                // Reference comparison is intended
-                return ((VariableDestination)statement.Return).Variable == ((VariableArgument)statement.Left).Variable;
-            }
-
-            return false;
+            this.WriteRegisterToDestination(this.Statement.Return, Register.RAX);
         }
     }
 }
