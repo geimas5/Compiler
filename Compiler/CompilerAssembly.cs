@@ -43,7 +43,7 @@
             }
         }
 
-        public bool CompileProgram(TextReader input, TextWriter output)
+        public bool CompileProgram(TextReader input, TextWriter output, string outputFileName = null)
         {
             var antlerParser = new AntlrParser(this.Logger);
 

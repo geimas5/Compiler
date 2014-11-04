@@ -54,6 +54,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Compiling\CompilationTestBase.cs" />
     <Compile Include="Compiling\RegistryAllocationAlgebraicOptimizationTests.cs" />
     <Compile Include="Compiling\RegisterAllocationEqualAsssignmentEliminationTests.cs" />
     <Compile Include="Compiling\RegisterAllocationFullOptimizationTests.cs" />
@@ -82,6 +83,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Compiling\Programs\Program2.m">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Compiling\Programs\Program7.m">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Compiling\Programs\Program6.m">
@@ -195,6 +199,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Compiling\Programs\Program7Result.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Compiling\Programs\Program6Result.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

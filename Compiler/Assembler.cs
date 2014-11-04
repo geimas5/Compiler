@@ -22,5 +22,22 @@
             Console.WriteLine(result);
             proc.WaitForExit();
         }
+
+        public static void ExecutAssemble(string asmFileName)
+        {
+            var procStartInfo = new ProcessStartInfo("cmd", string.Format("/c Assemble.bat {0}", asmFileName))
+            {
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+
+            var proc = new Process { StartInfo = procStartInfo };
+            proc.Start();
+            string result = proc.StandardOutput.ReadToEnd();
+            Console.WriteLine(result);
+            proc.WaitForExit();
+        }
     }
 }

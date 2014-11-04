@@ -36,59 +36,18 @@
 
             string program = @"int main()
 {
-    PrintBool(true == true);PrintLine("""");
-    PrintBool(false == true);PrintLine("""");
-    PrintBool(true == false);PrintLine("""");
-    PrintBool(false == false);PrintLine("""");
+    int[] v = new int[5];
+    v[0] = 443 + 23;
+    v[1] = 32 - 223;
+    v[2] = 23 * 34;
+    v[3] = 453 / 32;
+    v[4] = 23 % 5;
 
-    PrintLine(""----------"");
-    PrintBool(true != true);PrintLine("""");
-    PrintBool(false != true);PrintLine("""");
-    PrintBool(true != false);PrintLine("""");
-    PrintBool(false != false);PrintLine("""");
-
-    PrintLine(""----------"");
-    PrintBool(!true);PrintLine("""");
-    PrintBool(!false);PrintLine("""");
-
-    PrintLine(""----------"");
-    PrintBool(true && true); PrintLine("""");
-    PrintBool(true && false); PrintLine("""");
-    PrintBool(false && true); PrintLine("""");
-    PrintBool(false && false); PrintLine("""");
-
-    PrintLine(""----------"");
-    PrintBool(true || true); PrintLine("""");
-    PrintBool(true || false); PrintLine("""");
-    PrintBool(false || true); PrintLine("""");
-    PrintBool(false || false); PrintLine("""");
-
-    PrintBool(GetTrue() == GetTrue()); PrintLine("""");
-    PrintBool(GetFalse() == GetTrue()); PrintLine("""");
-    PrintBool(GetTrue() == GetFalse()); PrintLine("""");
-    PrintBool(GetFalse() == GetFalse()); PrintLine("""");
-
-    PrintLine(""----------"");
-    PrintBool(GetTrue() != GetTrue()); PrintLine("""");
-    PrintBool(GetFalse() != GetTrue()); PrintLine("""");
-    PrintBool(GetTrue() != GetFalse()); PrintLine("""");
-    PrintBool(GetFalse() != GetFalse()); PrintLine("""");
-
-    PrintLine(""----------"");
-    PrintBool(!GetTrue()); PrintLine("""");
-    PrintBool(!GetFalse()); PrintLine("""");
-
-    PrintLine(""----------"");
-    PrintBool(GetTrue() && GetTrue());PrintLine("""");
-    PrintBool(GetTrue() && GetFalse());PrintLine("""");
-    PrintBool(GetFalse() && GetTrue());PrintLine("""");
-    PrintBool(GetFalse() && GetFalse());PrintLine("""");
-
-    PrintLine(""----------"");
-    PrintBool(GetTrue() || GetTrue());PrintLine("""");
-    PrintBool(GetTrue() || GetFalse());PrintLine("""");
-    PrintBool(GetFalse() || GetTrue());PrintLine("""");
-    PrintBool(GetFalse() || GetFalse());PrintLine("""");
+    PrintInt(v[0]); PrintLine("""");
+    PrintInt(v[1]); PrintLine("""");
+    PrintInt(v[2]); PrintLine("""");
+    PrintInt(v[3]); PrintLine("""");
+    PrintInt(v[4]); PrintLine("""");
     
     return 0;
 }

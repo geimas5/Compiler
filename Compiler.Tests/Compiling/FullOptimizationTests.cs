@@ -1,17 +1,18 @@
 ﻿namespace Compiler.Tests.Compiling
 {
-    using System.Diagnostics;
-    using System.IO;
-    using System.Threading;
-
     using Compiler.Optimization;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     [DeploymentItem("Assemble.bat")]
-    public class FullOptimizationTests
+    public class FullOptimizationTests : CompilationTestBase
     {
+        public FullOptimizationTests()
+            : base("FullOptimization")
+        {
+        }
+
         [TestMethod]
         [DeploymentItem("Compiling/Programs/Program1.m")]
         [DeploymentItem("Compiling/Programs/Program1Result.txt")]
@@ -60,56 +61,27 @@
             this.TestProgram("Program6.m", "Program6Result.txt");
         }
 
-        private void TestProgram(string programFile, string resultFile)
+        [TestMethod]
+        [DeploymentItem("Compiling/Programs/Program7.m")]
+        [DeploymentItem("Compiling/Programs/Program7Result.txt")]
+        public void TestProgram7()
         {
-            var result = this.CompileAndRunProgram(programFile).Trim();
-            Assert.AreEqual(File.ReadAllText(resultFile).Trim(), result);
+            this.TestProgram("Program7.m", "Program7Result.txt");
         }
 
-        private string CompileAndRunProgram(string file)
+        protected override CompilerAssembly CreateCompilerAssembly()
         {
-            File.Delete("output.asm");
-            File.Delete("output.exe");
-
-            var asembly = new CompilerAssembly
-                              {
-                                  ActivatedOptimizations =
-                                      {
-                                          Optimizations.AlgebraicOptimization,
-                                          Optimizations.DeadCodeElimination,
-                                          Optimizations.EliminateEqualAssignments,
-                                          Optimizations.LocalCopyPropagation,
-                                      }
-                              };
-
-            using (var input = new StringReader(File.ReadAllText(file)))
-            using (var outputStream = File.Create("output.asm"))
-            using (var outputWriter = new StreamWriter(outputStream))
-            {
-                var successful = asembly.CompileProgram(input, outputWriter);
-                Assert.IsTrue(successful);
-            }
-
-            Thread.Sleep(100);
-
-            Assembler.ExecutAssemble();
-
-            return this.RunProgram();
+            return new CompilerAssembly
+                       {
+                           ActivatedOptimizations =
+                               {
+                                   Optimizations.AlgebraicOptimization,
+                                   Optimizations.DeadCodeElimination,
+                                   Optimizations.EliminateEqualAssignments,
+                                   Optimizations.LocalCopyPropagation,
+                               }
+                       };
         }
 
-        private string RunProgram()
-        {
-            var procStartInfo = new ProcessStartInfo("output.exe")
-            {
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-
-            var proc = new Process { StartInfo = procStartInfo };
-            proc.Start();
-            return proc.StandardOutput.ReadToEnd();
-        }
     }
 }
