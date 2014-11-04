@@ -194,9 +194,30 @@
             var tempVariable = this.MakeTempVariable(node, node.ResultingType);
 
             var beforeBlock = node.Expression.Accept(this);
-            var leftArgument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
+            var argument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
 
-            var statement = new UnaryOperatorStatement(new VariableDestination(tempVariable), node.Operator, leftArgument);
+            Statement statement;
+            switch (node.Operator)
+            {
+                case UnaryOperator.Not:
+                    statement = new UnaryOperatorStatement(new VariableDestination(tempVariable), node.Operator, argument);
+                    break;
+                case UnaryOperator.Negation:
+                    var constantZero = Equals(node.ResultingType, Type.DoubleType)
+                                           ? (Argument)new DoubleConstantArgument(0)
+                                           : new IntConstantArgument(0);
+
+                    statement = new BinaryOperatorStatement(
+                        new VariableDestination(tempVariable),
+                        BinaryOperator.Subtract,
+                        constantZero,
+                        argument);
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
 
             return beforeBlock.Append(statement);
         }

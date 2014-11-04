@@ -3,6 +3,7 @@
     public enum SingleArgOpcode
     {
         IDIV,
-        NOT
+        NOT,
+        NEG
     }
 }

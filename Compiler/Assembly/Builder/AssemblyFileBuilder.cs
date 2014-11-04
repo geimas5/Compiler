@@ -7,7 +7,6 @@
     using Compiler.ControlFlowGraph;
 
     using ReturnStatement = Compiler.ControlFlowGraph.ReturnStatement;
-    using Type = Compiler.Type;
 
     public static class AssemblyFileBuilder
     {

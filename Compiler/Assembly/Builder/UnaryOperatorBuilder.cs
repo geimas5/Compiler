@@ -14,7 +14,6 @@
                 case UnaryOperator.Not:
                     this.WriteNot();
                     break;
-                case UnaryOperator.Negation:
                 default:
                     throw new ArgumentOutOfRangeException();
             }
