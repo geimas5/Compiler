@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Security.Cryptography;
 
     using Compiler.ControlFlowGraph;
 
@@ -120,11 +121,23 @@
             {
                 if (variableDestination.Variable.Register.HasValue)
                 {
-                    instructions.Add(
-                        new BinaryOpCodeInstruction(
-                            Opcode.MOV,
-                            new RegisterOperand(variableDestination.Variable.Register.Value),
-                            new RegisterOperand(register)));
+                    if (RegisterUtility.IsXMM(variableDestination.Variable.Register.Value) && !RegisterUtility.IsXMM(register)
+                        || !RegisterUtility.IsXMM(variableDestination.Variable.Register.Value) && RegisterUtility.IsXMM(register))
+                    {
+                        instructions.Add(
+                            new BinaryOpCodeInstruction(
+                                Opcode.MOVD,
+                                new RegisterOperand(variableDestination.Variable.Register.Value),
+                                new RegisterOperand(register)));
+                    }
+                    else
+                    {
+                        instructions.Add(
+                            new BinaryOpCodeInstruction(
+                                Opcode.MOV,
+                                new RegisterOperand(variableDestination.Variable.Register.Value),
+                                new RegisterOperand(register)));
+                    }
                 }
                 else
                 {

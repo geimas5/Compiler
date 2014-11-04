@@ -15,12 +15,8 @@
 
         private static Procedure currentProcedure;
 
-        private static ControlFlowGraph graph;
-
         public static void BuildFile(AssemblyFile file, ControlFlowGraph graph)
         {
-            AssemblyFileBuilder.graph = graph;
-
             AddStrings(file, graph);
             AddFunctions(file, graph);
         }
@@ -67,11 +63,11 @@
         {
             IEnumerable<Instruction> instructions;
 
-            if (statement is ReturningCallStatement) instructions = CreateInstruction((ReturningCallStatement)statement);
-            else if (statement is CallStatement) instructions = CreateInstruction((CallStatement)statement);
-            else if (statement is AssignStatement) return new AssignStatementBuilder().Build((AssignStatement)statement, currentProcedure);
-            else if (statement is ReturnStatement) instructions = CreateInstruction((ReturnStatement)statement);
+            if (statement is CallStatement) return new CallStatementBuilder().Build((CallStatement)statement, currentProcedure);
+            if (statement is AssignStatement) return new AssignStatementBuilder().Build((AssignStatement)statement, currentProcedure);
+            if (statement is ReturnStatement) instructions = CreateInstruction((ReturnStatement)statement);
             else if (statement is BinaryOperatorStatement) return new BinaryOperatorBuilder().Build((BinaryOperatorStatement)statement, currentProcedure);
+            else if (statement is UnaryOperatorStatement) return new UnaryOperatorBuilder().Build((UnaryOperatorStatement)statement, currentProcedure);
             else if (statement is JumpStatement) instructions = CreateInstruction((JumpStatement)statement);
             else if (statement is BranchStatement) return new BranchStatementBuilder().Build((BranchStatement)statement, currentProcedure);
             else if (statement is ConvertToDoubleStatement) instructions = CreateInstruction((ConvertToDoubleStatement)statement);
@@ -81,30 +77,6 @@
             {
                 throw new ArgumentException();
             }
-
-            return instructions;
-        }
-
-        private static IEnumerable<Instruction> CreateInstruction(CallStatement statement)
-        {
-            string name = statement.Function.Name;
-
-            yield return new BinaryOpCodeInstruction(Opcode.SUB, new RegisterOperand(Register.RSP), new ConstantOperand(40));
-            yield return new CallInstruction(name);
-            yield return new BinaryOpCodeInstruction(Opcode.ADD, new RegisterOperand(Register.RSP), new ConstantOperand(40));
-        }
-
-        private static IEnumerable<Instruction> CreateInstruction(ReturningCallStatement statement)
-        {
-            var name = statement.Function.Name;
-
-            var instructions = new List<Instruction>();
-
-            instructions.Add(new BinaryOpCodeInstruction(Opcode.SUB, new RegisterOperand(Register.RSP), new ConstantOperand(40)));
-            instructions.Add(new CallInstruction(name));
-            instructions.Add(new BinaryOpCodeInstruction(Opcode.ADD, new RegisterOperand(Register.RSP), new ConstantOperand(40)));
-
-            instructions.AddRange(BuilderHelper.WriteRegisterToDestination(statement.Return, Register.RAX, currentProcedure));
 
             return instructions;
         }

@@ -10,7 +10,7 @@
 
     [TestClass]
     [DeploymentItem("Assemble.bat")]
-    public class FullOptimizationTests
+    public class RegisterAllocationEqualAsssignmentEliminationTests
     {
         [TestMethod]
         [DeploymentItem("Compiling/Programs/Program1.m")]
@@ -73,13 +73,8 @@
 
             var asembly = new CompilerAssembly
                               {
-                                  ActivatedOptimizations =
-                                      {
-                                          Optimizations.AlgebraicOptimization,
-                                          Optimizations.DeadCodeElimination,
-                                          Optimizations.EliminateEqualAssignments,
-                                          Optimizations.LocalCopyPropagation,
-                                      }
+                                  ActivatedOptimizations = { Optimizations.EliminateEqualAssignments },
+                                  AllocateRegisters = true
                               };
 
             using (var input = new StringReader(File.ReadAllText(file)))

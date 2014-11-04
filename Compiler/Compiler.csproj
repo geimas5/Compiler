@@ -57,9 +57,11 @@
     <Compile Include="Assembly\AssemblyObject.cs" />
     <Compile Include="Assembly\Block.cs" />
     <Compile Include="Assembly\Builder\AssignStatementBuilder.cs" />
+    <Compile Include="Assembly\Builder\UnaryOperatorBuilder.cs" />
     <Compile Include="Assembly\Builder\BinaryOperatorBuilder.cs" />
     <Compile Include="Assembly\Builder\BranchStatementBuilder.cs" />
     <Compile Include="Assembly\Builder\BuilderHelper.cs" />
+    <Compile Include="Assembly\Builder\CallStatementBuilder.cs" />
     <Compile Include="Assembly\Builder\StatementBuilder.cs" />
     <Compile Include="Assembly\CallingConvention.cs" />
     <Compile Include="Assembly\CallInstruction.cs" />
@@ -69,6 +71,7 @@
     <Compile Include="Assembly\DataOperand.cs" />
     <Compile Include="Assembly\DataSection.cs" />
     <Compile Include="Assembly\DataType.cs" />
+    <Compile Include="Assembly\DoubleConstantOperand.cs" />
     <Compile Include="Assembly\Instruction.cs" />
     <Compile Include="Assembly\JumpInstruction.cs" />
     <EmbeddedResource Include="Assembly\LibraryFunctions.asm" />
@@ -84,6 +87,7 @@
     <Compile Include="Assembly\Section.cs" />
     <Compile Include="Assembly\SingleArgOpcode.cs" />
     <Compile Include="Assembly\SingleOpcodeInstruction.cs" />
+    <Compile Include="Assembly\StringConstantOperand.cs" />
     <Compile Include="Assembly\StringEntry.cs" />
     <Compile Include="Common\ListExtensions.cs" />
     <Compile Include="Common\NotNullList.cs" />

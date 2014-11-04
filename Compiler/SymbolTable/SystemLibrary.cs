@@ -19,6 +19,12 @@
                 "IntToString",
                 new Type(PrimitiveType.Int),
                 new Tuple<string, Type>("value", new Type(PrimitiveType.Int)));
+
+            RegisterFunction(
+                symbolTable,
+                "Power",
+                new Tuple<string, Type>("left", new Type(PrimitiveType.Double)),
+                new Tuple<string, Type>("right", new Type(PrimitiveType.Double)));
         }
 
         private static void RegisterFunction(

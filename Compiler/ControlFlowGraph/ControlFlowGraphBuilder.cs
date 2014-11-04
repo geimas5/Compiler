@@ -456,33 +456,26 @@
                 return this.CreateBranchNode(unaryExpression.Expression, falseBranch, trueBranch);
             }
 
-            var booleanConstant = expression as ConstantExpression;
-            if (booleanConstant != null && booleanConstant.Constant is BooleanConstant)
+            var constantExpression = expression as ConstantExpression;
+            if (constantExpression != null && constantExpression.Constant is BooleanConstant)
             {
-                var con = booleanConstant.Constant as BooleanConstant;
+                var constant = constantExpression.Constant as BooleanConstant;
 
-                return con.Value ? trueBranch : falseBranch;
+                return constant.Value ? trueBranch : falseBranch;
             }
 
-            var binaryExpression = expression as BinaryOperatorExpression;
-
-            var leftBlock = binaryExpression.Left.Accept(this);
-            var leftArgument = ToArgument(((IReturningStatement)leftBlock.Exit).Return);
-
-            if (binaryExpression.Operator != BinaryOperator.And && binaryExpression.Operator != BinaryOperator.Or)
+            var variableExpression = expression as VariableExpression;
+            if (variableExpression != null)
             {
-                var rightBlock = binaryExpression.Right.Accept(this);
-                var rightArguumment = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
-                var beforeBlock = leftBlock.Join(rightBlock);
-
+                var variable = (VariableSymbol)variableExpression.VariableId.Symbol;
                 var branchStatement = new BranchStatement(
-                    true,
-                    binaryExpression.Operator,
-                    leftArgument,
-                    rightArguumment,
-                    falseBranch.Enter);
+                        true,
+                        BinaryOperator.Equal,
+                        new VariableArgument(variable), 
+                        new BooleanConstantArgument(true), 
+                        falseBranch.Enter);
 
-                var temp = beforeBlock.Append(branchStatement);
+                var temp = new BasicBlock(branchStatement);
                 temp = temp.Join(trueBranch);
                 temp = temp.Append(jumpToAfter);
                 temp = temp.Join(falseBranch);
@@ -491,52 +484,83 @@
                 return temp;
             }
 
-            var block = leftBlock;
-
-            if (binaryExpression.Operator == BinaryOperator.And)
+            var binaryExpression = expression as BinaryOperatorExpression;
+            if (binaryExpression != null)
             {
-                var firstBranch = new BranchStatement(
-                    true,
-                    BinaryOperator.Equal,
-                    leftArgument,
-                    new BooleanConstantArgument(true),
-                    falseBranch.Enter);
+                var leftBlock = binaryExpression.Left.Accept(this);
+                var leftArgument = ToArgument(((IReturningStatement)leftBlock.Exit).Return);
 
-                var rightBlock = binaryExpression.Right.Accept(this);
-                var rightArguumment = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
+                if (binaryExpression.Operator != BinaryOperator.And && binaryExpression.Operator != BinaryOperator.Or)
+                {
+                    var rightBlock = binaryExpression.Right.Accept(this);
+                    var rightArguumment = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
+                    var beforeBlock = leftBlock.Join(rightBlock);
 
-                var seccondBranch = new BranchStatement(
-                    true,
-                    BinaryOperator.Equal,
-                    rightArguumment,
-                    new BooleanConstantArgument(true),
-                    falseBranch.Enter);
+                    var branchStatement = new BranchStatement(
+                        true,
+                        binaryExpression.Operator,
+                        leftArgument,
+                        rightArguumment,
+                        falseBranch.Enter);
 
-                block = block.Append(firstBranch).Join(rightBlock).Append(seccondBranch);
+                    var temp = beforeBlock.Append(branchStatement);
+                    temp = temp.Join(trueBranch);
+                    temp = temp.Append(jumpToAfter);
+                    temp = temp.Join(falseBranch);
+                    temp = temp.Append(afterStatement);
+
+                    return temp;
+                }
+
+                var block = leftBlock;
+
+                if (binaryExpression.Operator == BinaryOperator.And)
+                {
+                    var firstBranch = new BranchStatement(
+                        true,
+                        BinaryOperator.Equal,
+                        leftArgument,
+                        new BooleanConstantArgument(true),
+                        falseBranch.Enter);
+
+                    var rightBlock = binaryExpression.Right.Accept(this);
+                    var rightArguumment = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
+
+                    var seccondBranch = new BranchStatement(
+                        true,
+                        BinaryOperator.Equal,
+                        rightArguumment,
+                        new BooleanConstantArgument(true),
+                        falseBranch.Enter);
+
+                    block = block.Append(firstBranch).Join(rightBlock).Append(seccondBranch);
+                }
+                else if (binaryExpression.Operator == BinaryOperator.Or)
+                {
+                    var firstBranch = new BranchStatement(
+                        false,
+                        BinaryOperator.Equal,
+                        leftArgument,
+                        new BooleanConstantArgument(true),
+                        trueBranch.Enter);
+
+                    var rightBlock = binaryExpression.Right.Accept(this);
+                    var rightArguumment = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
+
+                    var seccondBranch = new BranchStatement(
+                        true,
+                        BinaryOperator.Equal,
+                        rightArguumment,
+                        new BooleanConstantArgument(true),
+                        falseBranch.Enter);
+
+                    block = block.Append(firstBranch).Join(rightBlock).Append(seccondBranch);
+                }
+
+                return block.Join(trueBranch).Append(jumpToAfter).Join(falseBranch).Append(afterStatement);
             }
-            else if (binaryExpression.Operator == BinaryOperator.Or)
-            {
-                var firstBranch = new BranchStatement(
-                   true,
-                   BinaryOperator.Equal,
-                   leftArgument,
-                   new BooleanConstantArgument(true),
-                   trueBranch.Enter);
 
-                var rightBlock = binaryExpression.Right.Accept(this);
-                var rightArguumment = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
-
-                var seccondBranch = new BranchStatement(
-                    true,
-                    BinaryOperator.Equal,
-                    rightArguumment,
-                    new BooleanConstantArgument(true),
-                    falseBranch.Enter);
-
-                block = block.Append(firstBranch).Join(rightBlock).Append(seccondBranch);
-            }
-
-            return block.Join(trueBranch).Append(jumpToAfter).Join(falseBranch).Append(afterStatement);
+            throw new NotSupportedException();
         }
 
         private IEnumerable<BasicBlock> SplitBlock(BasicBlock block)

@@ -70,6 +70,24 @@
             UpdateJumpSourcesToNewStatement(statement, newStatement);
         }
 
+        public static void AddAfter(Statement statement, Statement newStatement)
+        {
+            if (statement.Next != null)
+            {
+                statement.Next.Previous = newStatement;
+            }
+
+            newStatement.Previous = statement;
+            newStatement.Next = statement.Next;
+            statement.Next = newStatement;
+            newStatement.BasicBlock = statement.BasicBlock;
+
+            if (statement.BasicBlock.Exit == statement)
+            {
+                newStatement.BasicBlock.Exit = newStatement;
+            }
+        }
+
         private static void UpdateJumpSourcesToNewStatement(Statement beforeStatement, Statement newStatement)
         {
             foreach (var jumpSource in beforeStatement.JumpSources.ToArray())

@@ -11,5 +11,16 @@
                    || register == Register.XMM12 || register == Register.XMM13 || register == Register.XMM14
                    || register == Register.XMM15;
         }
+
+        public static bool IsXMMOperand(Operand operand)
+        {
+            var registerOperand = operand as RegisterOperand;
+            if (registerOperand == null)
+            {
+                return false;
+            }
+
+            return IsXMM(registerOperand.Register);
+        }
     }
 }

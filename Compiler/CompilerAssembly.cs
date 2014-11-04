@@ -21,7 +21,6 @@
         {
             this.Logger = new Logger();
             this.optimizer = new Optimizer();
-            this.AllocateRegisters = true;
         }
 
         public Logger Logger { get; private set; }

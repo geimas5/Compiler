@@ -32,7 +32,6 @@
                 }
             }
 
-            Console.Write(sb);
             return sb.ToString();
         }
     }

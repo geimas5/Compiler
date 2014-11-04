@@ -253,9 +253,12 @@
                         this.logger.LogError(node.Location, "The operator '{0}' is only available on booleans", node.Operator);
                     }
 
+                    node.ResultingType = new Type(PrimitiveType.Boolean);
+
                     return new Type(PrimitiveType.Boolean);
                 case BinaryOperator.Equal:
                 case BinaryOperator.NotEqual:
+                    node.ResultingType = new Type(PrimitiveType.Boolean);
                     return new Type(PrimitiveType.Boolean);
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -302,7 +305,7 @@
                 this.logger.LogError(node.Location, "The function {0} must be called with the correct number of arguments", node.Name);
             }
 
-            for (int i = 0; i < node.Arguments.Count; i++)
+            for (int i = 0; i < Math.Min(functionSymbol.Parameters.Length, node.Arguments.Count); i++)
             {
                 var expressionNode = node.Arguments[i];
                 var expressionType = expressionNode.Accept(this);

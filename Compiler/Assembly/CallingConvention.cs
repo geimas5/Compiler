@@ -6,7 +6,7 @@
 
     public static class CallingConvention
     {
-        public static  Register GetArgumentRegister(Type type, int argumentNum)
+        public static Register GetArgumentRegister(Type type, int argumentNum)
         {
             if (Equals(type, Type.DoubleType))
             {
@@ -56,6 +56,11 @@
             {
                 return 4;
             }
+        }
+
+        public static Register GetReturnValueRegister(Type type)
+        {
+            return Equals(type, Type.DoubleType) ? Register.XMM0 : Register.RAX;
         }
     }
 }

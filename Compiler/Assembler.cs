@@ -20,6 +20,7 @@
             proc.Start();
             string result = proc.StandardOutput.ReadToEnd();
             Console.WriteLine(result);
+            proc.WaitForExit();
         }
     }
 }

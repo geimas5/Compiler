@@ -8,6 +8,7 @@
     using Compiler.Common;
     using Compiler.Optimization;
     using Compiler.SymbolTable;
+    using Compiler.SyntaxTree;
 
     using Type = Compiler.Type;
 
@@ -17,48 +18,100 @@
         {
             foreach (var function in graph.Functions)
             {
-                for (int i = 0; i < Math.Min(graph.FunctionParameters[function.Key].Count, CallingConvention.NumberOfRegisterParams); i++)
+                AddParameters(graph, symbolTable, function);
+
+                ConvertExponensiationToCalls(function, symbolTable);
+
+                ConvertCallsToCallingConvention(symbolTable, function);
+            }
+        }
+
+        private static void ConvertCallsToCallingConvention(SymbolTable symbolTable, KeyValuePair<string, IList<BasicBlock>> function)
+        {
+            int currentParam = 0;
+            var callParameters = new List<VariableSymbol>();
+            foreach (var statement in function.Value.SelectMany(m => m).ToArray())
+            {
+                var paramStatement = statement as ParamStatement;
+                if (paramStatement != null)
                 {
-                    var functionParameter = graph.FunctionParameters[function.Key][i];
-                    var register = CallingConvention.GetArgumentRegister(functionParameter.Type, i);
+                    if (currentParam < CallingConvention.NumberOfRegisterParams)
+                    {
+                        var register = CallingConvention.GetArgumentRegister(paramStatement.Argument.Type, currentParam);
 
-                    var registerVariable = MakeTempRegisterVariable(symbolTable, functionParameter.Type, register);
+                        var registerVariable = MakeTempRegisterVariable(symbolTable, paramStatement.Argument.Type, register);
+                        CFGUtilities.AddBefore(
+                            paramStatement,
+                            new AssignStatement(new VariableDestination(registerVariable), paramStatement.Argument));
 
-                    CFGUtilities.AddBefore(function.Value.First().Enter,
-                            new AssignStatement(
-                                new VariableDestination(functionParameter),
-                                new VariableArgument(registerVariable)));
+                        CFGUtilities.RemoveStatement(paramStatement);
+
+                        callParameters.Add(registerVariable);
+                    }
+
+                    currentParam++;
                 }
-
-                int currentParam = 0;
-                var callParameters = new List<VariableSymbol>();
-                foreach (var statement in function.Value.SelectMany(m => m).ToArray())
+                else if (statement is CallStatement)
                 {
-                    var paramStatement = statement as ParamStatement;
-                    if (paramStatement != null)
+                    currentParam = 0;
+                    var callStatement = (CallStatement)statement;
+                    if (callStatement is ReturningCallStatement)
                     {
-                        if (currentParam < CallingConvention.NumberOfRegisterParams)
-                        {
-                            var register = CallingConvention.GetArgumentRegister(paramStatement.Argument.Type, currentParam);
+                        var returningCallStatement = callStatement as ReturningCallStatement;
+                        var register = CallingConvention.GetReturnValueRegister(returningCallStatement.Return.Type);
+                        var registerVariable = MakeTempRegisterVariable(symbolTable, returningCallStatement.Return.Type, register);
 
-                            var registerVariable = MakeTempRegisterVariable(symbolTable, paramStatement.Argument.Type, register);
-                            CFGUtilities.AddBefore(
-                                paramStatement,
-                                new AssignStatement(new VariableDestination(registerVariable), paramStatement.Argument));
+                        var assignStatement = new AssignStatement(
+                            ((ReturningCallStatement)callStatement).Return,
+                            new VariableArgument(registerVariable));
 
-                            CFGUtilities.RemoveStatement(paramStatement);
+                        CFGUtilities.ReplaceStatement(
+                            callStatement,
+                            callStatement = new CallStatement(callStatement.Function, callStatement.NumberOfArguments));
 
-                            callParameters.Add(registerVariable);
-                        }
-
-                        currentParam++;
+                        CFGUtilities.AddAfter(callStatement, assignStatement);
                     }
-                    else if (statement is CallStatement)
-                    {
-                        currentParam = 0;
-                        var callStatement = (CallStatement)statement;
-                        callStatement.CallVariables.AddRange(callParameters);
-                    }
+
+                    callStatement.CallVariables.AddRange(callParameters);
+                }
+            }
+        }
+
+        private static void AddParameters(ControlFlowGraph graph, SymbolTable symbolTable, KeyValuePair<string, IList<BasicBlock>> function)
+        {
+            var numberOfRegisterParameters = Math.Min(
+                graph.FunctionParameters[function.Key].Count,
+                CallingConvention.NumberOfRegisterParams);
+
+            for (int i = 0; i < numberOfRegisterParameters; i++)
+            {
+                var functionParameter = graph.FunctionParameters[function.Key][i];
+                var register = CallingConvention.GetArgumentRegister(functionParameter.Type, i);
+
+                var registerVariable = MakeTempRegisterVariable(symbolTable, functionParameter.Type, register);
+
+                CFGUtilities.AddBefore(
+                    function.Value.First().Enter,
+                    new AssignStatement(new VariableDestination(functionParameter), new VariableArgument(registerVariable)));
+            }
+        }
+
+        private static void ConvertExponensiationToCalls(KeyValuePair<string, IList<BasicBlock>> function, SymbolTable symbolTable)
+        {
+            foreach (var statement in function.Value.SelectMany(m => m).ToArray())
+            {
+                if (statement is BinaryOperatorStatement && ((BinaryOperatorStatement)statement).Operator == BinaryOperator.Exponensiation)
+                {
+                    var binaryOperatorStatement = statement as BinaryOperatorStatement;
+
+                    CFGUtilities.AddBefore(statement, new ParamStatement(binaryOperatorStatement.Left));
+                    CFGUtilities.AddBefore(statement, new ParamStatement(binaryOperatorStatement.Right));
+                    CFGUtilities.ReplaceStatement(
+                        statement,
+                        new ReturningCallStatement(
+                            (FunctionSymbol)symbolTable.GetSymbol("Power", SymbolType.Function),
+                            2,
+                            binaryOperatorStatement.Return));
                 }
             }
         }

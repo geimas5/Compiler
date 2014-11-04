@@ -10,7 +10,7 @@
 
     [TestClass]
     [DeploymentItem("Assemble.bat")]
-    public class FullOptimizationTests
+    public class RegisterAllocationFullOptimizationTests
     {
         [TestMethod]
         [DeploymentItem("Compiling/Programs/Program1.m")]
@@ -79,7 +79,8 @@
                                           Optimizations.DeadCodeElimination,
                                           Optimizations.EliminateEqualAssignments,
                                           Optimizations.LocalCopyPropagation,
-                                      }
+                                      },
+                                  AllocateRegisters = true
                               };
 
             using (var input = new StringReader(File.ReadAllText(file)))
@@ -89,7 +90,6 @@
                 var successful = asembly.CompileProgram(input, outputWriter);
                 Assert.IsTrue(successful);
             }
-
             Thread.Sleep(100);
 
             Assembler.ExecutAssemble();

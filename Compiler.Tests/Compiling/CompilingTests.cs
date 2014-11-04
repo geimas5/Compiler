@@ -2,6 +2,7 @@
 {
     using System.Diagnostics;
     using System.IO;
+    using System.Threading;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -49,6 +50,14 @@
             this.TestProgram("Program5.m", "Program5Result.txt");
         }
 
+        [TestMethod]
+        [DeploymentItem("Compiling/Programs/Program6.m")]
+        [DeploymentItem("Compiling/Programs/Program6Result.txt")]
+        public void TestProgram6()
+        {
+            this.TestProgram("Program6.m", "Program6Result.txt");
+        }
+
         private void TestProgram(string programFile, string resultFile)
         {
             var result = this.CompileAndRunProgram(programFile).Trim();
@@ -57,6 +66,9 @@
 
         private string CompileAndRunProgram(string file)
         {
+            File.Delete("output.asm");
+            File.Delete("output.exe");
+
             var asembly = new CompilerAssembly();
 
             using (var input = new StringReader(File.ReadAllText(file)))
@@ -66,6 +78,8 @@
                 var successful = asembly.CompileProgram(input, outputWriter);
                 Assert.IsTrue(successful);
             }
+
+            Thread.Sleep(100);
 
             Assembler.ExecutAssemble();
 

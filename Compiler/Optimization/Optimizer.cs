@@ -1,5 +1,6 @@
 ﻿namespace Compiler.Optimization
 {
+    using System;
     using System.Collections.Generic;
 
     using Compiler.ControlFlowGraph;
@@ -15,6 +16,13 @@
 
         public void RunOptimizations(ControlFlowGraph graph)
         {
+            if (this.ActivatedOptimizations.Contains(Optimizations.LocalCopyPropagation)
+                && !this.ActivatedOptimizations.Contains(Optimizations.EliminateEqualAssignments))
+            {
+                throw new Exception("Using local copy propagation requires also "
+                                    + "using the eliminate equal assignments optimization");
+            }
+
             bool somethingChanged = true;
 
             while (somethingChanged)

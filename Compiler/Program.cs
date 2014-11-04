@@ -36,29 +36,96 @@
 
             string program = @"int main()
 {
-    double e;
-    e = 3 ** 2.2;
-//    e = e / 2;
-//    e = e * 5.3;
-//    e = e - 134;
-//    e = e + 12;
+    PrintBool(true == true);PrintLine("""");
+    PrintBool(false == true);PrintLine("""");
+    PrintBool(true == false);PrintLine("""");
+    PrintBool(false == false);PrintLine("""");
 
-    PrintDouble(e);
-                
+    PrintLine(""----------"");
+    PrintBool(true != true);PrintLine("""");
+    PrintBool(false != true);PrintLine("""");
+    PrintBool(true != false);PrintLine("""");
+    PrintBool(false != false);PrintLine("""");
+
+    PrintLine(""----------"");
+    PrintBool(!true);PrintLine("""");
+    PrintBool(!false);PrintLine("""");
+
+    PrintLine(""----------"");
+    PrintBool(true && true); PrintLine("""");
+    PrintBool(true && false); PrintLine("""");
+    PrintBool(false && true); PrintLine("""");
+    PrintBool(false && false); PrintLine("""");
+
+    PrintLine(""----------"");
+    PrintBool(true || true); PrintLine("""");
+    PrintBool(true || false); PrintLine("""");
+    PrintBool(false || true); PrintLine("""");
+    PrintBool(false || false); PrintLine("""");
+
+    PrintBool(GetTrue() == GetTrue()); PrintLine("""");
+    PrintBool(GetFalse() == GetTrue()); PrintLine("""");
+    PrintBool(GetTrue() == GetFalse()); PrintLine("""");
+    PrintBool(GetFalse() == GetFalse()); PrintLine("""");
+
+    PrintLine(""----------"");
+    PrintBool(GetTrue() != GetTrue()); PrintLine("""");
+    PrintBool(GetFalse() != GetTrue()); PrintLine("""");
+    PrintBool(GetTrue() != GetFalse()); PrintLine("""");
+    PrintBool(GetFalse() != GetFalse()); PrintLine("""");
+
+    PrintLine(""----------"");
+    PrintBool(!GetTrue()); PrintLine("""");
+    PrintBool(!GetFalse()); PrintLine("""");
+
+    PrintLine(""----------"");
+    PrintBool(GetTrue() && GetTrue());PrintLine("""");
+    PrintBool(GetTrue() && GetFalse());PrintLine("""");
+    PrintBool(GetFalse() && GetTrue());PrintLine("""");
+    PrintBool(GetFalse() && GetFalse());PrintLine("""");
+
+    PrintLine(""----------"");
+    PrintBool(GetTrue() || GetTrue());PrintLine("""");
+    PrintBool(GetTrue() || GetFalse());PrintLine("""");
+    PrintBool(GetFalse() || GetTrue());PrintLine("""");
+    PrintBool(GetFalse() || GetFalse());PrintLine("""");
+    
     return 0;
-}";
+}
+
+void PrintBool(bool val) {
+    if(val){
+        PrintInt(1);
+    }
+    else{
+        PrintInt(0);
+    }
+}
+
+bool GetTrue(){
+    PrintBool(true);
+    return true;
+}
+
+bool GetFalse(){
+    PrintBool(false);
+    return false;
+}
+
+";
 
             var asembly = new CompilerAssembly
                               {
                                   PrintMessages = true,
                                   PrintIR = true,
                                   OutputIr = true,
+                                  AllocateRegisters = true,
                                   ActivatedOptimizations =
                                       {
-                                          //Optimizations.EliminateEqualAssignments, 
-                                          //Optimizations.LocalCopyPropagation,
-                                          //Optimizations.DeadCodeElimination,
-                                          //Optimizations.AlgebraicOptimization
+                                          Optimizations.EliminateEqualAssignments, 
+                                          Optimizations.LocalCopyPropagation,
+                                          Optimizations.DeadCodeElimination,
+                                          Optimizations.AlgebraicOptimization
                                       }
                               };
 

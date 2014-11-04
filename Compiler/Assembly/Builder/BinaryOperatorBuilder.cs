@@ -11,7 +11,6 @@
         {
             if (Statement.Operator == BinaryOperator.Divide 
                 || Statement.Operator == BinaryOperator.Add
-                || Statement.Operator == BinaryOperator.Equal 
                 || Statement.Operator == BinaryOperator.Multiply
                 || Statement.Operator == BinaryOperator.Subtract 
                 || Statement.Operator == BinaryOperator.Mod
@@ -65,10 +64,7 @@
                     this.CreateDivisionInstruction();
                     return;
                 case BinaryOperator.Mod:
-                    CreateModuloInstruction();
-                    return;
-                case BinaryOperator.Exponensiation:
-                    CreateExponentiantionInstruction();
+                    this.CreateModuloInstruction();
                     return;
                 default:
                     throw new ArgumentException("operation operation not supported");
@@ -77,62 +73,11 @@
             var argument1 = new RegisterOperand(Register.R10);
             Operand argument2 = this.GetRightIntegerOperand(false);
 
-            this.PlaceArgumentInRegister(Statement.Left, Register.R10);
+            this.MoveData(this.ArgumentToOperand(Statement.Left, Register.R10), new RegisterOperand(Register.R10), Register.R10, Register.XMM14);
 
             this.WriteBinaryInstruction(opcode, argument1, argument2);
 
-            this.WriteRegisterToDestination(this.Statement.Return, Register.R10);
-        }
-
-        private Operand GetRightIntegerOperand(bool leftIsMemory)
-        {
-            var variableArgument = Statement.Right as VariableArgument;
-            if (variableArgument != null)
-            {
-                if (variableArgument.Variable.Register.HasValue)
-                {
-                    return new RegisterOperand(variableArgument.Variable.Register.Value);
-                }
-
-                var memoryOperand = this.Procedure.GetVarialeLocation(variableArgument.Variable);
-                if (!leftIsMemory) return memoryOperand;
-
-                this.WriteBinaryInstruction(Opcode.MOV, new RegisterOperand(Register.R11), memoryOperand);
-                return new RegisterOperand(Register.R11);
-            }
-
-            var intConstantArgument = Statement.Right as IntConstantArgument;
-            if (intConstantArgument != null)
-            {
-                if (leftIsMemory)
-                {
-                    this.PlaceArgumentInRegister(intConstantArgument, Register.R11);
-                    return new RegisterOperand(Register.R11);
-                }
-
-                return new ConstantOperand(intConstantArgument.Value);
-            }
-
-            var globalConstantArgument = Statement.Right as GlobalArgument;
-            if (globalConstantArgument != null)
-            {
-                this.PlaceArgumentInRegister(globalConstantArgument, Register.R11);
-                return new RegisterOperand(Register.R11);
-            }
-
-            var pointerArgument = Statement.Right as PointerArgument;
-            if (pointerArgument != null)
-            {
-                if (pointerArgument.Variable.Register.HasValue)
-                {
-                    return new MemoryOperand(pointerArgument.Variable.Register.Value);
-                }
-
-                this.PlaceArgumentInRegister(pointerArgument, Register.R11);
-                return new RegisterOperand(Register.R11);
-            }
-
-            throw new NotImplementedException();
+            this.MoveData(new RegisterOperand(Register.R10), this.DestinationToOperand(this.Statement.Return, Register.R11), Register.R11, Register.XMM14);
         }
 
         private void CreateFloatingPointMathInstructions()
@@ -154,33 +99,38 @@
                     opcode = Opcode.DIVSD;
                     break;
                 case BinaryOperator.Exponensiation:
-                    CreateExponentiantionInstruction();
-                    return;
+                    // This should not happen, exponentiantion should have 
+                    // been converted to calls to power before here.
                 default:
                     throw new ArgumentException("operation operation not supported");
             }
 
-            var argument1 = new RegisterOperand(Register.XMM14);
-            var argument2 = new RegisterOperand(Register.XMM15);
-            PlaceArgumentInRegister(Statement.Left, Register.XMM14);
-            PlaceArgumentInRegister(Statement.Right, Register.XMM15);
+            Operand rightOperand = this.ArgumentToOperand(Statement.Right, Register.XMM15);
+            if (!RegisterUtility.IsXMMOperand(rightOperand))
+            {
+                this.MoveData(rightOperand, new RegisterOperand(Register.XMM15), Register.R10, Register.XMM15);
+                rightOperand = new RegisterOperand(Register.XMM15);
+            }
 
-            this.WriteBinaryInstruction(opcode, argument1, argument2);
+            Operand leftOperand = new RegisterOperand(Register.XMM14);
+            this.MoveData(this.ArgumentToOperand(Statement.Left, Register.XMM14), leftOperand, Register.R10, Register.XMM15);
 
-            this.WriteBinaryInstruction(Opcode.MOVD, new RegisterOperand(Register.R10), argument1);
-            this.WriteRegisterToDestination(this.Statement.Return, Register.R10);
+            this.WriteBinaryInstruction(opcode, leftOperand, rightOperand);
+
+            var destinationOperand = this.DestinationToOperand(Statement.Return, Register.R10);
+            this.MoveData(leftOperand, destinationOperand, Register.R10, Register.XMM14);
         }
 
         private void CreateDivisionInstruction()
         {
             // Clear RDX
             this.WriteBinaryInstruction(Opcode.XOR, new RegisterOperand(Register.RDX), new RegisterOperand(Register.RDX));
-            this.PlaceArgumentInRegister(Statement.Left, Register.RAX);
-            this.PlaceArgumentInRegister(Statement.Right, Register.R10);
-            
-            this.WriteInstruction(new SingleOpcodeInstruction(SingleArgOpcode.IDIV, new RegisterOperand(Register.R10)));
 
-            this.WriteRegisterToDestination(this.Statement.Return, Register.RAX);
+            this.MoveData(this.ArgumentToOperand(Statement.Left, Register.RAX), new RegisterOperand(Register.RAX), Register.RAX, Register.XMM14);
+
+            this.WriteInstruction(new SingleOpcodeInstruction(SingleArgOpcode.IDIV, this.GetRightIntegerOperand(true, false)));
+
+            this.MoveData(new RegisterOperand(Register.RAX), this.DestinationToOperand(this.Statement.Return, Register.R10), Register.R10, Register.XMM14);
         }
 
         private void CreateModuloInstruction()
@@ -188,32 +138,15 @@
             // Clear RDX
             this.WriteBinaryInstruction(Opcode.XOR, new RegisterOperand(Register.RDX), new RegisterOperand(Register.RDX));
 
-            PlaceArgumentInRegister(Statement.Left, Register.RAX);
-            PlaceArgumentInRegister(Statement.Right, Register.R10);
+            this.MoveData(this.ArgumentToOperand(Statement.Left, Register.RAX), new RegisterOperand(Register.RAX), Register.RAX, Register.XMM14);
 
-            this.WriteInstruction(new SingleOpcodeInstruction(SingleArgOpcode.IDIV, new RegisterOperand(Register.R10)));
+            this.WriteInstruction(new SingleOpcodeInstruction(SingleArgOpcode.IDIV, this.GetRightIntegerOperand(true, false)));
 
-            this.WriteRegisterToDestination(this.Statement.Return, Register.RDX);
-        }
-
-        private void CreateExponentiantionInstruction()
-        {
-            PlaceArgumentInRegister(Statement.Left, Register.XMM14);
-            PlaceArgumentInRegister(Statement.Right, Register.XMM15);
-
-            this.WriteBinaryInstruction(Opcode.SUB, new RegisterOperand(Register.RSP), new ConstantOperand(40));
-            this.WriteInstruction(new CallInstruction("Power"));
-            this.WriteBinaryInstruction(Opcode.ADD, new RegisterOperand(Register.RSP), new ConstantOperand(40));
-
-            this.WriteBinaryInstruction(Opcode.MOVD, new RegisterOperand(Register.R10), new RegisterOperand(Register.XMM14));
-            this.WriteRegisterToDestination(this.Statement.Return, Register.R10);
+            this.MoveData(new RegisterOperand(Register.RDX), this.DestinationToOperand(this.Statement.Return, Register.R10), Register.RAX, Register.XMM14);
         }
 
         private void CreateComparisonInstruction()
         {
-            PlaceArgumentInRegister(Statement.Left, Register.R10);
-            PlaceArgumentInRegister(Statement.Right, Register.R11);
-
             Opcode opcode;
             switch (Statement.Operator)
             {
@@ -239,13 +172,59 @@
                     throw new ArgumentOutOfRangeException("statement", "Unsupported operator");
             }
 
-            this.WriteBinaryInstruction(Opcode.XOR, new RegisterOperand(Register.RAX), new RegisterOperand(Register.RAX));
-            this.WriteBinaryInstruction(Opcode.CMP, new RegisterOperand(Register.R10), new RegisterOperand(Register.R11));
+            var leftOperand = this.GetLeftBooleanOperand();
+            var rightOperand = this.GetRightIntegerOperand(leftOperand is MemoryOperand);
 
-            PlaceArgumentInRegister(new IntConstantArgument(1), Register.R10);
-            this.WriteBinaryInstruction(opcode, new RegisterOperand(Register.RAX), new RegisterOperand(Register.R10));
+            this.WriteBinaryInstruction(Opcode.CMP, leftOperand, rightOperand);
 
-            this.WriteRegisterToDestination(this.Statement.Return, Register.RAX);
+            this.MoveData(new ConstantOperand(1), new RegisterOperand(Register.R10), Register.R10, Register.XMM14);
+            this.WriteBinaryInstruction(Opcode.MOV, new RegisterOperand(Register.R11), new ConstantOperand(0));
+            this.WriteBinaryInstruction(opcode, new RegisterOperand(Register.R11), new RegisterOperand(Register.R10));
+
+            var destinationOperand = this.DestinationToOperand(Statement.Return, Register.R10);
+            this.MoveData(new RegisterOperand(Register.R11), destinationOperand, Register.R10, Register.XMM14);
+        }
+
+        private Operand GetLeftBooleanOperand()
+        {
+            var leftOperand = this.ArgumentToOperand(Statement.Left, Register.R11);
+
+            if (leftOperand is MemoryOperand)
+            {
+                this.MoveData(leftOperand, new RegisterOperand(Register.R11), Register.R11, Register.XMM14);
+
+                leftOperand = new RegisterOperand(Register.R11);
+            }
+
+            if (leftOperand is ConstantOperand)
+            {
+                this.MoveData(leftOperand, new RegisterOperand(Register.R11), Register.R11, Register.XMM14);
+
+                leftOperand = new RegisterOperand(Register.R11);
+            }
+
+            return leftOperand;
+        }
+
+        private Operand GetRightIntegerOperand(bool leftIsMemory, bool canBeImmediate = true)
+        {
+            var rightOperand = this.ArgumentToOperand(Statement.Right, Register.R11);
+
+            if (leftIsMemory && rightOperand is MemoryOperand)
+            {
+                this.MoveData(rightOperand, new RegisterOperand(Register.R11), Register.R11, Register.XMM14);
+
+                rightOperand = new RegisterOperand(Register.R11);
+            }
+
+            if (!canBeImmediate && rightOperand is ConstantOperand)
+            {
+                this.MoveData(rightOperand, new RegisterOperand(Register.R11), Register.R11, Register.XMM14);
+
+                rightOperand = new RegisterOperand(Register.R11);
+            }
+
+            return rightOperand;
         }
     }
 }

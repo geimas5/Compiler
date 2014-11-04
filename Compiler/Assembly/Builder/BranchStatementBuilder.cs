@@ -10,7 +10,7 @@
         protected override void Build()
         {
             var leftOperand = this.GetLeftOperand();
-            var rightOperand = this.GetRightOperand(leftOperand is MemoryOperand);
+            var rightOperand = this.GetRightOperand(leftOperand is MemoryOperand, !(leftOperand is MemoryOperand));
 
             this.WriteBinaryInstruction(Opcode.CMP, leftOperand, rightOperand);
 
@@ -43,68 +43,37 @@
             this.WriteInstruction(new JumpInstruction(opcode, "L" + Statement.BranchTarget.Id));
         }
 
-        private Operand GetRightOperand(bool leftIsMemory)
+        private Operand GetRightOperand(bool leftIsMemory, bool canBeImmediate = true)
         {
-            var variableArgument = Statement.Right as VariableArgument;
-            if (variableArgument != null)
+            var rightOperand = this.ArgumentToOperand(Statement.Right, Register.R11);
+
+            if (leftIsMemory && rightOperand is MemoryOperand)
             {
-                if (variableArgument.Variable.Register.HasValue)
-                {
-                    return new RegisterOperand(variableArgument.Variable.Register.Value);
-                }
+                this.MoveData(rightOperand, new RegisterOperand(Register.R11), Register.R11, Register.XMM14);
 
-                var memoryOperand = this.Procedure.GetVarialeLocation(variableArgument.Variable);
-                if (!leftIsMemory) return memoryOperand;
-
-                this.WriteBinaryInstruction(Opcode.MOV, new RegisterOperand(Register.R11), memoryOperand);
-                return new RegisterOperand(Register.R11);
+                rightOperand = new RegisterOperand(Register.R11);
             }
 
-            var intConstantArgument = Statement.Right as IntConstantArgument;
-            if (intConstantArgument != null)
+            if (!canBeImmediate && rightOperand is ConstantOperand)
             {
-                if (leftIsMemory)
-                {
-                    this.PlaceArgumentInRegister(intConstantArgument, Register.R11);
-                    return new RegisterOperand(Register.R11);
-                }
+                this.MoveData(rightOperand, new RegisterOperand(Register.R11), Register.R11, Register.XMM14);
 
-                return new ConstantOperand(intConstantArgument.Value);
+                rightOperand = new RegisterOperand(Register.R11);
             }
 
-            var globalConstantArgument = Statement.Right as GlobalArgument;
-            if (globalConstantArgument != null)
-            {
-                this.PlaceArgumentInRegister(globalConstantArgument, Register.R11);
-                return new RegisterOperand(Register.R11);
-            }
-
-            var pointerArgument = Statement.Right as PointerArgument;
-            if (pointerArgument != null)
-            {
-                this.PlaceArgumentInRegister(pointerArgument, Register.R11);
-                return new RegisterOperand(Register.R11);
-            }
-
-            throw new NotImplementedException();
+            return rightOperand;
         }
 
         private Operand GetLeftOperand()
         {
-            var variableArgument = Statement.Left as VariableArgument;
-            if (variableArgument != null)
+            var leftOperand = this.ArgumentToOperand(Statement.Left, Register.R10);
+            if (leftOperand is ConstantOperand)
             {
-                if (variableArgument.Variable.Register.HasValue)
-                {
-                    return new RegisterOperand(variableArgument.Variable.Register.Value);
-                }
-
-                return Procedure.GetVarialeLocation(variableArgument.Variable);
+                this.MoveData(leftOperand, new RegisterOperand(Register.R10), Register.R10, Register.XMM14);
+                leftOperand = new RegisterOperand(Register.R10);
             }
 
-            this.PlaceArgumentInRegister(Statement.Left, Register.R10);
-
-            return new RegisterOperand(Register.R10);
+            return leftOperand;
         }
     }
 }
