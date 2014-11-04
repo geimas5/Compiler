@@ -73,7 +73,7 @@
             var argument1 = new RegisterOperand(Register.R10);
             Operand argument2 = this.GetRightIntegerOperand(false);
 
-            this.MoveData(this.ArgumentToOperand(Statement.Left, Register.R10), new RegisterOperand(Register.R10), Register.R10, Register.XMM14);
+            this.MoveData(this.ArgumentToOperand(Statement.Left, Register.R10, Register.XMM14), new RegisterOperand(Register.R10), Register.R10, Register.XMM14);
 
             this.WriteBinaryInstruction(opcode, argument1, argument2);
 
@@ -105,7 +105,7 @@
                     throw new ArgumentException("operation operation not supported");
             }
 
-            Operand rightOperand = this.ArgumentToOperand(Statement.Right, Register.XMM15);
+            Operand rightOperand = this.ArgumentToOperand(Statement.Right, Register.R14, Register.XMM15);
             if (!RegisterUtility.IsXMMOperand(rightOperand))
             {
                 this.MoveData(rightOperand, new RegisterOperand(Register.XMM15), Register.R10, Register.XMM15);
@@ -113,7 +113,7 @@
             }
 
             Operand leftOperand = new RegisterOperand(Register.XMM14);
-            this.MoveData(this.ArgumentToOperand(Statement.Left, Register.XMM14), leftOperand, Register.R10, Register.XMM15);
+            this.MoveData(this.ArgumentToOperand(Statement.Left, Register.R10, Register.XMM14), leftOperand, Register.R10, Register.XMM15);
 
             this.WriteBinaryInstruction(opcode, leftOperand, rightOperand);
 
@@ -126,7 +126,7 @@
             // Clear RDX
             this.WriteBinaryInstruction(Opcode.XOR, new RegisterOperand(Register.RDX), new RegisterOperand(Register.RDX));
 
-            this.MoveData(this.ArgumentToOperand(Statement.Left, Register.RAX), new RegisterOperand(Register.RAX), Register.RAX, Register.XMM14);
+            this.MoveData(this.ArgumentToOperand(Statement.Left, Register.RAX, Register.XMM14), new RegisterOperand(Register.RAX), Register.RAX, Register.XMM14);
 
             this.WriteInstruction(new SingleOpcodeInstruction(SingleArgOpcode.IDIV, this.GetRightIntegerOperand(true, false)));
 
@@ -138,7 +138,7 @@
             // Clear RDX
             this.WriteBinaryInstruction(Opcode.XOR, new RegisterOperand(Register.RDX), new RegisterOperand(Register.RDX));
 
-            this.MoveData(this.ArgumentToOperand(Statement.Left, Register.RAX), new RegisterOperand(Register.RAX), Register.RAX, Register.XMM14);
+            this.MoveData(this.ArgumentToOperand(Statement.Left, Register.RAX, Register.XMM14), new RegisterOperand(Register.RAX), Register.RAX, Register.XMM14);
 
             this.WriteInstruction(new SingleOpcodeInstruction(SingleArgOpcode.IDIV, this.GetRightIntegerOperand(true, false)));
 
@@ -187,7 +187,7 @@
 
         private Operand GetLeftBooleanOperand()
         {
-            var leftOperand = this.ArgumentToOperand(Statement.Left, Register.R11);
+            var leftOperand = this.ArgumentToOperand(Statement.Left, Register.R11, Register.XMM14);
 
             if (leftOperand is MemoryOperand)
             {
@@ -208,7 +208,7 @@
 
         private Operand GetRightIntegerOperand(bool leftIsMemory, bool canBeImmediate = true)
         {
-            var rightOperand = this.ArgumentToOperand(Statement.Right, Register.R11);
+            var rightOperand = this.ArgumentToOperand(Statement.Right, Register.R11, Register.XMM14);
 
             if (leftIsMemory && rightOperand is MemoryOperand)
             {

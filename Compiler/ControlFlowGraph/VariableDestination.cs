@@ -27,10 +27,10 @@
         {
             if (Variable.Register.HasValue)
             {
-                return Variable.Register.Value.ToString();
+                return Variable.Register.Value + ":" + Type;
             }
 
-            return Variable.Name;
+            return Variable.Name + ":" + Type;
         }
     }
 }

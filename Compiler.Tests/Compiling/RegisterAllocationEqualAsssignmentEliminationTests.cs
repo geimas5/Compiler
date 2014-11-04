@@ -77,6 +77,14 @@
             this.TestProgram("Program8.m", "Program8Result.txt");
         }
 
+        [TestMethod]
+        [DeploymentItem("Compiling/Programs/Program9.m")]
+        [DeploymentItem("Compiling/Programs/Program9Result.txt")]
+        public void TestProgram9()
+        {
+            this.TestProgram("Program9.m", "Program9Result.txt");
+        }
+
         protected override CompilerAssembly CreateCompilerAssembly()
         {
             return new CompilerAssembly

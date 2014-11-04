@@ -74,6 +74,18 @@
             return this.Dimensions == other.Dimensions && this.PrimitiveType == other.PrimitiveType;
         }
 
+        public override string ToString()
+        {
+            string d = PrimitiveType.ToString();
+
+            for (int i = 0; i < this.Dimensions; i++)
+            {
+                d += "[]";
+            }
+
+            return d;
+        }
+
         public override int GetHashCode()
         {
             unchecked

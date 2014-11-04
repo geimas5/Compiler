@@ -22,7 +22,7 @@
         private void WriteNot()
         {
             this.MoveData(
-                this.ArgumentToOperand(Statement.Argument, Register.R10),
+                this.ArgumentToOperand(Statement.Argument, Register.R10, Register.XMM14),
                 new RegisterOperand(Register.R10),
                 Register.R10,
                 Register.XMM14);

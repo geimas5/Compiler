@@ -45,7 +45,7 @@
 
         private Operand GetRightOperand(bool leftIsMemory, bool canBeImmediate = true)
         {
-            var rightOperand = this.ArgumentToOperand(Statement.Right, Register.R11);
+            var rightOperand = this.ArgumentToOperand(Statement.Right, Register.R11, Register.XMM14);
 
             if (leftIsMemory && rightOperand is MemoryOperand)
             {
@@ -66,7 +66,7 @@
 
         private Operand GetLeftOperand()
         {
-            var leftOperand = this.ArgumentToOperand(Statement.Left, Register.R10);
+            var leftOperand = this.ArgumentToOperand(Statement.Left, Register.R10, Register.XMM14);
             if (leftOperand is ConstantOperand)
             {
                 this.MoveData(leftOperand, new RegisterOperand(Register.R10), Register.R10, Register.XMM14);

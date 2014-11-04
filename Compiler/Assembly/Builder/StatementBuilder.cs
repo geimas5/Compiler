@@ -183,7 +183,7 @@
             this.WriteBinaryInstruction(Opcode.MOV, destination, new RegisterOperand(tempGenRegister));
         }
 
-        protected Operand ArgumentToOperand(Argument argument, Register tempRegister)
+        protected Operand ArgumentToOperand(Argument argument, Register tempGenRegister, Register tempXmmRegister)
         {
             var variableArgument = argument as VariableArgument;
             if (variableArgument != null)
@@ -229,8 +229,8 @@
                     return new MemoryOperand(pointerArgument.Variable.Register.Value);
                 }
 
-                this.MoveData(this.Procedure.GetVarialeLocation(pointerArgument.Variable), new RegisterOperand(tempRegister));
-                return new MemoryOperand(tempRegister);
+                this.MoveData(this.Procedure.GetVarialeLocation(pointerArgument.Variable), new RegisterOperand(tempGenRegister));
+                return new MemoryOperand(tempGenRegister);
             }
 
 

@@ -5,8 +5,6 @@
     using System.Diagnostics;
     using System.Linq;
 
-    using Antlr4.Runtime.Atn;
-
     using Compiler.SymbolTable;
     using Compiler.SyntaxTree;
 
