@@ -25,6 +25,8 @@
                 "Power",
                 new Tuple<string, Type>("left", new Type(PrimitiveType.Double)),
                 new Tuple<string, Type>("right", new Type(PrimitiveType.Double)));
+
+            RegisterFunction(symbolTable, "Alloc", new Tuple<string, Type>("size", new Type(PrimitiveType.Int)));
         }
 
         private static void RegisterFunction(

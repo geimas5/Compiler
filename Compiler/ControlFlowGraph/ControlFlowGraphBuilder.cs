@@ -171,7 +171,7 @@
             // Store variable dimention sizes.
             for (int i = 0; i < sizes.Count; i++)
             {
-                var sizeOffsetVariable = this.MakeTempVariable(node, node.ResultingType);
+                var sizeOffsetVariable = this.MakeTempVariable(node, Type.IntType);
                 basicBlock =
                     basicBlock.Append(
                         new BinaryOperatorStatement(
@@ -313,11 +313,11 @@
         public override BasicBlock Visit(IndexerExpression node)
         {
             var indexer = this.BuildIndexerLocationVariable(node);
-            var tempVariable = this.MakeTempVariable(node, Type.IntType);
+            var tempVariable = this.MakeTempVariable(node, node.ResultingType);
 
             var assignment = new AssignStatement(
                new VariableDestination(tempVariable),
-               new PointerArgument(((VariableDestination)((IReturningStatement)indexer.Exit).Return).Variable));
+               new PointerArgument(((VariableDestination)((IReturningStatement)indexer.Exit).Return).Variable, tempVariable.Type));
             return indexer.Join(new BasicBlock(assignment));
         }
 
@@ -630,7 +630,7 @@
             var pointerDestination = destination as PointerDestination;
             if (pointerDestination != null)
             {
-                return new PointerArgument(pointerDestination.Destination);
+                return new PointerArgument(pointerDestination.Destination, destination.Type);
             }
 
             throw new ArgumentException("The destination type can not be converted to a argument", "destination");
@@ -684,7 +684,7 @@
                 var rowElements = this.MakeTempVariable(expression, Type.IntType);
                 block = block.Append(new AssignStatement(
                             new VariableDestination(rowElements),
-                            new PointerArgument(rowItemNumLocation)));
+                            new PointerArgument(rowItemNumLocation, rowElements.Type)));
 
                 var rowLocation = this.MakeTempVariable(expression, Type.IntType);
 

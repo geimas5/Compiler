@@ -36,40 +36,40 @@
 
             string program = @"int main()
 {
-    int[] v = new int[5];
+    double[] v = new double[5];
     v[0] = 443 + 23;
     v[1] = 32 - 223;
     v[2] = 23 * 34;
     v[3] = 453 / 32;
-    v[4] = 23 % 5;
+    v[4] = 23 ** 5;
 
-    PrintInt(v[0]); PrintLine("""");
-    PrintInt(v[1]); PrintLine("""");
-    PrintInt(v[2]); PrintLine("""");
-    PrintInt(v[3]); PrintLine("""");
-    PrintInt(v[4]); PrintLine("""");
+    PrintDouble(v[0]); PrintLine("""");
+    PrintDouble(v[1]); PrintLine("""");
+    PrintDouble(v[2]); PrintLine("""");
+    PrintDouble(v[3]); PrintLine("""");
+    PrintDouble(v[4]); PrintLine("""");
     
     return 0;
 }
 
-void PrintBool(bool val) {
-    if(val){
-        PrintInt(1);
-    }
-    else{
-        PrintInt(0);
-    }
-}
-
-bool GetTrue(){
-    PrintBool(true);
-    return true;
-}
-
-bool GetFalse(){
-    PrintBool(false);
-    return false;
-}
+//void PrintBool(bool val) {
+//    if(val){
+//        PrintInt(1);
+//    }
+//    else{
+//        PrintInt(0);
+//    }
+//}
+//
+//bool GetTrue(){
+//    PrintBool(true);
+//    return true;
+//}
+//
+//bool GetFalse(){
+//    PrintBool(false);
+//    return false;
+//}
 
 ";
 
@@ -81,10 +81,10 @@ bool GetFalse(){
                                   AllocateRegisters = true,
                                   ActivatedOptimizations =
                                       {
-                                          Optimizations.EliminateEqualAssignments, 
-                                          Optimizations.LocalCopyPropagation,
-                                          Optimizations.DeadCodeElimination,
-                                          Optimizations.AlgebraicOptimization
+                                          //Optimizations.EliminateEqualAssignments, 
+                                          //Optimizations.LocalCopyPropagation,
+                                          //Optimizations.DeadCodeElimination,
+                                          //Optimizations.AlgebraicOptimization
                                       }
                               };
 

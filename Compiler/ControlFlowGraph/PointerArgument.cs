@@ -4,8 +4,8 @@
 
     public class PointerArgument : Argument
     {
-        public PointerArgument(VariableSymbol variable)
-            : base(Type.IntType)
+        public PointerArgument(VariableSymbol variable, Type type)
+            : base(type)
         {
             this.Variable = variable;
         }

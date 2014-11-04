@@ -21,6 +21,7 @@
                 AddParameters(graph, symbolTable, function);
 
                 ConvertExponensiationToCalls(function, symbolTable);
+                ConvertAllocToCalls(function, symbolTable);
 
                 ConvertCallsToCallingConvention(symbolTable, function);
             }
@@ -96,23 +97,39 @@
             }
         }
 
-        private static void ConvertExponensiationToCalls(KeyValuePair<string, IList<BasicBlock>> function, SymbolTable symbolTable)
+        private static void ConvertExponensiationToCalls(
+            KeyValuePair<string, IList<BasicBlock>> function,
+            SymbolTable symbolTable)
         {
-            foreach (var statement in function.Value.SelectMany(m => m).ToArray())
+            foreach (var statement in function.Value.SelectMany(m => m).OfType<BinaryOperatorStatement>().ToArray())
             {
-                if (statement is BinaryOperatorStatement && ((BinaryOperatorStatement)statement).Operator == BinaryOperator.Exponensiation)
+                if (statement.Operator == BinaryOperator.Exponensiation)
                 {
-                    var binaryOperatorStatement = statement as BinaryOperatorStatement;
-
-                    CFGUtilities.AddBefore(statement, new ParamStatement(binaryOperatorStatement.Left));
-                    CFGUtilities.AddBefore(statement, new ParamStatement(binaryOperatorStatement.Right));
+                    CFGUtilities.AddBefore(statement, new ParamStatement(statement.Left));
+                    CFGUtilities.AddBefore(statement, new ParamStatement(statement.Right));
                     CFGUtilities.ReplaceStatement(
                         statement,
                         new ReturningCallStatement(
                             (FunctionSymbol)symbolTable.GetSymbol("Power", SymbolType.Function),
                             2,
-                            binaryOperatorStatement.Return));
+                            statement.Return));
                 }
+            }
+        }
+
+        private static void ConvertAllocToCalls(
+            KeyValuePair<string, IList<BasicBlock>> function,
+            SymbolTable symbolTable)
+        {
+            foreach (var statement in function.Value.SelectMany(m => m).OfType<AllocStatement>())
+            {
+                CFGUtilities.AddBefore(statement, new ParamStatement(statement.Size));
+                CFGUtilities.ReplaceStatement(
+                    statement,
+                    new ReturningCallStatement(
+                        (FunctionSymbol)symbolTable.GetSymbol("Alloc", SymbolType.Function),
+                        1,
+                        statement.Return));
             }
         }
 

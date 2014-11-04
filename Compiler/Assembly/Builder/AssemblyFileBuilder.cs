@@ -71,7 +71,6 @@
             else if (statement is JumpStatement) instructions = CreateInstruction((JumpStatement)statement);
             else if (statement is BranchStatement) return new BranchStatementBuilder().Build((BranchStatement)statement, currentProcedure);
             else if (statement is ConvertToDoubleStatement) instructions = CreateInstruction((ConvertToDoubleStatement)statement);
-            else if (statement is AllocStatement) instructions = CreateInstruction((AllocStatement)statement);
             else if (statement is NopStatement) instructions = new[] { new NOPInstruction() };
             else
             {
@@ -108,19 +107,6 @@
             instructions.Add(new BinaryOpCodeInstruction(Opcode.MOVD, new RegisterOperand(Register.R10), new RegisterOperand(Register.XMM14)));
 
             instructions.AddRange(BuilderHelper.WriteRegisterToDestination(statement.Return, Register.R10, currentProcedure));
-
-            return instructions;
-        }
-
-        private static IEnumerable<Instruction> CreateInstruction(AllocStatement statement)
-        {
-            var instructions = new List<Instruction>();
-
-            instructions.AddRange(BuilderHelper.PlaceArgumentInRegister(CallingConvention.GetArgumentRegister(Type.IntType, 0), statement.Size, currentProcedure));
-            instructions.Add(new BinaryOpCodeInstruction(Opcode.SUB, new RegisterOperand(Register.RSP), new ConstantOperand(40)));
-            instructions.Add(new CallInstruction("Alloc"));
-            instructions.Add(new BinaryOpCodeInstruction(Opcode.ADD, new RegisterOperand(Register.RSP), new ConstantOperand(40)));
-            instructions.AddRange(BuilderHelper.WriteRegisterToDestination(statement.Return, Register.RAX, currentProcedure));
 
             return instructions;
         }
