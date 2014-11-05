@@ -84,11 +84,14 @@
     <Compile Include="Assembly\Register.cs" />
     <Compile Include="Assembly\RegisterOperand.cs" />
     <Compile Include="Assembly\RegisterUtility.cs" />
+    <Compile Include="Assembly\SDComparisonType.cs" />
     <Compile Include="Assembly\Section.cs" />
     <Compile Include="Assembly\SingleArgOpcode.cs" />
     <Compile Include="Assembly\SingleOpcodeInstruction.cs" />
     <Compile Include="Assembly\StringConstantOperand.cs" />
     <Compile Include="Assembly\StringEntry.cs" />
+    <Compile Include="Assembly\TrinaryInstruction.cs" />
+    <Compile Include="Assembly\TrinaryOpcode.cs" />
     <Compile Include="Common\ListExtensions.cs" />
     <Compile Include="Common\NotNullList.cs" />
     <Compile Include="CompilerAssembly.cs" />

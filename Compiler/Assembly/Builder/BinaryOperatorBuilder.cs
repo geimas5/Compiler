@@ -16,7 +16,7 @@
                 || Statement.Operator == BinaryOperator.Mod
                 || Statement.Operator == BinaryOperator.Exponensiation)
             {
-                CreateMathInstruction();
+                this.CreateMathInstruction();
             }
             else if (this.Statement.Operator == BinaryOperator.Equal
                 || this.Statement.Operator == BinaryOperator.Greater
@@ -25,7 +25,7 @@
                 || this.Statement.Operator == BinaryOperator.LessEqual
                 || this.Statement.Operator == BinaryOperator.NotEqual)
             {
-                CreateComparisonInstruction();
+                this.CreateComparisonInstruction();
             }
             else
             {
@@ -42,6 +42,18 @@
             else
             {
                 this.CreateIntegerMathInstructions();
+            }
+        }
+
+        private void CreateComparisonInstruction()
+        {
+            if (this.Statement.Left.Type.PrimitiveType == PrimitiveType.Double)
+            {
+                this.CreateFloatingPointComparisonInstruction();
+            }
+            else
+            {
+                this.CreateIntegerComparisonInstruction();
             }
         }
 
@@ -105,7 +117,7 @@
                     throw new ArgumentException("operation operation not supported");
             }
 
-            Operand rightOperand = this.ArgumentToOperand(Statement.Right, Register.R14, Register.XMM15);
+            var rightOperand = this.ArgumentToOperand(Statement.Right, Register.R14, Register.XMM15);
             if (!RegisterUtility.IsXMMOperand(rightOperand))
             {
                 this.MoveData(rightOperand, new RegisterOperand(Register.XMM15), Register.R10, Register.XMM15);
@@ -145,7 +157,7 @@
             this.MoveData(new RegisterOperand(Register.RDX), this.DestinationToOperand(this.Statement.Return, Register.R10), Register.RAX, Register.XMM14);
         }
 
-        private void CreateComparisonInstruction()
+        private void CreateIntegerComparisonInstruction()
         {
             Opcode opcode;
             switch (Statement.Operator)
@@ -183,6 +195,48 @@
 
             var destinationOperand = this.DestinationToOperand(Statement.Return, Register.R10);
             this.MoveData(new RegisterOperand(Register.R11), destinationOperand, Register.R10, Register.XMM14);
+        }
+
+        private void CreateFloatingPointComparisonInstruction()
+        {
+            int comparisonType;
+
+            switch (Statement.Operator)
+            {
+                case BinaryOperator.Equal:
+                    comparisonType = (int)SDComparisonType.Equal;
+                    break;
+                case BinaryOperator.NotEqual:
+                    comparisonType = (int)SDComparisonType.NotEqual;
+                    break;
+                case BinaryOperator.Less:
+                    comparisonType = (int)SDComparisonType.LessThan;
+                    break;
+                case BinaryOperator.LessEqual:
+                    comparisonType = (int)SDComparisonType.LessEqual;
+                    break;
+                case BinaryOperator.Greater:
+                    comparisonType = (int)SDComparisonType.NotLessEqual;
+                    break;
+                case BinaryOperator.GreaterEqual:
+                    comparisonType = (int)SDComparisonType.NotLessThan;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("statement", "Unsupported operator");
+            }
+
+            Operand leftOperand = new RegisterOperand(Register.XMM14);
+            Operand rightOperand = new RegisterOperand(Register.XMM15);
+            this.MoveData(this.ArgumentToOperand(Statement.Left, Register.R10, Register.XMM14), leftOperand, Register.R10, Register.XMM14);
+            this.MoveData(this.ArgumentToOperand(Statement.Right, Register.R11, Register.XMM15), rightOperand, Register.R11, Register.XMM15);
+
+            this.WriteTrinaryInstruction(TrinaryOpcode.CMPSD, leftOperand, rightOperand, new ConstantOperand(comparisonType));
+
+            var destination = this.DestinationToOperand(Statement.Return, Register.R10);
+            this.MoveData(leftOperand, destination, Register.R10, Register.XMM14);
+
+            this.MoveData(new ConstantOperand(1), new RegisterOperand(Register.R10), Register.R10, Register.XMM14);
+            this.WriteBinaryInstruction(Opcode.AND, destination, new RegisterOperand(Register.R10));
         }
 
         private Operand GetLeftBooleanOperand()

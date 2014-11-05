@@ -36,6 +36,11 @@
             this.WriteInstruction(new BinaryOpCodeInstruction(opcode, argument1, argument2));
         }
 
+        protected void WriteTrinaryInstruction(TrinaryOpcode opcode, Operand argument1, Operand argument2, Operand argument3)
+        {
+            this.WriteInstruction(new TrinaryInstruction(opcode, argument1, argument2, argument3));
+        }
+
         protected void WriteUnaryInstruction(SingleArgOpcode opcode, Operand argument1)
         {
             this.WriteInstruction(new SingleOpcodeInstruction(opcode, argument1));

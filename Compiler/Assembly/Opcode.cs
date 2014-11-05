@@ -9,6 +9,7 @@ namespace Compiler.ControlFlowGraph
         ADD,
         IMUL,
         XOR,
+        AND,
 
         CMOVE,
         CMOVNE,
