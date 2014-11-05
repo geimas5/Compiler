@@ -93,6 +93,46 @@
             this.TestProgram("Program10.m", "Program10Result.txt");
         }
 
+        [TestMethod]
+        [DeploymentItem("Compiling/Programs/Program11.m")]
+        [DeploymentItem("Compiling/Programs/Program11Result.txt")]
+        public void TestProgram11()
+        {
+            this.TestProgram("Program11.m", "Program11Result.txt");
+        }
+
+        [TestMethod]
+        [DeploymentItem("Compiling/Programs/Program12.m")]
+        [DeploymentItem("Compiling/Programs/Program12Result.txt")]
+        public void TestProgram12()
+        {
+            this.TestProgram("Program12.m", "Program12Result.txt");
+        }
+
+        [TestMethod]
+        [DeploymentItem("Compiling/Programs/Program13.m")]
+        [DeploymentItem("Compiling/Programs/Program13Result.txt")]
+        public void TestProgram13()
+        {
+            this.TestProgram("Program13.m", "Program13Result.txt");
+        }
+
+        [TestMethod]
+        [DeploymentItem("Compiling/Programs/Program14.m")]
+        [DeploymentItem("Compiling/Programs/Program14Result.txt")]
+        public void TestProgram14()
+        {
+            this.TestProgram("Program14.m", "Program14Result.txt");
+        }
+
+        [TestMethod]
+        [DeploymentItem("Compiling/Programs/Program15.m")]
+        [DeploymentItem("Compiling/Programs/Program15Result.txt")]
+        public void TestProgram15()
+        {
+            this.TestProgram("Program15.m", "Program15Result.txt");
+        }
+
         protected override CompilerAssembly CreateCompilerAssembly()
         {
             return new CompilerAssembly { ActivatedOptimizations = { Optimizations.AlgebraicOptimization } };

@@ -36,24 +36,50 @@
 
             string program = @"int main()
             {
-//                PrintBool(4.0 == 4.0); PrintLine("""");
-                PrintBool(43.0 == 4.0); PrintLine("""");
-//            
-//                PrintBool(4.0 != 4.0); PrintLine("""");
-//                PrintBool(43.0 != 4.0); PrintLine("""");
-//            
-//                PrintBool(4.0 > 4.0); PrintLine("""");
-//                PrintBool(43.0 > 4.0); PrintLine("""");
-//                PrintBool(3.0 > 4.0); PrintLine("""");
-//            
-//                PrintBool(4.0 >= 4.0); PrintLine("""");
-//                PrintBool(43.0 >= 4.0); PrintLine("""");
-//                PrintBool(3.0 >= 4.0); PrintLine("""");
-//            
-//                PrintBool(4.0 <= 4.0); PrintLine("""");
-//                PrintBool(43.0 <= 4.0); PrintLine("""");
-//                PrintBool(3.0 <= 4.0); PrintLine("""");
-                
+                PrintBool(4.0 == 4); PrintLine("""");
+//                PrintBool(43.0 == 4); PrintLine("""");
+//
+//                PrintBool(4.0 != 4); PrintLine("""");
+//                PrintBool(43.0 != 4); PrintLine("""");
+//
+//                PrintBool(4.0 > 4); PrintLine("""");
+//                PrintBool(43.0 > 4); PrintLine("""");
+//                PrintBool(3.0 > 4); PrintLine("""");
+//
+//                PrintBool(4.0 < 4); PrintLine("""");
+//                PrintBool(43.0 < 4); PrintLine("""");
+//                PrintBool(3.0 < 4); PrintLine("""");
+//
+//                PrintBool(4.0 >= 4); PrintLine("""");
+//                PrintBool(43.0 >= 4); PrintLine("""");
+//                PrintBool(3.0 >= 4); PrintLine("""");
+//
+//                PrintBool(4.0 <= 4); PrintLine("""");
+//                PrintBool(43.0 <= 4); PrintLine("""");
+//                PrintBool(3.0 <= 4); PrintLine("""");
+//
+//                PrintBool(4 == 4.0); PrintLine("""");
+//                PrintBool(43 == 4.0); PrintLine("""");
+//
+//                PrintBool(4 != 4.0); PrintLine("""");
+//                PrintBool(43 != 4.0); PrintLine("""");
+//
+//                PrintBool(4 > 4.0); PrintLine("""");
+//                PrintBool(43 > 4.0); PrintLine("""");
+//                PrintBool(3 > 4.0); PrintLine("""");
+//
+//                PrintBool(4 < 4.0); PrintLine("""");
+//                PrintBool(43 < 4.0); PrintLine("""");
+//                PrintBool(3 < 4.0); PrintLine("""");
+//
+//                PrintBool(4 >= 4.0); PrintLine("""");
+//                PrintBool(43 >= 4.0); PrintLine("""");
+//                PrintBool(3 >= 4.0); PrintLine("""");
+//
+//                PrintBool(4 <= 4.0); PrintLine("""");
+//                PrintBool(43 <= 4.0); PrintLine("""");
+//                PrintBool(3 <= 4.0); PrintLine("""");
+
                 return 0;
             }
             
@@ -65,17 +91,7 @@
                     PrintInt(0);
                 }
             }
-            //
-            //bool GetTrue(){
-            //    PrintBool(true);
-            //    return true;
-            //}
-            //
-            //bool GetFalse(){
-            //    PrintBool(false);
-            //    return false;
-            //}
-            
+
             ";
 
             var asembly = new CompilerAssembly
@@ -86,10 +102,10 @@
                                   AllocateRegisters = false,
                                   ActivatedOptimizations =
                                       {
-                                          Optimizations.EliminateEqualAssignments, 
-                                          Optimizations.LocalCopyPropagation,
-                                          Optimizations.DeadCodeElimination,
-                                          Optimizations.AlgebraicOptimization
+                                          //Optimizations.EliminateEqualAssignments, 
+                                          //Optimizations.LocalCopyPropagation,
+                                          //Optimizations.DeadCodeElimination,
+                                          //Optimizations.AlgebraicOptimization
                                       }
                               };
 

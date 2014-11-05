@@ -39,7 +39,7 @@
                     opcode = this.Statement.Zero ? JumpOpCodes.JG : JumpOpCodes.JLE;
                     break;
                 case BinaryOperator.Greater:
-                    opcode = this.Statement.Zero ? JumpOpCodes.JL : JumpOpCodes.JGE;
+                    opcode = this.Statement.Zero ? JumpOpCodes.JLE : JumpOpCodes.JG;
                     break;
                 case BinaryOperator.GreaterEqual:
                     opcode = this.Statement.Zero ? JumpOpCodes.JL : JumpOpCodes.JGE;

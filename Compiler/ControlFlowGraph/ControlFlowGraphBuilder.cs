@@ -257,22 +257,18 @@
 
             var leftArgument = ToArgument(((IReturningStatement)leftBlock.Exit).Return);
             var rightArgument = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
-
-            if (Equals(node.ResultingType, Type.DoubleType))
+          
+            if (Equals(rightArgument.Type, Type.DoubleType) && Equals(leftArgument.Type, Type.IntType))
             {
-                if (Equals(node.Left.ResultingType, Type.IntType))
-                {
-                    var leftTempVariable = this.MakeTempVariable(node, Type.DoubleType);
-                    beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(new VariableDestination(leftTempVariable), leftArgument));
-                    leftArgument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
-                }
-
-                if (Equals(node.Right.ResultingType, Type.IntType))
-                {
-                    var rightTempVariable = this.MakeTempVariable(node, Type.DoubleType);
-                    beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(new VariableDestination(rightTempVariable), rightArgument));
-                    rightArgument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
-                }
+                var leftTempVariable = this.MakeTempVariable(node, Type.DoubleType);
+                beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(new VariableDestination(leftTempVariable), leftArgument));
+                leftArgument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
+            }
+            else if (Equals(leftArgument.Type, Type.DoubleType) && Equals(rightArgument.Type, Type.IntType))
+            {
+                var rightTempVariable = this.MakeTempVariable(node, Type.DoubleType);
+                beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(new VariableDestination(rightTempVariable), rightArgument));
+                rightArgument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
             }
 
             var statement = new BinaryOperatorStatement(new VariableDestination(tempVariable), node.Operator, leftArgument, rightArgument);
@@ -512,14 +508,27 @@
                 if (binaryExpression.Operator != BinaryOperator.And && binaryExpression.Operator != BinaryOperator.Or)
                 {
                     var rightBlock = binaryExpression.Right.Accept(this);
-                    var rightArguumment = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
+                    var rightArgument = ToArgument(((IReturningStatement)rightBlock.Exit).Return);
                     var beforeBlock = leftBlock.Join(rightBlock);
+
+                    if (Equals(rightArgument.Type, Type.DoubleType) && Equals(leftArgument.Type, Type.IntType))
+                    {
+                        var leftTempVariable = this.MakeTempVariable(expression, Type.DoubleType);
+                        beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(new VariableDestination(leftTempVariable), leftArgument));
+                        leftArgument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
+                    }
+                    else if (Equals(leftArgument.Type, Type.DoubleType) && Equals(rightArgument.Type, Type.IntType))
+                    {
+                        var rightTempVariable = this.MakeTempVariable(expression, Type.DoubleType);
+                        beforeBlock = beforeBlock.Append(new ConvertToDoubleStatement(new VariableDestination(rightTempVariable), rightArgument));
+                        rightArgument = ToArgument(((IReturningStatement)beforeBlock.Exit).Return);
+                    }
 
                     var branchStatement = new BranchStatement(
                         true,
                         binaryExpression.Operator,
                         leftArgument,
-                        rightArguumment,
+                        rightArgument,
                         falseBranch.Enter);
 
                     var temp = beforeBlock.Append(branchStatement);

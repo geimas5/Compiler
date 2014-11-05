@@ -98,9 +98,9 @@ expression returns [ExpressionNode expr]
    | functionCall { $expr = $functionCall.expr; }
    | creator { $expr = $creator.expr; }
    | left=expression StarStar right=expression { $expr = nodeFactory.CreateBinaryOperatorExpression(_localctx, $left.expr, $right.expr, BinaryOperator.Exponensiation); }
+   | Minus right=expression { $expr = nodeFactory.CreateUnaryExpression(_localctx, UnaryOperator.Negation, $right.expr); }
    | left=expression (Star { op = BinaryOperator.Multiply; } | Div { op = BinaryOperator.Divide; } | Mod { op = BinaryOperator.Mod; }) right=expression { $expr = nodeFactory.CreateBinaryOperatorExpression(_localctx, $left.expr, $right.expr, op); }
    | left=expression (Plus  { op = BinaryOperator.Add; }  | Minus  { op = BinaryOperator.Subtract; } ) right=expression { $expr = nodeFactory.CreateBinaryOperatorExpression(_localctx, $left.expr, $right.expr, op); }
-   | Minus right=expression { $expr = nodeFactory.CreateUnaryExpression(_localctx, UnaryOperator.Negation, $right.expr); }
    | left=expression (Less { op = BinaryOperator.Less; } | LessEqual { op = BinaryOperator.LessEqual; } | Greater { op = BinaryOperator.Greater; } | GreaterEqual { op = BinaryOperator.GreaterEqual; } ) right=expression { $expr = nodeFactory.CreateBinaryOperatorExpression(_localctx, $left.expr, $right.expr, op); }
    | left=expression (NotEqual { op = BinaryOperator.NotEqual; } | Equal { op = BinaryOperator.Equal; } ) right=expression { $expr = nodeFactory.CreateBinaryOperatorExpression(_localctx, $left.expr, $right.expr, op); }
    | left=expression AndAnd right=expression  { $expr = nodeFactory.CreateBinaryOperatorExpression(_localctx, $left.expr, $right.expr, BinaryOperator.And); }
