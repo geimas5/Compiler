@@ -76,6 +76,9 @@
     <None Include="Compiling\Programs\Program1.m">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Compiling\Programs\Program16.m">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Compiling\Programs\Program15.m">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -223,6 +226,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Compiling\Programs\Program16Result.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Compiling\Programs\Program15Result.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

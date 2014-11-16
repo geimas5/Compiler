@@ -198,7 +198,7 @@
                     return new RegisterOperand(variableArgument.Variable.Register.Value);
                 }
 
-                return Procedure.GetVarialeLocation(variableArgument.Variable);
+                return Procedure.GetVariableLocation(variableArgument.Variable);
             }
 
             var doubleConstantArgument = argument as DoubleConstantArgument;
@@ -234,7 +234,7 @@
                     return new MemoryOperand(pointerArgument.Variable.Register.Value);
                 }
 
-                this.MoveData(this.Procedure.GetVarialeLocation(pointerArgument.Variable), new RegisterOperand(tempGenRegister));
+                this.MoveData(this.Procedure.GetVariableLocation(pointerArgument.Variable), new RegisterOperand(tempGenRegister));
                 return new MemoryOperand(tempGenRegister);
             }
 
@@ -252,7 +252,7 @@
                     return new RegisterOperand(variableDestination.Variable.Register.Value);
                 }
 
-                return Procedure.GetVarialeLocation(variableDestination.Variable);
+                return Procedure.GetVariableLocation(variableDestination.Variable);
             }
 
             var pointerDestination = destination as PointerDestination;
@@ -263,7 +263,7 @@
                     return new MemoryOperand(pointerDestination.Destination.Register.Value);
                 }
 
-                var variable = Procedure.GetVarialeLocation(pointerDestination.Destination);
+                var variable = Procedure.GetVariableLocation(pointerDestination.Destination);
                 this.MoveData(variable, new RegisterOperand(tempRegister));
 
                 return new MemoryOperand(tempRegister);

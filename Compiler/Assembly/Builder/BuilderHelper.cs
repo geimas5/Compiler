@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Security.Cryptography;
 
     using Compiler.ControlFlowGraph;
 
@@ -61,7 +60,7 @@
                                };
                 }
 
-                argument2 = currentProcedure.GetVarialeLocation(variableArgument.Variable);
+                argument2 = currentProcedure.GetVariableLocation(variableArgument.Variable);
 
                 if (RegisterUtility.IsXMM(register))
                 {
@@ -94,7 +93,7 @@
                     new BinaryOpCodeInstruction(
                         Opcode.MOV,
                         new RegisterOperand(register),
-                        currentProcedure.GetVarialeLocation(pointerArgument.Variable)));
+                        currentProcedure.GetVariableLocation(pointerArgument.Variable)));
 
                 instructions.Add(new BinaryOpCodeInstruction(Opcode.MOV, new RegisterOperand(register), new MemoryOperand(register)));
 
@@ -141,7 +140,7 @@
                 }
                 else
                 {
-                    var destinationOperand = currentProcedure.GetVarialeLocation(variableDestination.Variable);
+                    var destinationOperand = currentProcedure.GetVariableLocation(variableDestination.Variable);
 
                     instructions.Add(new BinaryOpCodeInstruction(Opcode.MOV, destinationOperand, new RegisterOperand(register)));
                 }

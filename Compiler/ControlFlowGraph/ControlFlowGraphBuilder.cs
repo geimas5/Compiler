@@ -151,7 +151,6 @@
                         new VariableArgument(totalNumberOfElements), 
                         new IntConstantArgument(dataItemSize)));
 
-
             var totalSize = this.MakeTempVariable(node, Type.IntType);
             basicBlock = basicBlock.Append(
                     new BinaryOperatorStatement(

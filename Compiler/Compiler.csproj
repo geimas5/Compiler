@@ -57,6 +57,7 @@
     <Compile Include="Assembly\AssemblyObject.cs" />
     <Compile Include="Assembly\Block.cs" />
     <Compile Include="Assembly\Builder\AssignStatementBuilder.cs" />
+    <Compile Include="Assembly\Builder\CallContext.cs" />
     <Compile Include="Assembly\Builder\UnaryOperatorBuilder.cs" />
     <Compile Include="Assembly\Builder\BinaryOperatorBuilder.cs" />
     <Compile Include="Assembly\Builder\BranchStatementBuilder.cs" />
@@ -257,7 +258,6 @@
     <None Include="Assemble.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="ControlFlowGraph\Diagram.cd" />
     <None Include="packages.config" />
     <None Include="SyntaxTree\SyntaxTree.cd" />
   </ItemGroup>

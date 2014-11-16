@@ -133,6 +133,15 @@
             this.TestProgram("Program15.m", "Program15Result.txt");
         }
 
+        [TestMethod]
+        [DeploymentItem("Compiling/Programs/Program16.m")]
+        [DeploymentItem("Compiling/Programs/Program16Result.txt")]
+        public void TestProgram16()
+        {
+            this.TestProgram("Program16.m", "Program16Result.txt");
+        }
+
+
         protected override CompilerAssembly CreateCompilerAssembly()
         {
             return new CompilerAssembly { ActivatedOptimizations = { Optimizations.AlgebraicOptimization } };

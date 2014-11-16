@@ -14,11 +14,17 @@
 
         private static int currentOffset;
 
-        public Procedure(string name, AssemblyFile assemblyFile)
+        private readonly List<string> parameters = new List<string>();
+
+        private SymbolTable symbolTable;
+
+        public Procedure(string name, IEnumerable<string> parameters, AssemblyFile assemblyFile, SymbolTable symbolTable)
         {
             this.Name = name;
             this.AssemblyFile = assemblyFile;
+            this.symbolTable = symbolTable;
             this.Blocks = new List<Block>();
+            this.parameters.AddRange(parameters);
         }
 
         public string Name { get; set; }
@@ -50,11 +56,45 @@
 
             foreach (var usedRegister in usedRegisters)
             {
-                writer.WriteLine("push {0}", usedRegister);
+                if (RegisterUtility.IsXMM(usedRegister))
+                {
+                    writer.WriteLine("MOVD R10, {0}", usedRegister);
+                    writer.WriteLine("PUSH R10");
+                }
+                else
+                {
+                    writer.WriteLine("PUSH {0}", usedRegister);
+                }
             }
 
             writer.WriteLine("mov rbp, rsp");
-            writer.WriteLine("sub rsp, {0}", (16 * Math.Ceiling(((double)this.NumberOfLocalVariables * 8) / 16))); // Allocate stackframe space, and allign to 16 bit.
+            writer.WriteLine("sub rsp, {0}", 16 * Math.Ceiling(((double)this.NumberOfLocalVariables * 8) / 16)); // Allocate stackframe space, and allign to 16 bit.
+
+            int parameterOffset = 48 + 8 * usedRegisters.Count() + Math.Max(0, 8 * (this.parameters.Count - CallingConvention.NumberOfRegisterParams));
+            foreach (var parameter in parameters.Skip(CallingConvention.NumberOfRegisterParams))
+            {
+                var variableSymbol = (VariableSymbol)this.symbolTable.GetSymbol(parameter, SymbolType.Variable);
+
+                if (variableSymbol.Register.HasValue)
+                {
+                    if (RegisterUtility.IsXMM(variableSymbol.Register.Value))
+                    {
+                        writer.WriteLine("MOV R10, [RBP + {0}]", parameterOffset);
+                        writer.WriteLine("MOVD {0}, R10", variableSymbol.Register.Value);
+                    }
+                    else
+                    {
+                        writer.WriteLine("MOV {0}, [RBP + {1}]", variableSymbol.Register.Value, parameterOffset);    
+                    }
+                }
+                else
+                {
+                    writer.WriteLine("MOV R10, [RBP + {0}]", parameterOffset);
+                    writer.WriteLine("MOV {0}, R10", this.GetVariableLocation(parameter));
+                }
+
+                parameterOffset -= 8;
+            }
 
             foreach (var block in this.Blocks)
             {
@@ -71,7 +111,15 @@
             writer.WriteLine("mov rsp, rbp");
             foreach (var usedRegister in usedRegisters.Reverse())
             {
-                writer.WriteLine("pop {0}", usedRegister);
+                if (RegisterUtility.IsXMM(usedRegister))
+                {
+                    writer.WriteLine("POP R10");
+                    writer.WriteLine("MOVD {0}, R10", usedRegister);
+                }
+                else
+                {
+                    writer.WriteLine("POP {0}", usedRegister);
+                }
             }
             
 
@@ -80,18 +128,23 @@
             writer.WriteLine(this.Name + " ENDP");
         }
 
-        public MemoryOperand GetVarialeLocation(VariableSymbol variableSymbol)
+        public MemoryOperand GetVariableLocation(VariableSymbol variableSymbol)
+        {
+            return this.GetVariableLocation(variableSymbol.Name);
+        }
+
+        private MemoryOperand GetVariableLocation(string variableName)
         {
             int varOffset;
 
-            if (this.parameterOffsets.ContainsKey(variableSymbol.Name))
+            if (this.parameterOffsets.ContainsKey(variableName))
             {
-                varOffset = this.parameterOffsets[variableSymbol.Name];
+                varOffset = this.parameterOffsets[variableName];
             }
             else
             {
                 varOffset = currentOffset -= 8;
-                this.parameterOffsets[variableSymbol.Name] = currentOffset;
+                this.parameterOffsets[variableName] = currentOffset;
             }
 
             return new MemoryOperand(Register.RBP, varOffset);

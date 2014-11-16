@@ -4,6 +4,7 @@
     {
         IDIV,
         NOT,
-        NEG
+        NEG,
+        PUSH
     }
 }

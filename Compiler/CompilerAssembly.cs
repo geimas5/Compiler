@@ -76,7 +76,7 @@
             if (this.OutputIr) this.OutputIrCode(controlGraph);
 
             var assemblyFile = new AssemblyFile();
-            AssemblyFileBuilder.BuildFile(assemblyFile, controlGraph);
+            AssemblyFileBuilder.BuildFile(assemblyFile, controlGraph, symbolTable);
 
             assemblyFile.Write(output);
 

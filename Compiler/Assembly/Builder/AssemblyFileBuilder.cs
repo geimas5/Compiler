@@ -5,6 +5,7 @@
 
     using Compiler.Common;
     using Compiler.ControlFlowGraph;
+    using Compiler.SymbolTable;
 
     using ReturnStatement = Compiler.ControlFlowGraph.ReturnStatement;
 
@@ -14,10 +15,12 @@
 
         private static Procedure currentProcedure;
 
-        public static void BuildFile(AssemblyFile file, ControlFlowGraph graph)
+        private static readonly CallContext callContext = new CallContext();
+
+        public static void BuildFile(AssemblyFile file, ControlFlowGraph graph, SymbolTable symbolTable)
         {
             AddStrings(file, graph);
-            AddFunctions(file, graph);
+            AddFunctions(file, graph, symbolTable);
         }
 
         private static void AddStrings(AssemblyFile file, ControlFlowGraph graph)
@@ -28,21 +31,25 @@
             }
         }
 
-        private static void AddFunctions(AssemblyFile file, ControlFlowGraph graph)
+        private static void AddFunctions(AssemblyFile file, ControlFlowGraph graph, SymbolTable symbolTable)
         {
             foreach (var function in graph.Functions)
             {
+                var functionSymbol = (FunctionSymbol)symbolTable.GetSymbol(function.Key, SymbolType.Function);
+
                 currentFunction = function.Key;
-                AddFunction(file, function.Key, function.Value);
+                AddFunction(file, function.Key, functionSymbol.Parameters, functionSymbol, function.Value);
             }
         }
 
         private static void AddFunction(
             AssemblyFile file,
             string name,
+            IEnumerable<string> parameters,
+            FunctionSymbol functionSymbol,
             IEnumerable<BasicBlock> functionBlocks)
         {
-            currentProcedure = new Procedure(name, file);
+            currentProcedure = new Procedure(name, parameters, file, functionSymbol.SymbolTable);
 
             foreach (var block in functionBlocks)
             {
@@ -60,9 +67,9 @@
 
         private static IEnumerable<Instruction> CreateInstruction(Statement statement)
         {
-            IEnumerable<Instruction> instructions;
+            IEnumerable<Instruction> instructions = null;
 
-            if (statement is CallStatement) return new CallStatementBuilder().Build((CallStatement)statement, currentProcedure);
+            if (statement is CallStatement) return new CallStatementBuilder(callContext).Build((CallStatement)statement, currentProcedure);
             if (statement is AssignStatement) return new AssignStatementBuilder().Build((AssignStatement)statement, currentProcedure);
             if (statement is ReturnStatement) instructions = CreateInstruction((ReturnStatement)statement);
             else if (statement is BinaryOperatorStatement) return new BinaryOperatorBuilder().Build((BinaryOperatorStatement)statement, currentProcedure);
@@ -70,13 +77,14 @@
             else if (statement is JumpStatement) instructions = CreateInstruction((JumpStatement)statement);
             else if (statement is BranchStatement) return new BranchStatementBuilder().Build((BranchStatement)statement, currentProcedure);
             else if (statement is ConvertToDoubleStatement) instructions = CreateInstruction((ConvertToDoubleStatement)statement);
+            else if (statement is ParamStatement) callContext.Arguments.Add(((ParamStatement)statement).Argument);
             else if (statement is NopStatement) instructions = new[] { new NOPInstruction() };
             else
             {
                 throw new ArgumentException();
             }
 
-            return instructions;
+            return instructions ?? new Instruction[0];
         }
 
         private static IEnumerable<Instruction> CreateInstruction(ReturnStatement statement)
